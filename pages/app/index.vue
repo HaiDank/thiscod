@@ -1,3 +1,5 @@
-<h1>
-    Hey
-</h1>
+<template>
+	<h1 class="dark:text-red-600 font-bold">
+		Hello
+	</h1>
+</template>
