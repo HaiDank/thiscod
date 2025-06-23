@@ -1,0 +1,21 @@
+import { index, int, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+
+import { user } from "./auth";
+import { server } from "./servers";
+
+type MemberRole = "ADMIN" | "MODERATOR" | "GUEST";
+
+export const member = sqliteTable("member", {
+    id: int().primaryKey({ autoIncrement: true }),
+    memberRole: text().$type<MemberRole>().default("GUEST"),
+
+    userId: int().notNull().references(() => user.id, { onDelete: "cascade" }),
+    serverId: int().notNull().references(() => server.id, { onDelete: "cascade" }),
+
+    createdAt: int().notNull().$default(() => Date.now()),
+    updatedAt: int().notNull().$default(() => Date.now()).$onUpdate(() => Date.now()),
+}, t => [
+    unique().on(t.serverId, t.userId),
+    index("user_idx").on(t.userId),
+    index("server_idx").on(t.serverId),
+]);
