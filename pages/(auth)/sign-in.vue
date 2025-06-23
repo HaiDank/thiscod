@@ -29,64 +29,66 @@ definePageMeta({
 </script>
 
 <template>
-    <div class="w-full h-full relative flex items-center justify-center">
-        <img
-            src="/wallpaper.jpg"
-            class="h-full w-auto object-cover blur-[4px] brightness-75 -z-10 absolute"
-        >
-        <UForm
-            :schema="formSchema"
-            :state="state"
-            class="space-y-2 p-12 bg-background rounded-lg w-3xl h-1/2 flex items-center justify-center flex-col shadow-2xl"
-            @submit="onSubmit"
-        >
-            <UFormField
-                label="Email"
-                name="email"
-                size="lg"
-                class="w-2/3"
-            >
-                <UInput v-model="state.email" class="w-full" />
-            </UFormField>
+    <UForm
+        :schema="formSchema"
+        :state="state"
+        class="space-y-2 p-24 bg-background rounded-lg w-3xl box-border h-1/2 flex items-center justify-center flex-col shadow-2xl transition-all"
+        @submit="onSubmit"
+    >
+        <UFormField
+            label="Email"
 
-            <UFormField
-                label="Password"
-                name="password"
-                size="lg"
-                class="w-2/3"
-            >
-                <UInput
-                    v-model="state.password"
-                    type="password"
-                    class="w-full"
-                />
-            </UFormField>
-            <span class="text-text-disabled">
-                Need an account?
-                <NuxtLink to="/sign-up" class="text-primary font-semibold">Register</NuxtLink>
-            </span>
-
-            <UButton
-                type="submit"
-                class="w-2/3 justify-center"
+            name="email"
+            size="lg"
+            class="w-full"
+        >
+            <UInput
+                v-model="state.email"
+                class="w-full"
                 color="primary"
-                size="xl"
-            >
-                Log in
-            </UButton>
-            <p>
-                or
-            </p>
-            <UButton
-                class="w-2/3 justify-center"
-                color="secondary"
-                size="xl"
-                loading-auto
-                :disabled="authStore.loading"
-                @click="authStore.signIn"
-            >
-                Log in with Github <Icon name="mdi:github" class="h-[1.2rem] w-[1.2rem]" />
-            </UButton>
-        </UForm>
-    </div>
+                variant="subtle"
+            />
+        </UFormField>
+
+        <UFormField
+            label="Password"
+            name="password"
+            size="lg"
+            class="w-full"
+        >
+            <UInput
+                v-model="state.password"
+                type="password"
+                class="w-full"
+                color="primary"
+                variant="subtle"
+            />
+        </UFormField>
+        <span class="text-text-disabled w-full">
+            Need an account?
+            <NuxtLink to="/sign-up" class="text-primary font-semibold hover:underline">Register</NuxtLink>
+        </span>
+
+        <UButton
+            type="submit"
+            class="w-full justify-center"
+            color="primary"
+            size="xl"
+        >
+            Log in
+        </UButton>
+        <p>
+            or
+        </p>
+        <UButton
+            class="w-full justify-center"
+            color="secondary"
+            size="xl"
+            loading-auto
+            :disabled="authStore.loading"
+            @click="authStore.signInWithGithub"
+        >
+            Log in with Github <Icon name="mdi:github" class="h-[1.2rem] w-[1.2rem]" />
+        </UButton>
+    </UForm>
 </template>
