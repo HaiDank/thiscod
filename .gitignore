@@ -24,3 +24,5 @@ logs
 !.env.example
 
 /lib/generated/prisma
+
+local.db*
