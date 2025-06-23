@@ -1,9 +1,13 @@
 <script>
+
 </script>
 
 <template>
     <section class="w-screen h-screen flex flex-col relative">
         <header>
+            <NuxtLink to="/sign-in">
+                SIgn in
+            </NuxtLink>
             <ModeToggle />
         </header>
 

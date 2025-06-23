@@ -4,14 +4,12 @@ import "./lib/env";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     modules: [
-        "@nuxtjs/color-mode",
+        "@nuxt/ui",
         "@nuxt/eslint",
         "@nuxt/fonts",
         "@nuxt/icon",
-        "@nuxt/image",
         "@nuxt/test-utils",
         "@pinia/nuxt",
-        "shadcn-nuxt",
     ],
     eslint: {
         config: {
@@ -19,26 +17,12 @@ export default defineNuxtConfig({
         },
     },
     devtools: { enabled: true },
-    css: ["~/assets/css/main.css"],
-    colorMode: {
-        classSuffix: "",
-    },
+    css: ["~/assets/css/tailwind.css"],
     runtimeConfig: {},
     compatibilityDate: "2025-05-15",
     vite: {
         plugins: [
             tailwindcss(),
         ],
-    },
-    shadcn: {
-        /**
-         * Prefix for all the imported component
-         */
-        prefix: "",
-        /**
-         * Directory that the component lives in.
-         * @default "./components/ui"
-         */
-        componentDir: "./components/ui",
     },
 });
