@@ -15,30 +15,31 @@ export const useAuthStore = defineStore("auth", () => {
         loading.value = false;
     }
 
+    async function signInWithEmail(email: string, password: string) {
+        loading.value = true;
+        await authClient.signIn.email({
+            email,
+            password,
+        });
+        loading.value = false;
+        navigateTo("/app");
+    }
+
     async function signUp(email: string, password: string, name: string) {
         loading.value = true;
         await authClient.signUp.email({
             email,
             password,
             name,
-            callbackURL: "/app",
-            fetchOptions: {
-                onError(context) {
-                    console.log(context.error.message);
-                },
-                onSuccess() {
-                    useRouter().push("/app");
-                    console.log("success");
-                },
-            },
         });
-
         loading.value = false;
+        navigateTo("/app");
     }
 
     return {
         loading,
         signInWithGithub,
+        signInWithEmail,
         signUp,
     };
 });

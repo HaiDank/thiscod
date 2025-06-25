@@ -1,8 +1,12 @@
 <script setup lang="ts">
 // import type { FormSubmitEvent } from "@nuxt/ui";
 
+import type { FormSubmitEvent } from "@nuxt/ui";
+
 import { Icon } from "#components";
 import * as z from "zod";
+
+const authStore = useAuthStore();
 
 const formSchema = z.object({
     email: z.string().email("Invalid email"),
@@ -16,12 +20,10 @@ const state = reactive<Partial<Schema>>({
     password: undefined,
 });
 
-const toast = useToast();
-async function onSubmit() {
-    toast.add({ title: "Success", description: "The form has been submitted.", color: "success" });
+async function onSubmit(event: FormSubmitEvent<typeof state>) {
+    const { email, password } = event.data;
+    authStore.signInWithEmail(email!, password!);
 }
-
-const authStore = useAuthStore();
 
 definePageMeta({
     layout: "auth",

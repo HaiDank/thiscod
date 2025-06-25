@@ -21,9 +21,21 @@ const state = reactive<Partial<Schema>>({
     image: undefined,
 });
 
+const toast = useToast();
+
 async function onSubmit(event: FormSubmitEvent<typeof state>) {
     const { email, password, name } = event.data;
-    await authStore.signUp(email!, password!, name!);
+    try {
+        await authStore.signUp(email!, password!, name!);
+    }
+    catch (error) {
+        toast.add({
+            title: "Error",
+            description: "The email has already been registered",
+            color: "error",
+        });
+        console.log("[SIGN_UP_ERROR]", error);
+    }
 }
 
 definePageMeta({
