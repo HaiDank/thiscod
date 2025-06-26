@@ -31,11 +31,22 @@ export const useAuthStore = defineStore("auth", () => {
         });
     }
 
+    async function signOut() {
+        await authClient.signOut({
+            fetchOptions: {
+                onSuccess: () => {
+                    navigateTo("/sign-in");
+                },
+            },
+        });
+    }
+
     return {
         loading,
         signInWithGithub,
         signInWithEmail,
         signUp,
+        signOut,
         user,
     };
 });
