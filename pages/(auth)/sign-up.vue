@@ -22,19 +22,20 @@ const state = reactive<Partial<Schema>>({
 });
 
 const toast = useToast();
+const errorMsg = ref("");
 
 async function onSubmit(event: FormSubmitEvent<typeof state>) {
     const { email, password, name } = event.data;
-    try {
-        await authStore.signUp(email!, password!, name!);
-    }
-    catch (error) {
+    const { error } = await authStore.signUp(email!, password!, name!);
+    if (error && error.message) {
         toast.add({
-            title: "Error",
-            description: "The email has already been registered",
             color: "error",
+            title: error.message,
         });
-        console.log("[SIGN_UP_ERROR]", error);
+        errorMsg.value = error.message;
+    }
+    else {
+        navigateTo("/app");
     }
 }
 
@@ -47,15 +48,20 @@ definePageMeta({
     <UForm
         :schema="formSchema"
         :state="state"
-        class="space-y-2 p-24 bg-background rounded-lg w-3xl box-border h-1/2 flex items-center justify-center flex-col shadow-2xl"
+        class="gap-4 p-24 bg-card rounded-lg w-3xl box-border h-1/2 flex items-center justify-center flex-col shadow-2xl"
         @submit="onSubmit"
     >
+        <h1 class="text-accent-foreground font-bold text-3xl">
+            Create an account
+        </h1>
         <UFormField
             label="Email"
             name="email"
-            size="lg"
+            size="xl"
             class="w-full"
             color="primary"
+            :error="errorMsg"
+            required
         >
             <UInput
                 v-model="state.email"
@@ -67,8 +73,9 @@ definePageMeta({
         <UFormField
             label="Password"
             name="password"
-            size="lg"
+            size="xl"
             class="w-full"
+            required
         >
             <UInput
                 v-model="state.password"
@@ -82,8 +89,9 @@ definePageMeta({
         <UFormField
             label="Name"
             name="name"
-            size="lg"
+            size="xl"
             class="w-full"
+            required
         >
             <UInput
                 v-model="state.name"
@@ -92,6 +100,10 @@ definePageMeta({
                 variant="subtle"
             />
         </UFormField>
+
+        <NuxtLink to="/sign-in" class="text-primary font-semibold hover:underline w-full">
+            Already have an account?
+        </NuxtLink>
 
         <UButton
             type="submit"
@@ -103,9 +115,5 @@ definePageMeta({
         >
             Sign up
         </UButton>
-
-        <NuxtLink to="/sign-in" class="text-primary font-semibold hover:underline w-full">
-            Already have an account?
-        </NuxtLink>
     </UForm>
 </template>

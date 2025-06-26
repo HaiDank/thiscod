@@ -20,9 +20,22 @@ const state = reactive<Partial<Schema>>({
     password: undefined,
 });
 
+const toast = useToast();
+const errorMsg = ref("");
+
 async function onSubmit(event: FormSubmitEvent<typeof state>) {
     const { email, password } = event.data;
-    authStore.signInWithEmail(email!, password!);
+    const { error } = await authStore.signInWithEmail(email!, password!);
+    if (error && error.message) {
+        toast.add({
+            color: "error",
+            title: error.message,
+        });
+        errorMsg.value = error.message;
+    }
+    else {
+        navigateTo("/app");
+    }
 }
 
 definePageMeta({
@@ -34,19 +47,24 @@ definePageMeta({
     <UForm
         :schema="formSchema"
         :state="state"
-        class="space-y-2 p-24 bg-background rounded-lg w-3xl box-border h-1/2 flex items-center justify-center flex-col shadow-2xl transition-all"
+        class="space-y-2 p-24 bg-card rounded-lg w-3xl box-border h-1/2 flex items-center justify-center flex-col shadow-2xl transition-all"
         @submit="onSubmit"
     >
+        <h1 class="font-bold text-3xl text-accent-foreground">
+            Welcome!
+        </h1>
+        <p class="text-accent-foreground ">
+            We're excited to see you
+        </p>
         <UFormField
             label="Email"
-
             name="email"
-            size="lg"
-            class="w-full"
+            size="xl"
+            class="w-full transition-all duration-300 "
         >
             <UInput
                 v-model="state.email"
-                class="w-full"
+                class="w-full transition-all duration-300 "
                 color="primary"
                 variant="subtle"
             />
@@ -55,13 +73,14 @@ definePageMeta({
         <UFormField
             label="Password"
             name="password"
-            size="lg"
-            class="w-full"
+            size="xl"
+            class="w-full transition-all duration-300"
+            :error="errorMsg"
         >
             <UInput
                 v-model="state.password"
                 type="password"
-                class="w-full"
+                class="w-full transition-all duration-300"
                 color="primary"
                 variant="subtle"
             />
@@ -73,17 +92,18 @@ definePageMeta({
 
         <UButton
             type="submit"
-            class="w-full justify-center"
+            class="w-full justify-center font-semibold text-accent-foreground"
             color="primary"
             size="xl"
+            :loading="authStore.loading"
         >
             Log in
         </UButton>
-        <p>
+        <p class="text-text-disabled">
             or
         </p>
         <UButton
-            class="w-full justify-center"
+            class="w-full justify-center font-semibold text-accent"
             color="secondary"
             size="xl"
             loading-auto
