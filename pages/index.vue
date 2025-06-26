@@ -1,3 +1,9 @@
 <script setup lang="ts">
-await navigateTo("/app");
+navigateTo("/app");
 </script>
+
+<template>
+    <div>
+        Rerouting...
+    </div>
+</template>

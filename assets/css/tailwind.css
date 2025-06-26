@@ -11,8 +11,6 @@
     --color-card-foreground: var(--card-foreground);
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
-    --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
     --color-secondary: var(--secondary);
     --color-secondary-foreground: var(--secondary-foreground);
     --color-text-disabled: var(--text-disabled);
@@ -51,8 +49,6 @@
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
     --muted: oklch(0.97 0 0);
@@ -78,6 +74,12 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+
+    --ui-bg: var(--color-white);
+    --ui-bg-muted: var(--ui-color-neutral-50);
+    --ui-bg-elevated: var(--ui-color-neutral-100);
+    --ui-bg-accented: var(--ui-color-neutral-200);
+    --ui-bg-inverted: var(--ui-color-neutral-900);
 }
 
 .dark {
@@ -86,8 +88,6 @@
     --highlight: rgb(66, 69, 73);
     --card: rgb(54, 57, 62);
     --card-foreground: oklch(0.985 0 0);
-    --primary: #7289da;
-    --primary-foreground: oklch(1 0 0);
     --secondary: oklch(1 0 0);
     --secondary-foreground: oklch(0.269 0 0);
     --text-disabled: oklch(0.7 0 0);
@@ -113,6 +113,19 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(0.269 0 0);
     --sidebar-ring: oklch(0.439 0 0);
+
+    --ui-bg: var(--background);
+    --ui-bg-muted: var(--card);
+    --ui-bg-elevated: var(--background);
+    --ui-bg-accented: var(--highlight);
+    --ui-bg-inverted: var(--color-white);
+
+    --ui-text-dimmed: var(--ui-color-neutral-500);
+    --ui-text-muted: var(--ui-color-neutral-400);
+    --ui-text-toned: var(--ui-color-neutral-300);
+    --ui-text: var(--ui-color-neutral-200);
+    --ui-text-highlighted: var(--color-white);
+    --ui-text-inverted: var(--ui-color-neutral-900);
 }
 
 @layer base {

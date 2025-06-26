@@ -3,13 +3,8 @@
 </script>
 
 <template>
-    <section class="w-screen h-screen flex flex-col relative">
-        <header>
-            <NuxtLink to="/sign-in">
-                SIgn in
-            </NuxtLink>
-            <ModeToggle />
-        </header>
+    <section class="w-screen h-screen flex  relative">
+        <SideBar />
 
         <div class="w-full h-full flex">
             <slot />

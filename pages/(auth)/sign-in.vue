@@ -1,8 +1,12 @@
 <script setup lang="ts">
 // import type { FormSubmitEvent } from "@nuxt/ui";
 
+import type { FormSubmitEvent } from "@nuxt/ui";
+
 import { Icon } from "#components";
 import * as z from "zod";
+
+const authStore = useAuthStore();
 
 const formSchema = z.object({
     email: z.string().email("Invalid email"),
@@ -17,11 +21,22 @@ const state = reactive<Partial<Schema>>({
 });
 
 const toast = useToast();
-async function onSubmit() {
-    toast.add({ title: "Success", description: "The form has been submitted.", color: "success" });
-}
+const errorMsg = ref("");
 
-const authStore = useAuthStore();
+async function onSubmit(event: FormSubmitEvent<typeof state>) {
+    const { email, password } = event.data;
+    const { error } = await authStore.signInWithEmail(email!, password!);
+    if (error && error.message) {
+        toast.add({
+            color: "error",
+            title: error.message,
+        });
+        errorMsg.value = error.message;
+    }
+    else {
+        navigateTo("/app");
+    }
+}
 
 definePageMeta({
     layout: "auth",
@@ -29,64 +44,73 @@ definePageMeta({
 </script>
 
 <template>
-    <div class="w-full h-full relative flex items-center justify-center">
-        <img
-            src="/wallpaper.jpg"
-            class="h-full w-auto object-cover blur-[4px] brightness-75 -z-10 absolute"
+    <UForm
+        :schema="formSchema"
+        :state="state"
+        class="space-y-2 p-24 bg-card rounded-lg w-3xl box-border h-1/2 flex items-center justify-center flex-col shadow-2xl transition-all"
+        @submit="onSubmit"
+    >
+        <h1 class="font-bold text-3xl text-accent-foreground">
+            Welcome!
+        </h1>
+        <p class="text-accent-foreground ">
+            We're excited to see you
+        </p>
+        <UFormField
+            label="Email"
+            name="email"
+            size="xl"
+            class="w-full transition-all duration-300 "
         >
-        <UForm
-            :schema="formSchema"
-            :state="state"
-            class="space-y-2 p-12 bg-background rounded-lg w-3xl h-1/2 flex items-center justify-center flex-col shadow-2xl"
-            @submit="onSubmit"
-        >
-            <UFormField
-                label="Email"
-                name="email"
-                size="lg"
-                class="w-2/3"
-            >
-                <UInput v-model="state.email" class="w-full" />
-            </UFormField>
-
-            <UFormField
-                label="Password"
-                name="password"
-                size="lg"
-                class="w-2/3"
-            >
-                <UInput
-                    v-model="state.password"
-                    type="password"
-                    class="w-full"
-                />
-            </UFormField>
-            <span class="text-text-disabled">
-                Need an account?
-                <NuxtLink to="/sign-up" class="text-primary font-semibold">Register</NuxtLink>
-            </span>
-
-            <UButton
-                type="submit"
-                class="w-2/3 justify-center"
+            <UInput
+                v-model="state.email"
+                class="w-full transition-all duration-300 "
                 color="primary"
-                size="xl"
-            >
-                Log in
-            </UButton>
-            <p>
-                or
-            </p>
-            <UButton
-                class="w-2/3 justify-center"
-                color="secondary"
-                size="xl"
-                loading-auto
-                :disabled="authStore.loading"
-                @click="authStore.signIn"
-            >
-                Log in with Github <Icon name="mdi:github" class="h-[1.2rem] w-[1.2rem]" />
-            </UButton>
-        </UForm>
-    </div>
+                variant="subtle"
+            />
+        </UFormField>
+
+        <UFormField
+            label="Password"
+            name="password"
+            size="xl"
+            class="w-full transition-all duration-300"
+            :error="errorMsg"
+        >
+            <UInput
+                v-model="state.password"
+                type="password"
+                class="w-full transition-all duration-300"
+                color="primary"
+                variant="subtle"
+            />
+        </UFormField>
+        <span class="text-text-disabled w-full">
+            Need an account?
+            <NuxtLink to="/sign-up" class="text-primary font-semibold hover:underline">Register</NuxtLink>
+        </span>
+
+        <UButton
+            type="submit"
+            class="w-full justify-center font-semibold text-accent-foreground"
+            color="primary"
+            size="xl"
+            :loading="authStore.loading"
+        >
+            Log in
+        </UButton>
+        <p class="text-text-disabled">
+            or
+        </p>
+        <UButton
+            class="w-full justify-center font-semibold text-accent"
+            color="secondary"
+            size="xl"
+            loading-auto
+            :disabled="authStore.loading"
+            @click="authStore.signInWithGithub"
+        >
+            Log in with Github <Icon name="mdi:github" class="h-[1.2rem] w-[1.2rem]" />
+        </UButton>
+    </UForm>
 </template>
