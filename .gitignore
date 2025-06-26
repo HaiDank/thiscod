@@ -22,7 +22,7 @@ logs
 .env
 .env.*
 !.env.example
-components
+
 /lib/generated/prisma
 
 local.db*
