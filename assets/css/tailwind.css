@@ -119,7 +119,7 @@
 
     --ui-bg: var(--background);
     --ui-bg-muted: var(--card);
-    --ui-bg-elevated: var(--background);
+    --ui-bg-elevated: var(--selected);
     --ui-bg-accented: var(--highlight);
     --ui-bg-inverted: var(--color-white);
 
