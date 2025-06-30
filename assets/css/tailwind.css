@@ -10,12 +10,11 @@
     --color-highlight: var(--highlight);
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
-    --color-disabled: var(--disabled);
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
     --color-secondary: var(--secondary);
     --color-secondary-foreground: var(--secondary-foreground);
-    --color-text-disabled: var(--text-disabled);
+    --color-disabled: var(--text-disabled);
     --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
     --color-accent: var(--accent);
