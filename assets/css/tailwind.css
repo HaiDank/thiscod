@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+@import "tw-animate-css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -9,6 +10,7 @@
     --color-highlight: var(--highlight);
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
+    --color-disabled: var(--disabled);
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
     --color-secondary: var(--secondary);
@@ -23,11 +25,6 @@
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);
-    --color-chart-1: var(--chart-1);
-    --color-chart-2: var(--chart-2);
-    --color-chart-3: var(--chart-3);
-    --color-chart-4: var(--chart-4);
-    --color-chart-5: var(--chart-5);
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
@@ -49,6 +46,7 @@
     --selected: oklch(0.85 0 0);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.145 0 0);
+    --text-disabled: oklch(0.9 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
     --secondary: oklch(0.97 0 0);
@@ -78,7 +76,7 @@
     --sidebar-ring: oklch(0.708 0 0);
 
     --ui-bg: var(--color-white);
-    --ui-bg-muted: var(--ui-color-neutral-50);
+    --ui-bg-muted: var(--ui-disabled);
     --ui-bg-elevated: var(--ui-color-neutral-100);
     --ui-bg-accented: var(--ui-color-neutral-200);
     --ui-bg-inverted: var(--ui-color-neutral-900);
@@ -103,11 +101,6 @@
     --border: oklch(0.4 0 0);
     --input: oklch(0.269 0 0);
     --ring: oklch(0.439 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
     --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -124,11 +117,31 @@
     --ui-bg-inverted: var(--color-white);
 
     --ui-text-dimmed: var(--ui-color-neutral-500);
-    --ui-text-muted: var(--ui-color-neutral-400);
+    --ui-text-muted: var(--ui-disabled);
     --ui-text-toned: var(--ui-color-neutral-300);
     --ui-text: var(--ui-color-neutral-200);
     --ui-text-highlighted: var(--color-white);
     --ui-text-inverted: var(--ui-color-neutral-900);
+}
+
+@theme {  
+    --animate-wiggle: wiggle 0.7s ease-in-out ;  
+    @keyframes wiggle {
+            0%,    
+            100% 
+            {      
+                transform: rotate(-7deg);    
+            }    
+            50% {
+                transform: rotate(7deg);    
+            }  
+    }
+    --animate-spin-ease: spin-ease 0.7s ease-in-out ;  
+    @keyframes spin-ease {
+  to {
+    transform: rotate(180deg);
+  }
+}
 }
 
 @layer base {
@@ -139,3 +152,14 @@
         @apply bg-background text-foreground transition-colors ease-in-out;
     }
 }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+

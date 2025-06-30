@@ -24,8 +24,6 @@ const navItems = [
     { label: "Settings", to: "/settings", icon: "lucide:settings" },
 ];
 
-const authStore = useAuthStore();
-
 const isResizing = useIsResizing();
 const elementWidth = ref(420);
 let initialMouseX = 0;
@@ -55,28 +53,23 @@ function stopResize() {
 
 <template>
     <aside class=" min-w-60 max-w-124 h-full bg-sidebar sticky top-0 flex" :style="{ width: `${elementWidth}px` }">
-        <div class="w-20 h-full sticky top-0 py-1 flex flex-col items-center box-border gap-2 border-r ">
-            <div
-                class="w-full"
-            >
-                <div class=" h-10 w-10 rounded-lg bg-background hover:bg-primary/75  flex items-center justify-center mx-auto">
-                    <Icon
-                        name="material-symbols:fishfood"
-                        size="32"
-                    />
-                </div>
-            </div>
+        <div class="w-20 h-full overflow-y-scroll no-scrollbar top-0 py-1 flex flex-col items-center box-border gap-2 border-r ">
+            <ServerButton :highlighted="true" icon="material-symbols:fishfood" />
             <div class="w-8 bg-border h-[1px]" />
-            <div class="space-y-4 flex flex-col items-center justify-center">
+            <div class="space-y-4 flex flex-col items-center justify-center grow-1">
                 <nav class="flex-1">
                     <ul class="space-y-2">
                         <li v-for="item in navItems" :key="item.to">
-                            <Icon name="material-symbols:server-person" class=" h-[2rem] w-[2rem]" />
+                            <ServerButton :icon="item.icon" />
                         </li>
                     </ul>
                 </nav>
             </div>
+
+            <ServerButton />
         </div>
+
+        <!-- channel bar -->
         <div class="grow border-t box-border ">
             <UDropdownMenu
                 :items="items"
@@ -103,32 +96,7 @@ function stopResize() {
         </div>
 
         <div class="absolute bottom-0 h-16 p-2 pt-0 box-border bg-sidebar w-full">
-            <div class="rounded-lg bg-card w-full h-full flex items-center px-2 border border-background shadow-md">
-                <UButton
-                    v-if="authStore.user"
-                    variant="ghost"
-                    class="p-0  rounded-tl-2xl rounded-bl-2xl rounded-tr-md rounded-br-md text-accent-foreground font-semibold grow-1"
-                    color="neutral"
-                >
-                    <UChip
-                        inset
-                        position="bottom-right"
-                        color="success"
-                    >
-                        <UAvatar
-                            v-if="authStore.user"
-                            :src="authStore.user.image ?? undefined"
-                            :alt="authStore.user.name"
-                            class="size-10"
-                        />
-                    </UChip>
-                    <p>
-                        <span>
-                            {{ authStore.user.name }}
-                        </span>
-                    </p>
-                </UButton>
-            </div>
+            <AppUserUtilBar />
         </div>
 
         <div
