@@ -12,10 +12,6 @@
         "*.css": "tailwindcss"
     },
 
-    "tailwindCSS.classAttributes": ["class", "ui"],
-    "tailwindCSS.experimental.classRegex": [
-        ["ui:\\s*{([^)]*)\\s*}", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-    ],
     // Silent the stylistic rules in you IDE, but still auto fix them
     "eslint.rules.customizations": [
         { "rule": "style/*", "severity": "off", "fixable": true },
@@ -29,5 +25,29 @@
         { "rule": "*-newline", "severity": "off", "fixable": true },
         { "rule": "*quotes", "severity": "off", "fixable": true },
         { "rule": "*semi", "severity": "off", "fixable": true }
+    ],
+
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "vue",
+        "html",
+        "markdown",
+        "json",
+        "jsonc",
+        "yaml",
+        "toml",
+        "xml",
+        "gql",
+        "graphql",
+        "astro",
+        "svelte",
+        "css",
+        "less",
+        "scss",
+        "pcss",
+        "postcss"
     ]
 }

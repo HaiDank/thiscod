@@ -124,24 +124,23 @@
     --ui-text-inverted: var(--ui-color-neutral-900);
 }
 
-@theme {  
-    --animate-wiggle: wiggle 0.7s ease-in-out ;  
+@theme {
+    --animate-wiggle: wiggle 0.7s ease-in-out;
     @keyframes wiggle {
-            0%,    
-            100% 
-            {      
-                transform: rotate(-7deg);    
-            }    
-            50% {
-                transform: rotate(7deg);    
-            }  
+        0%,
+        100% {
+            transform: rotate(-7deg);
+        }
+        50% {
+            transform: rotate(7deg);
+        }
     }
-    --animate-spin-ease: spin-ease 0.7s ease-in-out ;  
+    --animate-spin-ease: spin-ease 0.7s ease-in-out;
     @keyframes spin-ease {
-  to {
-    transform: rotate(180deg);
-  }
-}
+        to {
+            transform: rotate(180deg);
+        }
+    }
 }
 
 @layer base {
@@ -154,12 +153,11 @@
 }
 
 @layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
 }
-

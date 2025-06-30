@@ -52,50 +52,52 @@ function stopResize() {
 </script>
 
 <template>
-    <aside class=" min-w-60 max-w-124 h-full bg-sidebar sticky top-0 flex" :style="{ width: `${elementWidth}px` }">
-        <div class="w-20 h-full overflow-y-scroll no-scrollbar top-0 py-1 flex flex-col items-center box-border gap-2 border-r ">
-            <ServerButton :highlighted="true" icon="material-symbols:fishfood" />
-            <div class="w-8 bg-border h-[1px]" />
-            <div class="space-y-4 flex flex-col items-center justify-center grow-1">
-                <nav class="flex-1">
-                    <ul class="space-y-2">
-                        <li v-for="item in navItems" :key="item.to">
-                            <ServerButton :icon="item.icon" />
-                        </li>
-                    </ul>
-                </nav>
+    <aside class=" min-w-60 max-w-124 h-full bg-sidebar sticky top-0 flex flex-col" :style="{ width: `${elementWidth}px` }">
+        <div>
+            <div class="w-20 h-full overflow-y-scroll no-scrollbar top-0 py-1 flex flex-col items-center box-border gap-2 border-r ">
+                <ServerButton :highlighted="true" icon="material-symbols:fishfood" />
+                <div class="w-8 bg-border h-[1px]" />
+                <div class="space-y-4 flex flex-col items-center justify-center grow-1">
+                    <nav class="flex-1">
+                        <ul class="space-y-2">
+                            <li v-for="item in navItems" :key="item.to">
+                                <ServerButton :icon="item.icon" />
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <ServerButton />
             </div>
 
-            <ServerButton />
-        </div>
-
-        <!-- channel bar -->
-        <div class="grow border-t box-border ">
-            <UDropdownMenu
-                :items="items"
-                :content="{
-                    align: 'center',
-                    side: 'bottom',
-                    sideOffset: 8,
-                }"
-                :ui="{
-                    content: 'w-48',
-                }"
-            >
-                <button
-                    class="h-12 w-full border-b font-semibold flex items-center justify-between hover:bg-highlight/50 px-2"
+            <!-- channel bar -->
+            <div class="grow border-t box-border ">
+                <UDropdownMenu
+                    :items="items"
+                    :content="{
+                        align: 'center',
+                        side: 'bottom',
+                        sideOffset: 8,
+                    }"
+                    :ui="{
+                        content: 'w-48',
+                    }"
                 >
-                    Server name
-                    <Icon
-                        name="material-symbols:keyboard-arrow-down"
-                        size="24"
-                        class="text-muted-foreground"
-                    />
-                </button>
-            </UDropdownMenu>
+                    <button
+                        class="h-12 w-full border-b font-semibold flex items-center justify-between hover:bg-highlight/50 px-2"
+                    >
+                        Server name
+                        <Icon
+                            name="material-symbols:keyboard-arrow-down"
+                            size="24"
+                            class="text-muted-foreground"
+                        />
+                    </button>
+                </UDropdownMenu>
+            </div>
         </div>
 
-        <div class="absolute bottom-0 h-16 p-2 pt-0 box-border bg-sidebar w-full">
+        <div class="sticky bottom-0 h-16 p-2 pt-0 box-border bg-sidebar w-full">
             <AppUserUtilBar />
         </div>
 
