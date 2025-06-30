@@ -2,13 +2,15 @@
 @import "@nuxt/ui";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
+    --color-highlight: var(--highlight);
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
+    --color-disabled: var(--disabled);
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
     --color-secondary: var(--secondary);
@@ -23,11 +25,6 @@
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);
-    --color-chart-1: var(--chart-1);
-    --color-chart-2: var(--chart-2);
-    --color-chart-3: var(--chart-3);
-    --color-chart-4: var(--chart-4);
-    --color-chart-5: var(--chart-5);
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
@@ -45,8 +42,11 @@
 :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
+    --highlight: oklch(0.9 0 0);
+    --selected: oklch(0.85 0 0);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.145 0 0);
+    --text-disabled: oklch(0.9 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
     --secondary: oklch(0.97 0 0);
@@ -57,7 +57,7 @@
     --accent-foreground: oklch(0.205 0 0);
     --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
+    --border: oklch(0.7 0 0);
     --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
     --chart-1: oklch(0.646 0.222 41.116);
@@ -66,27 +66,28 @@
     --chart-4: oklch(0.828 0.189 84.429);
     --chart-5: oklch(0.769 0.188 70.08);
     --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
+    --sidebar: oklch(0.95 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
     --sidebar-primary: oklch(0.205 0 0);
     --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent: oklch(0.93 0 0);
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
 
     --ui-bg: var(--color-white);
-    --ui-bg-muted: var(--ui-color-neutral-50);
+    --ui-bg-muted: var(--ui-disabled);
     --ui-bg-elevated: var(--ui-color-neutral-100);
     --ui-bg-accented: var(--ui-color-neutral-200);
     --ui-bg-inverted: var(--ui-color-neutral-900);
 }
 
 .dark {
-    --background: rgb(40, 43, 48);
+    --background: oklch(0.25 0.0064 258.36);
     --foreground: oklch(0.985 0 0);
-    --highlight: rgb(66, 69, 73);
-    --card: rgb(54, 57, 62);
+    --selected: oklch(0.38 0.013 261.74);
+    --highlight: oklch(0.29 0.0093 268.37);
+    --card: oklch(0.28 0.0078 264.44);
     --card-foreground: oklch(0.985 0 0);
     --secondary: oklch(1 0 0);
     --secondary-foreground: oklch(0.269 0 0);
@@ -97,14 +98,9 @@
     --accent-foreground: oklch(0.985 0 0);
     --destructive: oklch(0.396 0.141 25.723);
     --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
+    --border: oklch(0.4 0 0);
     --input: oklch(0.269 0 0);
     --ring: oklch(0.439 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
     --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -116,23 +112,52 @@
 
     --ui-bg: var(--background);
     --ui-bg-muted: var(--card);
-    --ui-bg-elevated: var(--background);
+    --ui-bg-elevated: var(--selected);
     --ui-bg-accented: var(--highlight);
     --ui-bg-inverted: var(--color-white);
 
     --ui-text-dimmed: var(--ui-color-neutral-500);
-    --ui-text-muted: var(--ui-color-neutral-400);
+    --ui-text-muted: var(--ui-disabled);
     --ui-text-toned: var(--ui-color-neutral-300);
     --ui-text: var(--ui-color-neutral-200);
     --ui-text-highlighted: var(--color-white);
     --ui-text-inverted: var(--ui-color-neutral-900);
 }
 
+@theme {
+    --animate-wiggle: wiggle 0.7s ease-in-out;
+    @keyframes wiggle {
+        0%,
+        100% {
+            transform: rotate(-7deg);
+        }
+        50% {
+            transform: rotate(7deg);
+        }
+    }
+    --animate-spin-ease: spin-ease 0.7s ease-in-out;
+    @keyframes spin-ease {
+        to {
+            transform: rotate(180deg);
+        }
+    }
+}
+
 @layer base {
     * {
-        @apply border-border outline-ring/50;
+        @apply border-background outline-ring/50 transition-colors duration-200;
     }
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground transition-colors ease-in-out;
+    }
+}
+
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
 }
