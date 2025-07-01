@@ -13,6 +13,7 @@ export default defineNuxtConfig({
         "@nuxt/icon",
         "@nuxt/test-utils",
         "@pinia/nuxt",
+        "@vee-validate/nuxt",
     ],
     eslint: {
         config: {
@@ -20,10 +21,13 @@ export default defineNuxtConfig({
         },
     },
     colorMode: {
-        preference: "system",
-        fallback: "dark",
+        preference: "dark", // default value of $colorMode.preference
+        fallback: "dark", // fallback value if not system preference found
+        componentName: "ColorScheme",
         classPrefix: "",
         classSuffix: "",
+        storage: "localStorage", // or 'sessionStorage' or 'cookie'
+        storageKey: "nuxt-color-mode",
     },
     devtools: { enabled: true },
     css: ["~/assets/css/tailwind.css"],
@@ -34,4 +38,5 @@ export default defineNuxtConfig({
             tailwindcss(),
         ],
     },
+
 });
