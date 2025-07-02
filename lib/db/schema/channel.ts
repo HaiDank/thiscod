@@ -1,6 +1,5 @@
-import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, int, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
-import { user } from "./auth";
 import { server } from "./servers";
 
 type ChannelType = "TEXT" | "VOICE";
@@ -10,9 +9,11 @@ export const channel = sqliteTable("channel", {
     channelType: text().$type<ChannelType>().default("TEXT"),
     name: text().notNull(),
 
-    userId: int().notNull().references(() => user.id, { onDelete: "cascade" }),
     serverId: int().notNull().references(() => server.id, { onDelete: "cascade" }),
 
     createdAt: int().notNull().$default(() => Date.now()),
     updatedAt: int().notNull().$default(() => Date.now()).$onUpdate(() => Date.now()),
-});
+}, t => [
+    unique().on(t.serverId, t.name),
+    index("channel_server_idx").on(t.serverId),
+]);

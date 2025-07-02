@@ -20,6 +20,6 @@ const navItems = [
             </li>
         </ul>
 
-        <ServerButton icon="material-symbols:add-circle" />
+        <AppCreateServerModal />
     </nav>
 </template>

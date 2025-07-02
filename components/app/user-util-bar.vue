@@ -24,15 +24,15 @@ const authStore = useAuthStore();
                     class="size-10"
                 />
             </UChip>
-            <p class="relative flex flex-col items-baseline overflow-hidden w-full">
+            <p class="relative flex flex-col items-baseline justify-baseline overflow-hidden w-full">
                 <span class="font-semibold text-foreground">
                     {{ authStore.user.name }}
                 </span>
                 <span
-                    :class="cn('flex flex-col transition-all  ease-in-out group-hover:-translate-y-full ')"
+                    :class="cn('flex flex-col transition-all ease-in-out group-hover:-translate-y-full w-full')"
                 >
-                    <span class="text-text-disabled scale-y-100 transition-all group-hover:scale-y-0">online</span>
-                    <span class="absolute top-full text-text-disabled">{{ authStore.user.email }}</span>
+                    <span class="text-disabled scale-y-100 flex items-baseline transition-all group-hover:scale-y-0 font-semibold opacity-100 hover:opacity-0 truncate max-w-full">online</span>
+                    <span class="absolute top-full text-disabled font-semibold truncate max-w-full">{{ authStore.user.email }}</span>
                 </span>
             </p>
         </UButton>
@@ -47,7 +47,7 @@ const authStore = useAuthStore();
         >
             <UButton
                 variant="ghost"
-                class="text-text-disabled hover:text-accent-foreground group p-1"
+                class="text-disabled hover:text-accent-foreground group p-1"
                 color="neutral"
             >
                 <Icon
@@ -68,7 +68,7 @@ const authStore = useAuthStore();
         >
             <UButton
                 variant="ghost"
-                class="text-text-disabled hover:text-accent-foreground group p-1"
+                class="text-disabled hover:text-accent-foreground group p-1"
                 color="neutral"
             >
                 <Icon
@@ -89,7 +89,7 @@ const authStore = useAuthStore();
         >
             <UButton
                 variant="ghost"
-                class="text-text-disabled hover:text-accent-foreground group p-1"
+                class="text-disabled hover:text-accent-foreground group p-1"
                 color="neutral"
             >
                 <Icon
