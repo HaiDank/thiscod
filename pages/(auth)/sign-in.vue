@@ -61,6 +61,9 @@ definePageMeta({
             name="email"
             size="xl"
             class="w-full transition-all duration-300 "
+            :ui="{
+                error: 'hidden',
+            }"
         >
             <UInput
                 v-model="state.email"

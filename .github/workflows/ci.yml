@@ -17,7 +17,6 @@ jobs:
             BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
             AUTH_GITHUB_CLIENT_ID: ${{ secrets.AUTH_GITHUB_CLIENT_ID }}
             AUTH_GITHUB_CLIENT_SECRET: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
-            NUXT_UPLOADTHING_TOKEN: ${{ secrets.NUXT_UPLOADTHING_TOKEN }}
         steps:
             - uses: actions/checkout@v4
             - name: Install pnpm

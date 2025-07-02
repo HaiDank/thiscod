@@ -15,6 +15,7 @@
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
         "db:studio": "drizzle-kit studio",
+        "typecheck": "nuxi typecheck",
         "prepare": "husky"
     },
     "dependencies": {
@@ -54,7 +55,8 @@
         "drizzle-kit": "^0.31.4",
         "eslint-plugin-format": "^1.0.1",
         "husky": "^9.1.7",
-        "lint-staged": "^16.1.2"
+        "lint-staged": "^16.1.2",
+        "vue-tsc": "^3.0.0"
     },
     "lint-staged": {
         "*": "pnpm lint"

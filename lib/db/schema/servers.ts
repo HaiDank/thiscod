@@ -1,6 +1,6 @@
 import type { z } from "zod/v4";
 
-import { index, int, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 
 import { user } from "./auth";
@@ -14,7 +14,6 @@ export const server = sqliteTable("server", {
     createdAt: int().notNull().$default(() => Date.now()),
     updatedAt: int().notNull().$default(() => Date.now()).$onUpdate(() => Date.now()),
 }, t => [
-    unique().on(t.id, t.ownerId),
     index("server_owner_idx").on(t.ownerId),
 ]);
 
