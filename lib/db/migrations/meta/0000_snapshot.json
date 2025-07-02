@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "8cf56f8c-ca1e-4d32-a733-6b43d2fd5189",
+  "id": "5be3f8a1-8d00-4d5c-940e-a6fee57e7155",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -374,8 +374,8 @@
         }
       },
       "indexes": {
-        "server_idx": {
-          "name": "server_idx",
+        "channel_server_idx": {
+          "name": "channel_server_idx",
           "columns": [
             "server_id"
           ],
@@ -529,15 +529,15 @@
         }
       },
       "indexes": {
-        "user_idx": {
-          "name": "user_idx",
+        "member_user_idx": {
+          "name": "member_user_idx",
           "columns": [
             "user_id"
           ],
           "isUnique": false
         },
-        "server_idx": {
-          "name": "server_idx",
+        "member_server_idx": {
+          "name": "member_server_idx",
           "columns": [
             "server_id"
           ],
@@ -638,8 +638,8 @@
         }
       },
       "indexes": {
-        "owner_idx": {
-          "name": "owner_idx",
+        "server_owner_idx": {
+          "name": "server_owner_idx",
           "columns": [
             "owner_id"
           ],

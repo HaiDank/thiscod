@@ -13,11 +13,18 @@ export const useAuthStore = defineStore("auth", () => {
     const user = computed(() => session.value?.data?.user);
     const loading = computed(() => session.value?.isPending);
 
+    const { csrf } = useCsrf();
+    const headers = new Headers();
+    headers.append("csrf-token", csrf);
+
     async function signInWithGithub() {
         await authClient.signIn.social({
             provider: "github",
             callbackURL: "/app",
             errorCallbackURL: "/error",
+            fetchOptions: {
+                headers,
+            },
         });
     }
 
@@ -25,6 +32,9 @@ export const useAuthStore = defineStore("auth", () => {
         return await authClient.signIn.email({
             email,
             password,
+            fetchOptions: {
+                headers,
+            },
         });
     }
 
@@ -33,6 +43,9 @@ export const useAuthStore = defineStore("auth", () => {
             email,
             password,
             name,
+            fetchOptions: {
+                headers,
+            },
         });
     }
 
@@ -42,6 +55,7 @@ export const useAuthStore = defineStore("auth", () => {
                 onSuccess: () => {
                     navigateTo("/sign-in");
                 },
+                headers,
             },
         });
     }

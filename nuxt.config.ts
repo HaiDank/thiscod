@@ -14,6 +14,7 @@ export default defineNuxtConfig({
         "@nuxt/test-utils",
         "@pinia/nuxt",
         "@vee-validate/nuxt",
+        "nuxt-csurf",
     ],
     eslint: {
         config: {

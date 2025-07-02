@@ -58,7 +58,7 @@ CREATE TABLE `channel` (
 	FOREIGN KEY (`server_id`) REFERENCES `server`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE INDEX `server_idx` ON `channel` (`server_id`);--> statement-breakpoint
+CREATE INDEX `channel_server_idx` ON `channel` (`server_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `channel_serverId_name_unique` ON `channel` (`server_id`,`name`);--> statement-breakpoint
 CREATE TABLE `conversation` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -81,8 +81,8 @@ CREATE TABLE `member` (
 	FOREIGN KEY (`server_id`) REFERENCES `server`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE INDEX `user_idx` ON `member` (`user_id`);--> statement-breakpoint
-CREATE INDEX `server_idx` ON `member` (`server_id`);--> statement-breakpoint
+CREATE INDEX `member_user_idx` ON `member` (`user_id`);--> statement-breakpoint
+CREATE INDEX `member_server_idx` ON `member` (`server_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `member_serverId_userId_unique` ON `member` (`server_id`,`user_id`);--> statement-breakpoint
 CREATE TABLE `server` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -95,5 +95,5 @@ CREATE TABLE `server` (
 	FOREIGN KEY (`owner_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE INDEX `owner_idx` ON `server` (`owner_id`);--> statement-breakpoint
+CREATE INDEX `server_owner_idx` ON `server` (`owner_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `server_id_ownerId_unique` ON `server` (`id`,`owner_id`);

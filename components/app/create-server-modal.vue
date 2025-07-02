@@ -7,6 +7,8 @@ import * as z from "zod";
 const authStore = useAuthStore();
 const toast = useToast();
 
+const { $csrfFetch } = useNuxtApp();
+
 const schema = z.object({
     name: z.string().min(1, "Please enter your server's name").max(100, "Your server's name has exceed the maximum character count (100)"),
     image: z.string().optional(),
@@ -55,19 +57,17 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             canvas.getContext("bitmaprenderer")?.transferFromImageBitmap(resized);
             const blob = await canvas.convertToBlob({ type: "image/jpeg", quality: 0.9 });
 
-            const checksum = await getChecksum(blob);
-            console.log(checksum);
+            await getChecksum(blob);
         });
         previewImage.src = previewURL.value;
     }
 
     try {
         loading.value = true;
-        const insertedData = await $fetch("/api/servers", {
+        await $csrfFetch("/api/servers", {
             method: "POST",
             body: event.data,
         });
-        console.log(insertedData);
     }
     catch (e) {
         const error = e as FetchError;
