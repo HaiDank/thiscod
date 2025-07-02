@@ -15,5 +15,5 @@ export const channel = sqliteTable("channel", {
     updatedAt: int().notNull().$default(() => Date.now()).$onUpdate(() => Date.now()),
 }, t => [
     unique().on(t.serverId, t.name),
-    index("server_idx").on(t.serverId),
+    index("channel_server_idx").on(t.serverId),
 ]);

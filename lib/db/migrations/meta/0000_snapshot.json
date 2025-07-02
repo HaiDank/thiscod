@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "611d6a30-21e2-470e-8732-629b784463bf",
+  "id": "8cf56f8c-ca1e-4d32-a733-6b43d2fd5189",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -351,13 +351,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "user_id": {
-          "name": "user_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "server_id": {
           "name": "server_id",
           "type": "integer",
@@ -380,21 +373,24 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
-      "foreignKeys": {
-        "channel_user_id_user_id_fk": {
-          "name": "channel_user_id_user_id_fk",
-          "tableFrom": "channel",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
+      "indexes": {
+        "server_idx": {
+          "name": "server_idx",
+          "columns": [
+            "server_id"
           ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "isUnique": false
         },
+        "channel_serverId_name_unique": {
+          "name": "channel_serverId_name_unique",
+          "columns": [
+            "server_id",
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
         "channel_server_id_server_id_fk": {
           "name": "channel_server_id_server_id_fk",
           "tableFrom": "channel",
@@ -406,6 +402,78 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "conversation": {
+      "name": "conversation",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "user_one_id": {
+          "name": "user_one_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "user_two_id": {
+          "name": "user_two_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "conversation_user_one_id_user_id_fk": {
+          "name": "conversation_user_one_id_user_id_fk",
+          "tableFrom": "conversation",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_one_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "conversation_user_two_id_user_id_fk": {
+          "name": "conversation_user_two_id_user_id_fk",
+          "tableFrom": "conversation",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_two_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -537,7 +605,7 @@
           "name": "invite_code",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "image": {
@@ -569,7 +637,23 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "owner_idx": {
+          "name": "owner_idx",
+          "columns": [
+            "owner_id"
+          ],
+          "isUnique": false
+        },
+        "server_id_ownerId_unique": {
+          "name": "server_id_ownerId_unique",
+          "columns": [
+            "id",
+            "owner_id"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {
         "server_owner_id_user_id_fk": {
           "name": "server_owner_id_user_id_fk",

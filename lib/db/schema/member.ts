@@ -16,6 +16,6 @@ export const member = sqliteTable("member", {
     updatedAt: int().notNull().$default(() => Date.now()).$onUpdate(() => Date.now()),
 }, t => [
     unique().on(t.serverId, t.userId),
-    index("user_idx").on(t.userId),
-    index("server_idx").on(t.serverId),
+    index("member_user_idx").on(t.userId),
+    index("member_server_idx").on(t.serverId),
 ]);

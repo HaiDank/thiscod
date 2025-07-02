@@ -15,7 +15,7 @@ export const server = sqliteTable("server", {
     updatedAt: int().notNull().$default(() => Date.now()).$onUpdate(() => Date.now()),
 }, t => [
     unique().on(t.id, t.ownerId),
-    index("owner_idx").on(t.ownerId),
+    index("server_owner_idx").on(t.ownerId),
 ]);
 
 export const InsertServer = createInsertSchema(server, {
