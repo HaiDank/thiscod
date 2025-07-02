@@ -17,7 +17,6 @@ const { data } = await useFetch("/api/servers", {
                 <ServerButton
                     :avatar-url="item.image ? item.image : undefined "
                     :alt="item.name"
-                    highlighted
                 />
             </li>
         </ul>

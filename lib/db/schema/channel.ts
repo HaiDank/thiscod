@@ -1,5 +1,7 @@
+import { relations } from "drizzle-orm";
 import { index, int, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
+import { message } from "./message";
 import { server } from "./servers";
 
 type ChannelType = "TEXT" | "VOICE";
@@ -17,3 +19,11 @@ export const channel = sqliteTable("channel", {
     unique().on(t.serverId, t.name),
     index("channel_server_idx").on(t.serverId),
 ]);
+
+export const channelRelations = relations(channel, ({ one, many }) => ({
+    server: one(server, {
+        fields: [channel.serverId],
+        references: [server.id],
+    }),
+    messages: many(message),
+}));

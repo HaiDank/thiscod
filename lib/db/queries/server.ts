@@ -8,3 +8,12 @@ export async function findServers(userId: number) {
         where: eq(server.ownerId, userId),
     });
 }
+
+export async function findServer(id: number) {
+    return db.query.server.findFirst({
+        where: eq(server.id, id),
+        with: {
+            channel: true,
+        },
+    });
+}
