@@ -13,7 +13,7 @@ export async function findServer(id: number) {
     return db.query.server.findFirst({
         where: eq(server.id, id),
         with: {
-            channel: true,
+            channels: true,
         },
     });
 }

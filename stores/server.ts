@@ -17,6 +17,19 @@ export const useServerStore = defineStore("useServerStore", () => {
         refresh: refreshCurrentServer,
     } = useFetch(serverAndChannelUrlWithId);
 
+    const sidebarStore = useSidebarStore();
+
+    watchEffect(() => {
+        if (servers.value) {
+            sidebarStore.sidebarItems = servers.value.map(server => ({
+                id: `${server.id}`,
+                avatarUrl: server.image ? server.image : undefined,
+                alt: server.name,
+                to: `${server.id}`,
+            }));
+        }
+    });
+
     return {
         servers,
         serversStatus,

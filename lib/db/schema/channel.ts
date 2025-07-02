@@ -27,3 +27,5 @@ export const channelRelations = relations(channel, ({ one, many }) => ({
     }),
     messages: many(message),
 }));
+
+export type SelectChannel = typeof channel.$inferSelect;

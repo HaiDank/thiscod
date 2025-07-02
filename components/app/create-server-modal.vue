@@ -5,9 +5,11 @@ import type { FetchError } from "ofetch";
 import * as z from "zod";
 
 const authStore = useAuthStore();
+const serverStore = useServerStore();
 const toast = useToast();
 
 const { $csrfFetch } = useNuxtApp();
+const { refreshServers } = serverStore;
 
 const schema = z.object({
     name: z.string().min(1, "Please enter your server's name").max(100, "Your server's name has exceed the maximum character count (100)"),
@@ -73,6 +75,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         const error = e as FetchError;
         toast.add({ title: error.statusMessage || "An unknown error occurred", color: "error" });
     }
+    await refreshServers();
     loading.value = false;
     close();
 };
