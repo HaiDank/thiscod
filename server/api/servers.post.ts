@@ -1,4 +1,5 @@
-import { InsertServer } from "~/lib/db/schema";
+import db from "~/lib/db";
+import { InsertServer, server } from "~/lib/db/schema";
 
 export default defineEventHandler(async (event) => {
     if (!event.context.user) {
@@ -24,5 +25,10 @@ export default defineEventHandler(async (event) => {
         }));
     }
 
-    return result.data;
+    const [created] = await db.insert(server).values({
+        ...result.data,
+        ownerId: event.context.user.id,
+    }).returning();
+
+    return created;
 });

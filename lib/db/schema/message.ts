@@ -11,6 +11,8 @@ export const message = sqliteTable("message", {
     content: text(),
     fileUrl: text(),
 
+    type: text("type").notNull().$default(() => "text"),
+    // e.g., 'text' | 'call_started' | 'call_ended' | 'user_joined'
     userId: int().notNull().references(() => user.id, { onDelete: "cascade" }),
     channelId: int().notNull().references(() => channel.id, { onDelete: "cascade" }),
 
@@ -31,6 +33,8 @@ export const directMessage = sqliteTable("directMessage", {
 
     content: text(),
     fileUrl: text(),
+
+    type: text({ enum: ["text", "call_started", "call_ended", "user_joined"] }).notNull().$default(() => "text"),
 
     userId: int().references(() => user.id, { onDelete: "set null" }),
     conversationId: int().notNull().references(() => conversation.id, { onDelete: "cascade" }),
@@ -53,6 +57,8 @@ export const groupMessage = sqliteTable("groupMessage", {
     content: text(),
     fileUrl: text(),
 
+    type: text("type").notNull().$default(() => "text"),
+    // e.g., 'text' | 'call_started' | 'call_ended' | 'user_joined'
     userId: int().references(() => user.id, { onDelete: "set null" }),
     groupId: int().notNull().references(() => conversation.id, { onDelete: "cascade" }),
 
