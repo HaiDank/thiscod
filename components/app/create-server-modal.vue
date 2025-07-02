@@ -74,6 +74,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         toast.add({ title: error.statusMessage || "An unknown error occurred", color: "error" });
     }
     loading.value = false;
+    close();
 };
 </script>
 

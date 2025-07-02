@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "5be3f8a1-8d00-4d5c-940e-a6fee57e7155",
+  "id": "76a67b3e-59e4-4836-8b7b-f8b12d96946c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -30,7 +30,7 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -173,7 +173,7 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -644,14 +644,6 @@
             "owner_id"
           ],
           "isUnique": false
-        },
-        "server_id_ownerId_unique": {
-          "name": "server_id_ownerId_unique",
-          "columns": [
-            "id",
-            "owner_id"
-          ],
-          "isUnique": true
         }
       },
       "foreignKeys": {

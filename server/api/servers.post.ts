@@ -1,28 +1,13 @@
 import db from "~/lib/db";
 import { InsertServer, server } from "~/lib/db/schema";
+import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
+import sendZodError from "~/utils/send-zod-error";
 
-export default defineEventHandler(async (event) => {
-    if (!event.context.user) {
-        return sendError(event, createError({
-            statusCode: 401,
-            statusMessage: "Unauthorized",
-        }));
-    }
-
+export default defineAuthenticatedEventHandler(async (event) => {
     const result = await readValidatedBody(event, InsertServer.safeParse);
 
     if (!result.success) {
-        const statusMessage = result.error.issues.map(issue => `${issue.path.join("")}: ${issue.message}`).join(";");
-        const data = result.error.issues.reduce((errors, issue) => {
-            errors[issue.path.join("")] = issue.message;
-            return errors;
-        }, {} as Record<string, string>);
-
-        return sendError(event, createError({
-            statusCode: 422,
-            statusMessage,
-            data,
-        }));
+        return sendZodError(event, result.error);
     }
 
     const [created] = await db.insert(server).values({
