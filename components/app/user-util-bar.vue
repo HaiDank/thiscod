@@ -39,7 +39,7 @@ const authStore = useAuthStore();
         <UTooltip
             text="Mute"
             :delay-duration="0"
-            :arrow="true"
+            arrow
             :content="{
                 align: 'center',
                 sideOffset: 4,

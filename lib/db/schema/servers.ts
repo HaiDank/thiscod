@@ -29,6 +29,7 @@ export const serverRelations = relations(server, ({ many }) => ({
 
 export const InsertServer = createInsertSchema(server, {
     name: field => field.min(1).max(100),
+    image: field => field.regex(/^\d+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.jpg$/, "Invalid key").optional(),
 }).omit({
     id: true,
     inviteCode: true,

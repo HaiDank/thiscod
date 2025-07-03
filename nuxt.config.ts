@@ -1,6 +1,6 @@
 import tailwindcss from "@tailwindcss/vite";
 
-import "./lib/env";
+import env from "./lib/env";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     app: {
@@ -32,12 +32,17 @@ export default defineNuxtConfig({
         storageKey: "nuxt-color-mode",
     },
     css: ["~/assets/css/tailwind.css"],
-    runtimeConfig: {},
     compatibilityDate: "2025-05-15",
     vite: {
         plugins: [
             tailwindcss(),
         ],
+    },
+
+    runtimeConfig: {
+        public: {
+            s3BucketUrl: env.S3_BUCKET_URL,
+        },
     },
 
 });
