@@ -1,5 +1,11 @@
-<script>
+<script setup lang="ts">
+const authStore = useAuthStore();
 
+onMounted(() => {
+    if (authStore.user) {
+        navigateTo("/app");
+    }
+});
 </script>
 
 <template>

@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
         headers: event.headers,
     });
     event.context.user = session?.user as unknown as UserWithId;
-    if (event.path.startsWith("/app")) {
+    if (event.path.startsWith("/channels")) {
         if (!session?.user) {
             await sendRedirect(event, "/sign-in", 302);
         }

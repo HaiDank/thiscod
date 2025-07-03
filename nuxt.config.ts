@@ -16,6 +16,7 @@ export default defineNuxtConfig({
         "@vee-validate/nuxt",
         "nuxt-csurf",
     ],
+    devtools: { enabled: true },
     eslint: {
         config: {
             standalone: false,
@@ -30,7 +31,6 @@ export default defineNuxtConfig({
         storage: "localStorage", // or 'sessionStorage' or 'cookie'
         storageKey: "nuxt-color-mode",
     },
-    devtools: { enabled: true },
     css: ["~/assets/css/tailwind.css"],
     runtimeConfig: {},
     compatibilityDate: "2025-05-15",

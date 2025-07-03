@@ -1,9 +1,14 @@
 import type { z } from "zod/v4";
 
+import { relations } from "drizzle-orm";
 import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 
+import type { SelectChannel } from "./channel";
+
 import { user } from "./auth";
+import { channel } from "./channel";
+import { member } from "./member";
 
 export const server = sqliteTable("server", {
     id: int().primaryKey({ autoIncrement: true }),
@@ -17,6 +22,11 @@ export const server = sqliteTable("server", {
     index("server_owner_idx").on(t.ownerId),
 ]);
 
+export const serverRelations = relations(server, ({ many }) => ({
+    channels: many(channel),
+    members: many(member),
+}));
+
 export const InsertServer = createInsertSchema(server, {
     name: field => field.min(1).max(100),
 }).omit({
@@ -28,3 +38,7 @@ export const InsertServer = createInsertSchema(server, {
 });
 
 export type InsertServer = z.infer<typeof InsertServer>;
+export type SelectServer = typeof server.$inferSelect;
+export type SelectServerWithChannels = SelectServer & {
+    channels: SelectChannel[];
+};

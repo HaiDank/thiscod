@@ -62,12 +62,19 @@ CREATE INDEX `channel_server_idx` ON `channel` (`server_id`);--> statement-break
 CREATE UNIQUE INDEX `channel_serverId_name_unique` ON `channel` (`server_id`,`name`);--> statement-breakpoint
 CREATE TABLE `conversation` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`user_one_id` integer,
-	`user_two_id` integer,
+	`name` text,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE `users_to_conversations` (
+	`user_id` integer NOT NULL,
+	`conversation_id` integer NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL,
-	FOREIGN KEY (`user_one_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE set null,
-	FOREIGN KEY (`user_two_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE set null
+	PRIMARY KEY(`user_id`, `conversation_id`),
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`conversation_id`) REFERENCES `conversation`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `member` (
@@ -84,6 +91,34 @@ CREATE TABLE `member` (
 CREATE INDEX `member_user_idx` ON `member` (`user_id`);--> statement-breakpoint
 CREATE INDEX `member_server_idx` ON `member` (`server_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `member_serverId_userId_unique` ON `member` (`server_id`,`user_id`);--> statement-breakpoint
+CREATE TABLE `directMessage` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`content` text,
+	`file_url` text,
+	`conversation_id` integer NOT NULL,
+	`edited` integer DEFAULT false,
+	`seen` integer DEFAULT false,
+	`user_id` integer,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	FOREIGN KEY (`conversation_id`) REFERENCES `channel`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE set null
+);
+--> statement-breakpoint
+CREATE TABLE `message` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`channel_id` integer NOT NULL,
+	`content` text,
+	`file_url` text,
+	`edited` integer DEFAULT false,
+	`seen` integer DEFAULT false,
+	`user_id` integer,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	FOREIGN KEY (`channel_id`) REFERENCES `channel`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE set null
+);
+--> statement-breakpoint
 CREATE TABLE `server` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,

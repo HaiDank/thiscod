@@ -13,14 +13,14 @@ export const useAuthStore = defineStore("auth", () => {
     const user = computed(() => session.value?.data?.user);
     const loading = computed(() => session.value?.isPending);
 
-    const { csrf } = useCsrf();
-    const headers = new Headers();
-    headers.append("csrf-token", csrf);
-
     async function signInWithGithub() {
+        const { csrf } = useCsrf();
+        const headers = new Headers();
+        headers.append("csrf-token", csrf);
+
         await authClient.signIn.social({
             provider: "github",
-            callbackURL: "/app",
+            callbackURL: "/channels",
             errorCallbackURL: "/error",
             fetchOptions: {
                 headers,
@@ -29,6 +29,10 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     async function signInWithEmail(email: string, password: string) {
+        const { csrf } = useCsrf();
+        const headers = new Headers();
+        headers.append("csrf-token", csrf);
+
         return await authClient.signIn.email({
             email,
             password,
@@ -39,6 +43,10 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     async function signUp(email: string, password: string, name: string) {
+        const { csrf } = useCsrf();
+        const headers = new Headers();
+        headers.append("csrf-token", csrf);
+
         return await authClient.signUp.email({
             email,
             password,
@@ -50,6 +58,10 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     async function signOut() {
+        const { csrf } = useCsrf();
+        const headers = new Headers();
+        headers.append("csrf-token", csrf);
+
         await authClient.signOut({
             fetchOptions: {
                 onSuccess: () => {

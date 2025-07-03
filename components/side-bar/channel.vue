@@ -18,7 +18,7 @@ const items = ref<DropdownMenuItem[]>([
 </script>
 
 <template>
-    <div class="grow border-t box-border ">
+    <div class="grow border-t border-l box-border rounded-tl-lg">
         <UDropdownMenu
             :items="items"
             :content="{

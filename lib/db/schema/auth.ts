@@ -1,4 +1,7 @@
+import { relations } from "drizzle-orm";
 import { int, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+
+import { usersToConversations } from "./conversation";
 
 export const user = sqliteTable("user", {
     id: int().primaryKey({ autoIncrement: true }),
@@ -9,6 +12,10 @@ export const user = sqliteTable("user", {
     createdAt: integer().$defaultFn(() => Date.now()).notNull(),
     updatedAt: integer().$defaultFn(() => Date.now()).notNull(),
 });
+
+export const userRelations = relations(user, ({ many }) => ({
+    usersToConversations: many(usersToConversations),
+}));
 
 export const session = sqliteTable("session", {
     id: int().primaryKey({ autoIncrement: true }),
