@@ -1,5 +1,8 @@
+import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { z } from "zod";
 
+import env from "~/lib/env";
+import createS3Client from "~/utils/create-s3-client";
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
 
 const MAX_CONTENT_LENGTH = 1024 * 1024 * 4;
@@ -26,7 +29,25 @@ export default defineAuthenticatedEventHandler(async (event) => {
         }));
     }
 
-    const id = getRouterParam(event, "id") as string;
+    const client = createS3Client();
 
-    await $fetch(`/api/servers/${id}`);
+    const fileName = crypto.randomUUID();
+    const key = `${event.context.user.id}/${fileName}.jpg`;
+
+    const { url, fields } = await createPresignedPost(client, {
+        Bucket: env.S3_BUCKET,
+        Key: key,
+        Expires: 120,
+        Fields: {
+            "x-amz-checksum-sha256": result.data.checksum,
+        },
+        Conditions: [
+            ["content-length-range", result.data.contentLength, result.data.contentLength],
+            ["eq", "$x-amz-meta-user-id", event.context.user.id.toString()],
+        ],
+    });
+
+    fields["x-amz-meta-user-id"] = event.context.user.id.toString();
+
+    return { url, fields, key };
 });

@@ -47,35 +47,65 @@ async function getChecksum(blob: Blob) {
 }
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    // resize the image and reduce the quality to save space
-    if (image.value && previewURL.value) {
-        const previewImage = new Image();
-        previewImage.addEventListener("load", async () => {
-            const width = Math.min(1000, previewImage.width);
-            const resized = await createImageBitmap(previewImage, {
-                resizeWidth: width,
-            });
-            const canvas = new OffscreenCanvas(width, resized.height);
-            canvas.getContext("bitmaprenderer")?.transferFromImageBitmap(resized);
-            const blob = await canvas.convertToBlob({ type: "image/jpeg", quality: 0.9 });
-
-            await getChecksum(blob);
-        });
-        previewImage.src = previewURL.value;
-    }
-
     try {
         loading.value = true;
-        await $csrfFetch("/api/servers", {
-            method: "POST",
-            body: event.data,
-        });
+        if (image.value && previewURL.value) {
+        // resize the image and reduce the quality to save space
+            const previewImage = new Image();
+            previewImage.addEventListener("load", async () => {
+                const width = Math.min(1000, previewImage.width);
+                const resized = await createImageBitmap(previewImage, {
+                    resizeWidth: width,
+                });
+                const canvas = new OffscreenCanvas(width, resized.height);
+                canvas.getContext("bitmaprenderer")?.transferFromImageBitmap(resized);
+                const blob = await canvas.convertToBlob({ type: "image/jpeg", quality: 0.9 });
+
+                const checksum = await getChecksum(blob);
+
+                const { fields, key, url } = await $csrfFetch(`/api/sign-image`, {
+                    method: "POST",
+                    body: {
+                        checksum,
+                        contentLength: blob.size,
+                    },
+                });
+
+                const formData = new FormData();
+
+                Object.entries(fields).forEach(([key, value]) => {
+                    formData.append(key, value as string);
+                });
+                formData.append("file", blob);
+
+                await $fetch(url, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "x-amz-checksum-algorithm": "SHA256",
+                    },
+                });
+
+                await $csrfFetch("/api/servers", {
+                    method: "POST",
+                    body: { ...event.data, image: key },
+                });
+                await refreshServers();
+            });
+            previewImage.src = previewURL.value;
+        }
+        else {
+            await $csrfFetch("/api/servers", {
+                method: "POST",
+                body: event.data,
+            });
+            await refreshServers();
+        }
     }
     catch (e) {
         const error = e as FetchError;
         toast.add({ title: error.statusMessage || "An unknown error occurred", color: "error" });
     }
-    await refreshServers();
     loading.value = false;
     close();
 };

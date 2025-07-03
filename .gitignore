@@ -26,3 +26,5 @@ logs
 /lib/generated/prisma
 
 local.db*
+
+docker-data
