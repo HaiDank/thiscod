@@ -25,7 +25,7 @@ export const useServerStore = defineStore("useServerStore", () => {
                 id: `${server.id}`,
                 avatarUrl: server.image ? server.image : undefined,
                 alt: server.name,
-                to: `${server.id}`,
+                to: { name: "channels-server", params: { server: server.id } },
             }));
         }
     });

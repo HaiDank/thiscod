@@ -1,5 +1,8 @@
 <script setup lang="ts">
-navigateTo("/app");
+const route = useRoute();
+if (route.path === "/channels") {
+    navigateTo("/channels/me");
+}
 </script>
 
 <template>

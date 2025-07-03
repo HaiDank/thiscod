@@ -20,7 +20,7 @@ export const useAuthStore = defineStore("auth", () => {
 
         await authClient.signIn.social({
             provider: "github",
-            callbackURL: "/app",
+            callbackURL: "/channels",
             errorCallbackURL: "/error",
             fetchOptions: {
                 headers,

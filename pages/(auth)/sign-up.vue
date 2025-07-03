@@ -35,7 +35,7 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
         errorMsg.value = error.message;
     }
     else {
-        navigateTo("/app");
+        navigateTo("/channels");
     }
 }
 
