@@ -1,10 +1,11 @@
 import { relations } from "drizzle-orm";
 import { index, int, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import { createInsertSchema } from "drizzle-zod";
+
+import type { ChannelType } from "~/lib/types";
 
 import { message } from "./message";
 import { server } from "./servers";
-
-type ChannelType = "TEXT" | "VOICE";
 
 export const channel = sqliteTable("channel", {
     id: int().primaryKey({ autoIncrement: true }),
@@ -27,5 +28,13 @@ export const channelRelations = relations(channel, ({ one, many }) => ({
     }),
     messages: many(message),
 }));
+
+export const InsertChannel = createInsertSchema(channel, {
+    name: field => field.min(1).max(100),
+}).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+});
 
 export type SelectChannel = typeof channel.$inferSelect;

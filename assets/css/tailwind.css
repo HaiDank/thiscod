@@ -72,7 +72,7 @@
     --sidebar-ring: oklch(0.708 0 0);
 
     --ui-bg: var(--color-white);
-    --ui-bg-muted: var(--ui-disabled);
+    --ui-bg-muted: var(--color-disabled);
     --ui-bg-elevated: var(--ui-color-neutral-100);
     --ui-bg-accented: var(--ui-color-neutral-200);
     --ui-bg-inverted: var(--ui-color-neutral-900);
@@ -81,8 +81,8 @@
 .dark {
     --background: oklch(0.25 0.0064 258.36);
     --foreground: oklch(0.985 0 0);
-    --selected: oklch(0.31 0.013 250);
-    --highlight: oklch(0.29 0.0093 268.37);
+    --selected: oklch(0.37 0.013 250);
+    --highlight: oklch(0.32 0.0093 268.37);
     --card: oklch(0.28 0.0078 264.44);
     --card-foreground: oklch(0.985 0 0);
     --secondary: oklch(1 0 0);
@@ -112,8 +112,8 @@
     --ui-bg-accented: var(--highlight);
     --ui-bg-inverted: var(--color-white);
 
-    --ui-text-dimmed: var(--ui-color-neutral-500);
-    --ui-text-muted: var(--ui-disabled);
+    --ui-text-dimmed: var(--color-disabled);
+    --ui-text-muted: var(--color-disabled);
     --ui-text-toned: var(--ui-color-neutral-300);
     --ui-text: var(--ui-color-neutral-200);
     --ui-text-highlighted: var(--color-white);

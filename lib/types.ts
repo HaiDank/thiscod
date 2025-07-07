@@ -1,7 +1,11 @@
+import type { User } from "better-auth";
 import type { H3Event, H3EventContext } from "h3";
 
-import type { UserWithId } from "./auth";
+export type ChannelType = "TEXT" | "VOICE";
 
+export type UserWithId = Omit<User, "id"> & {
+    id: number;
+};
 export type AuthenticatedEvent = H3Event & {
     context: H3EventContext & {
         user: UserWithId;

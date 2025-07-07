@@ -47,7 +47,7 @@ const activeBg = (props.icon || !props.avatarUrl) ? "bg-primary/90 active" : "ac
                     :src="avatarUrl"
                     :ui="{
                         root: 'rounded-none bg-inherit/0 h-full w-full',
-                        icon: 'size-6',
+                        icon: 'size-6 text-default',
                         fallback: 'font-semibold text-center',
                     }"
                 />

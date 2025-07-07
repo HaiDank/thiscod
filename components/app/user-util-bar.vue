@@ -31,8 +31,8 @@ const authStore = useAuthStore();
                 <span
                     :class="cn('flex flex-col transition-all ease-in-out group-hover:-translate-y-full w-full')"
                 >
-                    <span class="text-disabled scale-y-100 flex items-baseline transition-all group-hover:scale-y-0 font-semibold opacity-100 hover:opacity-0 truncate max-w-full">online</span>
-                    <span class="absolute top-full text-disabled font-semibold truncate max-w-full">{{ authStore.user.email }}</span>
+                    <span class="text-disabled scale-y-100 flex items-baseline transition-all group-hover:scale-y-0  text-xs opacity-100 hover:opacity-0 truncate max-w-full">online</span>
+                    <span class="absolute top-full text-disabled text-xs truncate max-w-full">{{ authStore.user.email }}</span>
                 </span>
             </p>
         </UButton>
