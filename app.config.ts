@@ -3,5 +3,12 @@ export default defineAppConfig({
         colors: {
             primary: "indigo",
         },
+        tooltip: {
+            slots: {
+                text: "text-base",
+                content: " bg-selected h-auto",
+            },
+
+        },
     },
 });

@@ -1,5 +1,6 @@
 export const useServerStore = defineStore("useServerStore", () => {
     const route = useRoute();
+    const config = useRuntimeConfig();
 
     const serverAndChannelUrlWithId = computed(() => `/api/server/${route.params.id}`);
 
@@ -23,7 +24,7 @@ export const useServerStore = defineStore("useServerStore", () => {
         if (servers.value) {
             sidebarStore.sidebarItems = servers.value.map(server => ({
                 id: `${server.id}`,
-                avatarUrl: server.image ? server.image : undefined,
+                avatarUrl: server.image ? `${config.public.s3BucketUrl}/${server.image}` : undefined,
                 alt: server.name,
                 to: { name: "channels-server", params: { server: server.id } },
             }));

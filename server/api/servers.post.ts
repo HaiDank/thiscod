@@ -5,7 +5,6 @@ import sendZodError from "~/utils/send-zod-error";
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const result = await readValidatedBody(event, InsertServer.safeParse);
-
     if (!result.success) {
         return sendZodError(event, result.error);
     }

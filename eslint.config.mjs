@@ -15,7 +15,7 @@ export default withNuxt(antfu({
         semi: true,
         quotes: "double",
     },
-    ignores: [".pnpm-store/**", "**/migrations/*", ".github/**"],
+    ignores: [".pnpm-store/**", "**/migrations/*", ".github/**", "docker-compose.yml"],
     standalone: false,
 }, {
     rules: {
