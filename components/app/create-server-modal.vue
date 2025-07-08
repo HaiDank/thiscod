@@ -116,15 +116,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         v-model:open="open"
         title="Create Your Server"
         description="Give you server a personality with a name and an icon. You can always change it later."
-        :ui="{
-            header: 'justify-center pb-2',
-            title: 'text-2xl font-bold text-center',
-            description: 'text-center text-foreground text-base',
-            content: 'bg-card divide-none',
-            overlay: 'bg-black/50',
-            close: 'bg-card text-disabled hover:text-foreground',
-            body: 'pb-2',
-        }"
     >
         <ServerButton icon="material-symbols:add-circle" />
 

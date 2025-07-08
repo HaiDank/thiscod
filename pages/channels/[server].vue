@@ -2,6 +2,11 @@
 const route = useRoute();
 
 const { server } = route.params;
+
+const serverStore = useServerStore();
+onMounted(() => {
+    serverStore.refreshCurrentServer();
+});
 </script>
 
 <template>
