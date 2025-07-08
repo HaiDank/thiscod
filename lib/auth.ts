@@ -19,9 +19,6 @@ export const auth = betterAuth({
             }
         }),
     },
-    trustedOrigins: [
-        "https://thiscod.vercel.app",
-    ],
     database: drizzleAdapter(db, {
         provider: "sqlite",
     }),

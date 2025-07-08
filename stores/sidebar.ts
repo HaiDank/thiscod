@@ -1,7 +1,7 @@
 import type { RouteLocationRaw } from "vue-router";
 
 export type SidebarItem = {
-    id: string;
+    id: number;
     icon?: string;
     avatarUrl?: string;
     alt?: string;
@@ -10,9 +10,9 @@ export type SidebarItem = {
 };
 
 export type SidebarChannelItem = {
-    id: string;
+    id: number;
     name: string;
-    to?: RouteLocationRaw;
+    to: RouteLocationRaw;
     icon: string;
 };
 
@@ -20,8 +20,8 @@ export const useSidebarStore = defineStore("useSidebarStore", () => {
     const sidebarItems = ref<SidebarItem[]>([]);
     const sidebarChannelItems = ref<SidebarChannelItem[]>([]);
     const sidebarConversationItems = ref<SidebarItem[]>([]);
-    const channelLoading = ref(false);
-    const serverLoading = ref(false);
+    const channelLoading = ref(true);
+    const serverLoading = ref(true);
 
     return {
         serverLoading,

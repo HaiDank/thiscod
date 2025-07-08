@@ -41,9 +41,7 @@ function handleCreateChannel() {
             }"
             size="lg"
             :ui="{
-                item: 'flex-row-reverse justify-between px-1',
-                itemLabel: 'w-full text-start',
-                content: 'w-48 p-1',
+                content: 'w-48 ',
             }"
         >
             <button
@@ -59,23 +57,14 @@ function handleCreateChannel() {
         </UDropdownMenu>
 
         <ul v-if="sidebarChannelItems && !channelLoading" class="space-y-1 p-2">
-            <ULink
+            <SideBarChannelButton
                 v-for="item in sidebarChannelItems"
+                :id="item.id"
                 :key="item.id"
-                as="button"
                 :to="item.to"
-                raw
-                class="w-full flex items-center group rounded-md py-1 px-2 gap-2 font-semibold"
-                active-class="text-default active bg-selected"
-                inactive-class="text-dimmed hover:text-default hover:bg-card"
-            >
-                <UIcon :name="item.icon" class="text-dimmed group-[.active]:text-default size-5" />
-                {{ item.name }}
-            </ULink>
-        </ul>
-
-        <ul v-else-if="channelLoading" class="space-y-1 p-2">
-            <USkeleton class="w-full rounded-md h-8" />
+                :icon="item.icon"
+                :name="item.name"
+            />
         </ul>
     </div>
 </template>

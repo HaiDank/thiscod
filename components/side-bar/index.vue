@@ -36,8 +36,10 @@ function stopResize() {
         <div class="grow flex">
             <SideBarServer />
             <!-- channel bar -->
-            <SideBarConversation v-if="CONVERSATION_PAGES.has(route.name?.toString() || '')" />
-            <SideBarChannel v-else />
+            <ClientOnly>
+                <SideBarConversation v-if="CONVERSATION_PAGES.has(route.name?.toString() || '')" />
+                <SideBarChannel v-else />
+            </ClientOnly>
         </div>
         <div class="sticky bottom-0 h-16 p-2 pt-0 box-border bg-sidebar w-full">
             <AppUserUtilBar />

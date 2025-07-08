@@ -1,4 +1,4 @@
-import type { UserWithId } from "~/lib/auth";
+import type { UserWithId } from "~/lib/types";
 
 import { auth } from "~/lib/auth";
 

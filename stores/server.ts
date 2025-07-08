@@ -29,7 +29,7 @@ export const useServerStore = defineStore("useServerStore", () => {
     watchEffect(() => {
         if (servers.value) {
             sidebarStore.sidebarItems = servers.value.map(server => ({
-                id: `${server.id}`,
+                id: server.id,
                 avatarUrl: server.image ? `${config.public.s3BucketUrl}/${server.image}` : undefined,
                 alt: server.name,
                 to: { name: "channels-server", params: { server: server.id } },
@@ -37,7 +37,7 @@ export const useServerStore = defineStore("useServerStore", () => {
         }
         if (currentServer.value) {
             sidebarStore.sidebarChannelItems = currentServer.value.channels.map(channel => ({
-                id: `${channel.id}`,
+                id: channel.id,
                 name: channel.name,
                 to: { name: "channels-server-channel", params: { server: currentServer.value!.id, channel: channel.id } },
                 icon: channel.channelType === "TEXT" ? "ic:round-numbers" : "material-symbols:volume-up",
