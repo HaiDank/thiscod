@@ -139,6 +139,21 @@
             transform: rotate(180deg);
         }
     }
+    --animate-spin-ease-loop: spin-ease-loop 1.5s ease-in-out infinite;
+    @keyframes spin-ease-loop {
+        0%,
+        40% {
+            transform: rotate(0deg);
+            scale: 1;
+        }
+        70% {
+            scale: 1.2;
+        }
+        100% {
+            transform: rotate(360deg);
+            scale: 1;
+        }
+    }
 }
 
 @layer base {
