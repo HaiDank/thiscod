@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
+import type { FetchError } from "ofetch";
 
 const sidebarStore = useSidebarStore();
 const serverStore = useServerStore();
+const toast = useToast();
+const route = useRoute();
+const openConfirmDialog = ref(false);
 const {
     currentServer,
 } = storeToRefs(serverStore);
@@ -14,7 +18,6 @@ const {
 
 const createChannelRef = ref();
 const items = ref<DropdownMenuItem[]>([
-
     {
         label: "Create Channels",
         icon: "material-symbols:add-circle",
@@ -22,7 +25,36 @@ const items = ref<DropdownMenuItem[]>([
             handleCreateChannel();
         },
     },
+    {
+        label: "Delete Server",
+        icon: "material-symbols:delete-rounded",
+        onSelect() {
+            openConfirmDialog.value = true;
+        },
+        color: "error",
+    },
 ]);
+
+async function handleDeleteServer() {
+    if (route.params.server) {
+        close();
+        try {
+            await $fetch(`/api/servers/${route.params.server}`, {
+                method: "DELETE",
+            });
+            serverStore.refreshServers();
+            navigateTo({ name: "channels-me" });
+        }
+        catch (e) {
+            const error = e as FetchError;
+            toast.add({ title: error.statusMessage || "An unknown error occurred", color: "error" });
+        }
+    }
+}
+
+function onClose() {
+    openConfirmDialog.value = false;
+}
 
 function handleCreateChannel() {
     createChannelRef.value?.openModel();
@@ -31,6 +63,16 @@ function handleCreateChannel() {
 
 <template>
     <div class="grow border-t border-l box-border rounded-tl-lg">
+        <AppDialog
+            v-if="currentServer"
+            :open="openConfirmDialog"
+            confirm-color="error"
+            confirm-label="Delete Server"
+            :description="`Are you sure you want to delete ${currentServer.name} server? This action cannot be undone.`"
+            :title="`Delete '${currentServer.name}'' server`"
+            @on-closed="onClose"
+            @on-confirmed="handleDeleteServer"
+        />
         <AppCreateChannelModal ref="createChannelRef" />
         <UDropdownMenu
             v-if="currentServer"

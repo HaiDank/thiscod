@@ -63,7 +63,7 @@ function handleOnClick() {
                     :ui="{
                         root: 'rounded-none bg-inherit/0 h-full w-full',
                         icon: 'size-6 text-default',
-                        fallback: 'font-semibold text-center',
+                        fallback: 'font-semibold text-center text-default',
                     }"
                 />
             </ULink>

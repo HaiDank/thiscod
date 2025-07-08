@@ -2,7 +2,6 @@
 const sidebarStore = useSidebarStore();
 const {
     sidebarItems,
-    serverLoading,
 } = storeToRefs(sidebarStore);
 </script>
 
@@ -14,16 +13,7 @@ const {
         />
         <div class="w-8 bg-border h-[1px]" />
         <div class="w-full flex-1">
-            <ul v-if="serverLoading" class="space-y-2">
-                <li
-                    v-for="item in Array(9)"
-                    :key="`skeleton-sidebar-${item}`"
-                    class="w-full flex items-center justify-center"
-                >
-                    <USkeleton as="div" class="w-10 rounded-lg h-10" />
-                </li>
-            </ul>
-            <ul v-else-if="sidebarItems" class="space-y-2">
+            <ul v-if="sidebarItems" class="space-y-2">
                 <li
                     v-for="item in sidebarItems"
                     :key="`server-${item.id}`"
