@@ -15,7 +15,7 @@ const { refreshCurrentServer } = serverStore;
 const { server } = route.params;
 
 if (Number.isNaN(Number(server)) || !Number.isInteger(Number(server))) {
-    throw createError({ statusCode: 404, statusMessage: "Page Not Found" });
+    navigateTo({ name: "channels-me" });
 }
 
 function openModel() {

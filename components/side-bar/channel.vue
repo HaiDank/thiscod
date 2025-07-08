@@ -4,12 +4,13 @@ import type { DropdownMenuItem } from "@nuxt/ui";
 const sidebarStore = useSidebarStore();
 const serverStore = useServerStore();
 const {
+    currentServer,
+} = storeToRefs(serverStore);
+
+const {
     sidebarChannelItems,
     channelLoading,
 } = storeToRefs(sidebarStore);
-const {
-    currentServer,
-} = storeToRefs(serverStore);
 
 const createChannelRef = ref();
 const items = ref<DropdownMenuItem[]>([

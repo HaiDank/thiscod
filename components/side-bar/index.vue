@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { CONVERSATION_PAGES } from "~/lib/constants";
 import { cn } from "~/lib/utils";
+
+const route = useRoute();
 
 const isResizing = useIsResizing();
 const elementWidth = ref(420);
@@ -33,7 +36,8 @@ function stopResize() {
         <div class="grow flex">
             <SideBarServer />
             <!-- channel bar -->
-            <SideBarChannel />
+            <SideBarConversation v-if="CONVERSATION_PAGES.has(route.name?.toString() || '')" />
+            <SideBarChannel v-else />
         </div>
         <div class="sticky bottom-0 h-16 p-2 pt-0 box-border bg-sidebar w-full">
             <AppUserUtilBar />
