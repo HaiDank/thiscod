@@ -15,7 +15,22 @@ const props = defineProps<{
     onClick?: () => void;
 }>();
 
+const route = useRoute();
+const router = useRouter();
+
 const activeBg = (props.icon || !props.avatarUrl) ? "bg-primary/90 active" : "active";
+
+function handleOnClick() {
+    if (props.onClick) {
+        props.onClick();
+    }
+    if (!props.to || route.fullPath.includes(router.resolve(props.to).fullPath)) {
+        return null;
+    }
+    else {
+        navigateTo(props.to);
+    }
+}
 </script>
 
 <template>
@@ -39,7 +54,7 @@ const activeBg = (props.icon || !props.avatarUrl) ? "bg-primary/90 active" : "ac
                 class="h-10 w-10 rounded-lg overflow-hidden text-foreground cursor-pointer flex items-center peer justify-center mx-auto hover:bg-primary/90"
                 :active-class="activeBg"
                 inactive-class="bg-background"
-                @click="onClick"
+                @click.prevent="handleOnClick"
             >
                 <UAvatar
                     :icon="icon"

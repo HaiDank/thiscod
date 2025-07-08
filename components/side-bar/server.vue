@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const sidebarStore = useSidebarStore();
-
 const {
     sidebarItems,
 } = storeToRefs(sidebarStore);
@@ -8,7 +7,10 @@ const {
 
 <template>
     <nav class="w-20 h-full overflow-y-scroll no-scrollbar top-0 pt-1 pb-2 flex flex-col items-center box-border gap-2 ">
-        <ServerButton icon="mdi:jellyfish" :to="{ name: 'channels-me' }" />
+        <ServerButton
+            icon="mdi:jellyfish"
+            :to="{ name: 'channels-me' }"
+        />
         <div class="w-8 bg-border h-[1px]" />
         <div class="w-full flex-1">
             <ul v-if="sidebarItems" class="space-y-2 ">

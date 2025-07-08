@@ -3,9 +3,8 @@ import type { DropdownMenuItem } from "@nuxt/ui";
 
 const items = ref<DropdownMenuItem[]>([
     {
-        label: "Create Channels",
+        label: "Create DM",
         icon: "material-symbols:add-circle",
-
     },
 ]);
 </script>

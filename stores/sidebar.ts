@@ -6,7 +6,7 @@ export type SidebarItem = {
     avatarUrl?: string;
     alt?: string;
     href?: string;
-    to?: RouteLocationRaw;
+    to: RouteLocationRaw;
 };
 
 export type SidebarChannelItem = {
