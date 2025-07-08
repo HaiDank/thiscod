@@ -9,7 +9,7 @@ export async function findServers(userId: number) {
     });
 }
 
-export async function findServer(id: number) {
+export async function findServerWithChannels(id: number) {
     return db.query.server.findFirst({
         where: eq(server.id, id),
         with: {

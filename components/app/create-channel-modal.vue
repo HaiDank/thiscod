@@ -1,9 +1,23 @@
 <script setup lang="ts">
-import type { RadioGroupItem } from "@nuxt/ui";
+import type { FormSubmitEvent, RadioGroupItem } from "@nuxt/ui";
+import type { FetchError } from "ofetch";
 
 import { z } from "zod";
 
+const loading = ref(false);
 const open = ref(false);
+const toast = useToast();
+const route = useRoute();
+const { $csrfFetch } = useNuxtApp();
+const serverStore = useServerStore();
+const { refreshCurrentServer } = serverStore;
+
+const { server } = route.params;
+
+if (Number.isNaN(Number(server)) || !Number.isInteger(Number(server))) {
+    throw createError({ statusCode: 404, statusMessage: "Page Not Found" });
+}
+
 function openModel() {
     open.value = true;
 }
@@ -30,6 +44,7 @@ const items = ref<RadioGroupItem[]>([
 const schema = z.object({
     name: z.string().min(1, "Please enter your server's name").max(100, "Your server's name has exceed the maximum character count (100)"),
     channelType: z.enum(["TEXT", "VOICE"]),
+    serverId: z.number(),
 });
 
 type Schema = z.output<typeof schema>;
@@ -37,10 +52,26 @@ type Schema = z.output<typeof schema>;
 const state = reactive<Partial<Schema>>({
     name: ``,
     channelType: "TEXT",
+    serverId: Number(server),
 });
 
-async function onSubmit() {
-
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+    try {
+        loading.value = true;
+        if (server) {
+            await $csrfFetch(`/api/servers/${server}`, {
+                method: "POST",
+                body: event.data,
+            });
+            await refreshCurrentServer();
+        }
+    }
+    catch (e) {
+        const error = e as FetchError;
+        toast.add({ title: error.statusMessage || "An unknown error occurred", color: "error" });
+    }
+    loading.value = false;
+    close();
 }
 </script>
 
@@ -79,7 +110,7 @@ async function onSubmit() {
                 >
                     <UInput
                         v-model="state.name"
-                        icon="solar:hashtag-bold"
+                        :icon="state.channelType === 'TEXT' ? 'ic:round-numbers' : 'material-symbols:volume-up'"
                         type="text"
                         maxlength="100"
                         size="xl"
@@ -97,10 +128,11 @@ async function onSubmit() {
                     <UButton
                         type="submit"
                         color="primary"
-                        :disabled="!state.name "
+                        :disabled="!state.name || loading"
+                        :loading="loading"
                         class="text-foreground font-semibold "
                     >
-                        <span>
+                        <span v-if="!loading">
                             Create Channel
                         </span>
                     </UButton>

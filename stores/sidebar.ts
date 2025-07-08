@@ -9,14 +9,23 @@ export type SidebarItem = {
     to?: RouteLocationRaw;
 };
 
+export type SidebarChannelItem = {
+    id: string;
+    name: string;
+    to?: RouteLocationRaw;
+    icon: string;
+};
+
 export const useSidebarStore = defineStore("useSidebarStore", () => {
     const sidebarItems = ref<SidebarItem[]>([]);
-    const sidebarChannelItems = ref<SidebarItem[]>([]);
+    const sidebarChannelItems = ref<SidebarChannelItem[]>([]);
     const sidebarConversationItems = ref<SidebarItem[]>([]);
-    const loading = ref(false);
+    const channelLoading = ref(false);
+    const serverLoading = ref(false);
 
     return {
-        loading,
+        serverLoading,
+        channelLoading,
         sidebarItems,
         sidebarConversationItems,
         sidebarChannelItems,

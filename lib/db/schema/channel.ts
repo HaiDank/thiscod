@@ -2,14 +2,12 @@ import { relations } from "drizzle-orm";
 import { index, int, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 
-import type { ChannelType } from "~/lib/types";
-
 import { message } from "./message";
 import { server } from "./servers";
 
 export const channel = sqliteTable("channel", {
     id: int().primaryKey({ autoIncrement: true }),
-    channelType: text().$type<ChannelType>().default("TEXT"),
+    channelType: text({ mode: "text", enum: ["TEXT", "VOICE"] }).default("TEXT"),
     name: text().notNull(),
 
     serverId: int().notNull().references(() => server.id, { onDelete: "cascade" }),

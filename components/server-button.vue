@@ -36,7 +36,7 @@ const activeBg = (props.icon || !props.avatarUrl) ? "bg-primary/90 active" : "ac
             <ULink
                 as="button"
                 :to="to"
-                :class="cn('h-10 w-10 rounded-lg overflow-hidden text-foreground cursor-pointer flex items-center peer justify-center mx-auto', (icon || !avatarUrl) && 'hover:bg-primary/90')"
+                class="h-10 w-10 rounded-lg overflow-hidden text-foreground cursor-pointer flex items-center peer justify-center mx-auto hover:bg-primary/90"
                 :active-class="activeBg"
                 inactive-class="bg-background"
                 @click="onClick"
