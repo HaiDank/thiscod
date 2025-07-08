@@ -1,0 +1,1 @@
+DROP INDEX `channel_serverId_name_unique`;

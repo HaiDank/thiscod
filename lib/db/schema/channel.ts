@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { index, int, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 
 import { message } from "./message";
@@ -15,7 +15,6 @@ export const channel = sqliteTable("channel", {
     createdAt: int().notNull().$default(() => Date.now()),
     updatedAt: int().notNull().$default(() => Date.now()).$onUpdate(() => Date.now()),
 }, t => [
-    unique().on(t.serverId, t.name),
     index("channel_server_idx").on(t.serverId),
 ]);
 
