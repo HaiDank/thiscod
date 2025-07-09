@@ -78,26 +78,6 @@ const authStore = useAuthStore();
                 />
             </UButton>
         </UTooltip>
-        <UTooltip
-            text="User Settings"
-            :delay-duration="0"
-            :arrow="true"
-            :content="{
-                align: 'center',
-                sideOffset: 4,
-            }"
-        >
-            <UButton
-                variant="ghost"
-                class="text-disabled hover:text-accent-foreground group p-1"
-                color="neutral"
-            >
-                <Icon
-                    class="group-hover:animate-spin-ease"
-                    name="material-symbols:settings-rounded"
-                    size="22"
-                />
-            </UButton>
-        </UTooltip>
+        <AppUserSetting />
     </div>
 </template>

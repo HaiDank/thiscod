@@ -18,7 +18,7 @@ export const useAuthStore = defineStore("auth", () => {
         const headers = new Headers();
         headers.append("csrf-token", csrf);
 
-        await authClient.signIn.social({
+        return await authClient.signIn.social({
             provider: "github",
             callbackURL: "/channels",
             errorCallbackURL: "/error",
@@ -62,7 +62,7 @@ export const useAuthStore = defineStore("auth", () => {
         const headers = new Headers();
         headers.append("csrf-token", csrf);
 
-        await authClient.signOut({
+        return await authClient.signOut({
             fetchOptions: {
                 onSuccess: () => {
                     navigateTo("/sign-in");
