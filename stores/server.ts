@@ -29,10 +29,10 @@ export const useServerStore = defineStore("useServerStore", () => {
     watchEffect(() => {
         if (servers.value) {
             sidebarStore.sidebarItems = servers.value.map(server => ({
-                id: server.id,
-                avatarUrl: server.image ? `${config.public.s3BucketUrl}/${server.image}` : undefined,
-                alt: server.name,
-                to: { name: "channels-server", params: { server: server.id } },
+                id: server.server.id,
+                avatarUrl: server.server.image ? `${config.public.s3BucketUrl}/${server.server.image}` : undefined,
+                alt: server.server.name,
+                to: { name: "channels-server", params: { server: server.server.id } },
             }));
         }
         if (currentServer.value) {

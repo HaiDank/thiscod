@@ -3,12 +3,13 @@ import { and, eq } from "drizzle-orm";
 import type { InsertServer } from "../schema";
 
 import db from "..";
-import { server } from "../schema";
+import { member, server } from "../schema";
 
 export async function findServers(userId: number) {
-    return db.query.server.findMany({
-        where: eq(server.ownerId, userId),
-    });
+    return db.select()
+        .from(server)
+        .leftJoin(member, eq(server.id, member.serverId))
+        .where(eq(member.userId, userId));
 }
 
 export async function findServerWithChannels(id: number) {

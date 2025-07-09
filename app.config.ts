@@ -15,7 +15,7 @@ export default defineAppConfig({
                 content: "bg-card ring-0 border border-border/50",
                 itemLeadingIcon: "text-dimmed/50",
                 item: "flex-row-reverse justify-between px-1",
-                itemLabel: "w-full text-start",
+                itemLabel: "w-full text-start font-semibold",
             },
         },
         modal: {

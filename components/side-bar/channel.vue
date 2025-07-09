@@ -19,6 +19,13 @@ const {
 const createChannelRef = ref();
 const items = ref<DropdownMenuItem[]>([
     {
+        label: "Invite People",
+        icon: "material-symbols:group-add-rounded",
+        onSelect() {
+
+        },
+    },
+    {
         label: "Create Channels",
         icon: "material-symbols:add-circle",
         onSelect() {

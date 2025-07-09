@@ -15,6 +15,13 @@
       "when": 1751964990612,
       "tag": "0001_flat_blob",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1752034326847,
+      "tag": "0002_sleepy_green_goblin",
+      "breakpoints": true
     }
   ]
 }
