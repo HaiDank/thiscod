@@ -16,6 +16,11 @@ export default defineNuxtConfig({
         "@vee-validate/nuxt",
         "nuxt-csurf",
     ],
+    nitro: {
+        experimental: {
+            websocket: true,
+        },
+    },
     devtools: { enabled: true },
     eslint: {
         config: {
