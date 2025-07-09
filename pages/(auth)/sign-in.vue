@@ -38,6 +38,17 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
     }
 }
 
+async function signInOAuth() {
+    const { error } = await authStore.signInWithGithub();
+    if (error && error.message) {
+        toast.add({
+            color: "error",
+            title: error.message,
+        });
+        errorMsg.value = error.message;
+    }
+}
+
 definePageMeta({
     layout: "auth",
 });
@@ -111,7 +122,7 @@ definePageMeta({
             size="xl"
             loading-auto
             :disabled="authStore.loading"
-            @click="authStore.signInWithGithub"
+            @click="signInOAuth"
         >
             Log in with Github <Icon name="mdi:github" class="h-[1.2rem] w-[1.2rem]" />
         </UButton>
