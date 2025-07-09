@@ -1,5 +1,7 @@
 import { and, eq } from "drizzle-orm";
 
+import type { InsertChannel } from "../schema";
+
 import db from "..";
 import { channel } from "../schema";
 
@@ -10,4 +12,10 @@ export async function removeChannel(id: number, serverId: number) {
     )).returning();
 
     return removed;
+}
+
+export async function insertChannel(insertable: InsertChannel) {
+    const [created] = await db.insert(channel).values(insertable).returning();
+
+    return created;
 }

@@ -3,7 +3,7 @@ const authStore = useAuthStore();
 
 onMounted(() => {
     if (authStore.user) {
-        navigateTo("/app");
+        navigateTo("/channels");
     }
 });
 </script>

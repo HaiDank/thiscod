@@ -1,14 +1,15 @@
+import type { z } from "zod/v4";
+
 import { relations } from "drizzle-orm";
 import { index, int, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import { createInsertSchema } from "drizzle-zod";
 
 import { user } from "./auth";
 import { server } from "./servers";
 
-type MemberRole = "ADMIN" | "GUEST";
-
 export const member = sqliteTable("member", {
     id: int().primaryKey({ autoIncrement: true }),
-    memberRole: text().$type<MemberRole>().default("GUEST"),
+    memberRole: text({ mode: "text", enum: ["GUEST", "ADMIN"] }).notNull().default("GUEST"),
 
     userId: int().notNull().references(() => user.id, { onDelete: "cascade" }),
     serverId: int().notNull().references(() => server.id, { onDelete: "cascade" }),
@@ -27,3 +28,13 @@ export const memberRelations = relations(member, ({ one }) => ({
         references: [server.id],
     }),
 }));
+
+export const InsertMember = createInsertSchema(member, {
+}).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
+export type InsertMember = z.infer<typeof InsertMember>;
+export type SelectMember = typeof server.$inferSelect;

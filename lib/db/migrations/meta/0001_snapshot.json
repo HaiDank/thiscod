@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "2f0fd113-8a85-4fc5-8816-95fc3577c3ae",
-  "prevId": "2dc8297e-c17b-4704-a18b-f9d0da9b655a",
+  "id": "a4806fcc-819b-490b-954a-8cd75ca33bb8",
+  "prevId": "58b0d94c-4f67-4509-95c5-924a50b72126",
   "tables": {
     "account": {
       "name": "account",
@@ -526,7 +526,7 @@
           "name": "member_role",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": "'GUEST'"
         },
@@ -843,6 +843,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "invite_code_expires_at": {
+          "name": "invite_code_expires_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "image": {
           "name": "image",
           "type": "text",
@@ -873,6 +880,13 @@
         }
       },
       "indexes": {
+        "server_inviteCode_unique": {
+          "name": "server_inviteCode_unique",
+          "columns": [
+            "invite_code"
+          ],
+          "isUnique": true
+        },
         "server_owner_idx": {
           "name": "server_owner_idx",
           "columns": [

@@ -154,6 +154,12 @@
             scale: 1;
         }
     }
+    --animate-spin-invert: spin-ease 0.7s linear infinite;
+    @keyframes spin-ease {
+        to {
+            transform: rotate(-180deg);
+        }
+    }
 }
 
 @layer base {

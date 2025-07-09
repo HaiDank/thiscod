@@ -2,6 +2,7 @@ import type { User } from "better-auth";
 import type { H3Event, H3EventContext } from "h3";
 
 export type ChannelType = "TEXT" | "VOICE";
+export type MemberRole = "ADMIN" | "GUEST";
 
 export type UserWithId = Omit<User, "id"> & {
     id: number;
