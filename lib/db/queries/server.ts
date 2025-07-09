@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 
 import type { InsertServer } from "../schema";
 
@@ -21,6 +21,17 @@ export async function findServerWithChannels(id: number) {
     });
 }
 
+export async function findServerByInviteCode(code: string) {
+    const now = Date.now();
+    return db.query.server.findFirst({
+        where: and(eq(server.inviteCode, code), gt(server.inviteCodeExpiresAt, now)),
+        with: {
+            channels: true,
+            members: true,
+        },
+    });
+}
+
 export async function insertServer(insertable: InsertServer, ownerId: number) {
     const [created] = await db.insert(server).values({
         ...insertable,
@@ -37,4 +48,8 @@ export async function removeServerById(id: number, ownerId: number) {
     )).returning();
 
     return [remove];
+}
+
+export async function patchNewInviteCode(serverId: number, inviteCode: string, inviteCodeExpiresAt: number) {
+    return await db.update(server).set({ inviteCode, inviteCodeExpiresAt }).where(eq(server.id, serverId)).returning({ code: server.inviteCode });
 }

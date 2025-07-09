@@ -1,3 +1,5 @@
+import type { z } from "zod/v4";
+
 import { relations } from "drizzle-orm";
 import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
@@ -34,4 +36,5 @@ export const InsertChannel = createInsertSchema(channel, {
     updatedAt: true,
 });
 
+export type InsertChannel = z.infer<typeof InsertChannel>;
 export type SelectChannel = typeof channel.$inferSelect;

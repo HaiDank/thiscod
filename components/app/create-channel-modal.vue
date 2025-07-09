@@ -18,14 +18,14 @@ if (Number.isNaN(Number(server)) || !Number.isInteger(Number(server))) {
     navigateTo({ name: "channels-me" });
 }
 
-function openModel() {
+function openModal() {
     open.value = true;
 }
 
 function close() {
     open.value = false;
 }
-defineExpose({ openModel });
+defineExpose({ openModal });
 
 const items = ref<RadioGroupItem[]>([
 

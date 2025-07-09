@@ -3,7 +3,7 @@ import { cn } from "~/lib/utils";
 
 const authStore = useAuthStore();
 const chipColor = ref<"error" | "neutral" | "primary" | "secondary" | "success" | "info" | "warning">("neutral");
-onMounted(() => {
+watchEffect(() => {
     if (authStore.user) {
         chipColor.value = "success";
     }
@@ -14,7 +14,7 @@ onMounted(() => {
     <UButton
         v-if="authStore.user"
         variant="ghost"
-        class="p-0 rounded-tl-2xl rounded-bl-2xl group rounded-tr-md rounded-br-md  grow-1"
+        class="p-0 rounded-tl-4xl rounded-bl-4xl group rounded-tr-md rounded-br-md  grow-1"
         color="neutral"
     >
         <UChip
@@ -26,6 +26,9 @@ onMounted(() => {
                 :src="authStore.user.image ?? undefined"
                 :alt="authStore.user?.name"
                 icon="material-symbols:account-circle"
+                :ui="{
+                    icon: 'size-full',
+                }"
                 class="size-10"
             />
         </UChip>

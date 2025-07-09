@@ -59,7 +59,6 @@ CREATE TABLE `channel` (
 );
 --> statement-breakpoint
 CREATE INDEX `channel_server_idx` ON `channel` (`server_id`);--> statement-breakpoint
-CREATE UNIQUE INDEX `channel_serverId_name_unique` ON `channel` (`server_id`,`name`);--> statement-breakpoint
 CREATE TABLE `conversation` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text,
@@ -79,7 +78,7 @@ CREATE TABLE `users_to_conversations` (
 --> statement-breakpoint
 CREATE TABLE `member` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`member_role` text DEFAULT 'GUEST',
+	`member_role` text DEFAULT 'GUEST' NOT NULL,
 	`user_id` integer NOT NULL,
 	`server_id` integer NOT NULL,
 	`created_at` integer NOT NULL,
@@ -123,6 +122,7 @@ CREATE TABLE `server` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`invite_code` text,
+	`invite_code_expires_at` integer,
 	`image` text,
 	`owner_id` integer NOT NULL,
 	`created_at` integer NOT NULL,

@@ -5,6 +5,9 @@ import type { FetchError } from "ofetch";
 import * as z from "zod";
 
 const authStore = useAuthStore();
+const {
+    user,
+} = storeToRefs(authStore);
 const serverStore = useServerStore();
 const toast = useToast();
 
@@ -19,7 +22,7 @@ const schema = z.object({
 type Schema = z.output<typeof schema>;
 
 const state = reactive<Partial<Schema>>({
-    name: `${authStore.user?.name}'s server`,
+    name: `${user.value?.name}'s server`,
     image: undefined,
 });
 
@@ -160,8 +163,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                                 size="xs"
                                 class="absolute top-0 right-0 cursor-pointer"
                                 :ui="{
-                                    root: 'bg-primary',
-                                    icon: 'size-5',
+                                    root: 'bg-primary ',
+                                    icon: 'size-5 text-default',
                                 }"
                             />
                         </div>

@@ -17,12 +17,13 @@ const {
 } = storeToRefs(sidebarStore);
 
 const createChannelRef = ref();
+const serverInviteRef = ref();
 const items = ref<DropdownMenuItem[]>([
     {
         label: "Invite People",
         icon: "material-symbols:group-add-rounded",
         onSelect() {
-
+            handleServerInvite();
         },
     },
     {
@@ -63,14 +64,18 @@ function onClose() {
     openConfirmDialog.value = false;
 }
 
+function handleServerInvite() {
+    serverInviteRef.value?.openModal();
+}
+
 function handleCreateChannel() {
-    createChannelRef.value?.openModel();
+    createChannelRef.value?.openModal();
 }
 </script>
 
 <template>
     <div class="grow border-t border-l box-border rounded-tl-lg">
-        <AppDialog
+        <LazyAppDialog
             v-if="currentServer"
             :open="openConfirmDialog"
             confirm-color="error"
@@ -80,7 +85,8 @@ function handleCreateChannel() {
             @on-closed="onClose"
             @on-confirmed="handleDeleteServer"
         />
-        <AppCreateChannelModal ref="createChannelRef" />
+        <LazyAppServerInviteModal ref="serverInviteRef" />
+        <LazyAppCreateChannelModal ref="createChannelRef" />
         <UDropdownMenu
             v-if="currentServer"
             :items="items"

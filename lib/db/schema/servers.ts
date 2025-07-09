@@ -13,7 +13,8 @@ import { member } from "./member";
 export const server = sqliteTable("server", {
     id: int().primaryKey({ autoIncrement: true }),
     name: text().notNull(),
-    inviteCode: text(),
+    inviteCode: text().unique(),
+    inviteCodeExpiresAt: int(),
     image: text(),
     ownerId: int().notNull().references(() => user.id, { onDelete: "cascade" }),
     createdAt: int().notNull().$default(() => Date.now()),
@@ -33,6 +34,7 @@ export const InsertServer = createInsertSchema(server, {
 }).omit({
     id: true,
     inviteCode: true,
+    inviteCodeExpiresAt: true,
     ownerId: true,
     createdAt: true,
     updatedAt: true,

@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `server_inviteCode_unique` ON `server` (`invite_code`);

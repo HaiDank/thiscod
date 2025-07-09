@@ -1,3 +1,4 @@
+import { insertChannel } from "~/lib/db/queries/channel";
 import { insertMember } from "~/lib/db/queries/member";
 import { insertServer } from "~/lib/db/queries/server";
 import { InsertServer } from "~/lib/db/schema";
@@ -16,6 +17,12 @@ export default defineAuthenticatedEventHandler(async (event) => {
         serverId: createdServer.id,
         userId: event.context.user.id,
         memberRole: "ADMIN",
+    });
+
+    await insertChannel({
+        name: "general",
+        serverId: createdServer.id,
+        channelType: "TEXT",
     });
 
     return createdServer;

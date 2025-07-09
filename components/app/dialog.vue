@@ -30,12 +30,14 @@ function onConfirm() {
     >
         <template #footer>
             <UButton
+                class="font-semibold"
                 label="Cancel"
                 color="neutral"
                 variant="ghost"
                 @click="onClose"
             />
             <UButton
+                class="font-semibold text-default"
                 :label="confirmLabel"
                 :color="confirmColor"
                 @click="onConfirm"

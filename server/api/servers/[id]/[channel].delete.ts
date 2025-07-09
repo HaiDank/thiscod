@@ -34,7 +34,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
     if (server.ownerId !== Number(event.context.user.id)) {
         throw createError({
             statusCode: 401,
-            statusMessage: "Unauthorized asdasd.",
+            statusMessage: "Unauthorized.",
         });
     }
 
