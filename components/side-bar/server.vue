@@ -11,8 +11,8 @@ const {
             icon="mdi:jellyfish"
             :to="{ name: 'channels-me' }"
         />
-        <div class="w-8 bg-border h-[1px]" />
-        <div class="w-full flex-1">
+        <div class="w-8 border-t h-[1px]" />
+        <div class="w-full flex-1 space-y-2">
             <ul v-if="sidebarItems" class="space-y-2">
                 <li
                     v-for="item in sidebarItems"
@@ -26,7 +26,8 @@ const {
                     />
                 </li>
             </ul>
+            <AppCreateServerModal />
         </div>
-        <AppCreateServerModal />
+        <ModeToggle />
     </nav>
 </template>

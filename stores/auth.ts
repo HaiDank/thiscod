@@ -12,6 +12,7 @@ export const useAuthStore = defineStore("auth", () => {
 
     const user = computed(() => session.value?.data?.user);
     const loading = computed(() => session.value?.isPending);
+    const token = computed(() => session.value?.data?.session.token);
 
     async function signInWithGithub() {
         const { csrf } = useCsrf();
@@ -80,5 +81,6 @@ export const useAuthStore = defineStore("auth", () => {
         signUp,
         signOut,
         user,
+        token,
     };
 });

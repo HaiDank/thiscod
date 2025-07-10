@@ -13,6 +13,13 @@ export type AuthenticatedEvent = H3Event & {
     };
 };
 
+declare module "socket.io" {
+    // eslint-disable-next-line ts/consistent-type-definitions
+    interface Socket {
+        user?: UserWithId;
+    }
+}
+
 declare module "h3" {
     // eslint-disable-next-line ts/consistent-type-definitions
     interface H3EventContext {

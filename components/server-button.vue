@@ -51,7 +51,7 @@ function handleOnClick() {
             <ULink
                 as="button"
                 :to="to"
-                class="h-10 w-10 rounded-lg overflow-hidden text-foreground cursor-pointer flex items-center peer justify-center mx-auto hover:bg-primary/90"
+                class="h-10 w-10 rounded-lg overflow-hidden text-default cursor-pointer flex items-center peer justify-center mx-auto hover:bg-primary/90"
                 :active-class="activeBg"
                 inactive-class="bg-background"
                 @click.prevent="handleOnClick"

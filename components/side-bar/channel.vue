@@ -60,6 +60,10 @@ async function handleDeleteServer() {
     }
 }
 
+function setChosenChannel(item: SidebarChannelItem) {
+    sidebarStore.chosenChannels.set(`${route.params.server}`, item);
+}
+
 function onClose() {
     openConfirmDialog.value = false;
 }
@@ -74,7 +78,7 @@ function handleCreateChannel() {
 </script>
 
 <template>
-    <div class="grow border-t border-l box-border rounded-tl-lg">
+    <div class="grow border-t border-l border-r border-r-sidebar box-border rounded-tl-lg">
         <LazyAppDialog
             v-if="currentServer"
             :open="openConfirmDialog"
@@ -100,7 +104,7 @@ function handleCreateChannel() {
             }"
         >
             <button
-                class="h-12 w-full border-b font-semibold flex items-center justify-between hover:bg-highlight/50 px-4"
+                class="h-12 w-full border-b box-border font-semibold flex items-center justify-between hover:bg-highlight/50 px-4"
             >
                 {{ currentServer.name }}
                 <Icon
@@ -119,6 +123,7 @@ function handleCreateChannel() {
                 :to="item.to"
                 :icon="item.icon"
                 :name="item.name"
+                @click="setChosenChannel(item)"
             />
         </ul>
     </div>

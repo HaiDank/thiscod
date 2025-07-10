@@ -20,7 +20,7 @@ const isResizing = useIsResizing();
         <Header />
         <div class="w-full h-[calc(100vh-2rem)] flex relative">
             <SideBar />
-            <div class="w-full h-full flex border border-background bg-background">
+            <div class="w-full h-full flex border-background bg-background">
                 <slot />
             </div>
         </div>

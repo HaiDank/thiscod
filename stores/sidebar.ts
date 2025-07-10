@@ -20,6 +20,7 @@ export const useSidebarStore = defineStore("useSidebarStore", () => {
     const sidebarItems = ref<SidebarItem[]>([]);
     const sidebarChannelItems = ref<SidebarChannelItem[]>([]);
     const sidebarConversationItems = ref<SidebarItem[]>([]);
+    const chosenChannels = ref<Map<string, SidebarChannelItem>>(new Map());
     const channelLoading = ref(true);
     const serverLoading = ref(true);
 
@@ -29,5 +30,6 @@ export const useSidebarStore = defineStore("useSidebarStore", () => {
         sidebarItems,
         sidebarConversationItems,
         sidebarChannelItems,
+        chosenChannels,
     };
 });

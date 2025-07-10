@@ -16,6 +16,11 @@ export default defineNuxtConfig({
         "@vee-validate/nuxt",
         "nuxt-csurf",
     ],
+    routeRules: {
+        "socket.io": {
+            csurf: false,
+        },
+    },
     nitro: {
         experimental: {
             websocket: true,

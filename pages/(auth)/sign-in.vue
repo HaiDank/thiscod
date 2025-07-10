@@ -7,7 +7,7 @@ import { Icon } from "#components";
 import * as z from "zod";
 
 const authStore = useAuthStore();
-
+const loading = ref(false);
 const formSchema = z.object({
     email: z.string().email("Invalid email"),
     password: z.string().min(8, "Must be at least 8 characters"),
@@ -24,8 +24,10 @@ const toast = useToast();
 const errorMsg = ref("");
 
 async function onSubmit(event: FormSubmitEvent<typeof state>) {
+    loading.value = true;
     const { email, password } = event.data;
     const { error } = await authStore.signInWithEmail(email!, password!);
+    loading.value = false;
     if (error && error.message) {
         toast.add({
             color: "error",
@@ -34,7 +36,7 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
         errorMsg.value = error.message;
     }
     else {
-        navigateTo("/channels");
+        await navigateTo("/channels");
     }
 }
 
@@ -109,7 +111,7 @@ definePageMeta({
             class="w-full justify-center font-semibold text-accent-foreground"
             color="primary"
             size="xl"
-            :loading="authStore.loading"
+            :loading="loading"
         >
             Log in
         </UButton>
