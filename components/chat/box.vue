@@ -2,54 +2,8 @@
 defineProps<{
     item?: SidebarChannelItem;
 }>();
-const isConnected = ref(false);
-const messages = ref([]);
-// const newMessage = ref("");
-
 const socket = useSocket();
 socket.connect();
-
-if (socket.connected) {
-    onConnect();
-}
-
-function onConnect() {
-    isConnected.value = true;
-}
-
-function onDisconnect() {
-    isConnected.value = false;
-}
-
-function onMessage(data) {
-    messages.value.push(data);
-}
-
-// function sendMessage() {
-//     if (newMessage.value.trim()) {
-//         socket.emit("message", {
-//             id: Date.now(),
-//             text: newMessage.value,
-//             timestamp: new Date().toLocaleTimeString(),
-//         });
-//         newMessage.value = "";
-//     }
-// }
-
-onMounted(() => {
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("message", onMessage);
-});
-
-onBeforeUnmount(() => {
-    socket.off("connect", onConnect);
-    socket.off("disconnect", onDisconnect);
-    socket.off("message", onMessage);
-});
-onUnmounted(() => {
-    socket.disconnect();
-});
 </script>
 
 <template>
@@ -66,6 +20,6 @@ onUnmounted(() => {
             </div>
             <ChatMessage />
         </div>
-        <ChatInput />
+        <ChatInput :placeholder="item?.name" />
     </section>
 </template>

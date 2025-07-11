@@ -59,7 +59,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     try {
         loading.value = true;
         if (server) {
-            await $csrfFetch(`/api/servers/${server}`, {
+            await $csrfFetch(`/api/channels`, {
                 method: "POST",
                 body: event.data,
             });

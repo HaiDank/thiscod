@@ -1,44 +1,89 @@
 <script setup lang="ts">
+import type { FormSubmitEvent } from "@nuxt/ui";
+
+import * as z from "zod";
+
 defineProps<{
     placeholder?: string;
 }>();
+
+const socket = useSocket();
+
+const schema = z.object({
+    content: z.string().min(1).max(250).optional(),
+    file: z.string().optional(),
+});
+
+type Schema = z.output<typeof schema>;
+
+const state = reactive<Partial<Schema>>({
+    content: undefined,
+    file: undefined,
+});
+
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+    if (event.data.content && event.data.content.trim().length > 0) {
+        sendMessage(event.data.content);
+        console.log(event.data);
+    }
+}
+
+function sendMessage(msg: string) {
+    socket.emit("send-message", {
+        content: msg,
+    });
+}
+
+onUnmounted(() => {
+    socket.disconnect();
+});
 </script>
 
 <template>
     <div class="w-full px-1.5 py-6 flex items-center ">
-        <UInput
-            :ui="{
-                base: 'p-4 pl-18 text-base gap-2 ring-1 bg-card ring-border focus-visible:ring-ring focus-visible:ring shadow-sm',
-                leading: 'ps-0',
-                trailing: 'pe-0',
-                leadingIcon: 'size-6',
-                leadingAvatarSize: 'xs',
-                trailingIcon: 'size-6',
-            }"
+        <UForm
+            :schema="schema"
+            :state="state"
             class="w-full"
-            :placeholder="placeholder"
-            variant="subtle"
+            @submit="onSubmit"
         >
-            <template #leading>
-                <UButton
-                    class="px-4"
-                    variant="link"
-                    color="neutral"
-                    size="xl"
-                    icon="material-symbols:add-circle"
-                    aria-label="Chat upload"
-                />
-            </template>
-            <template #trailing>
-                <UButton
-                    variant="link"
-                    color="neutral"
-                    class="hover:scale-110 transition-transform "
-                    size="xl"
-                    icon="material-symbols:sentiment-excited-rounded"
-                    aria-label="Emoji"
-                />
-            </template>
-        </UInput>
+            <UFormField name="content">
+                <UInput
+                    v-model="state.content"
+                    :ui="{
+                        base: 'p-4 pl-18 text-base gap-2 ring-1 bg-card ring-border/75 focus-visible:ring-ring focus-visible:ring shadow-sm',
+                        leading: 'ps-0',
+                        trailing: 'pe-0',
+                        leadingIcon: 'size-6',
+                        leadingAvatarSize: 'xs',
+                        trailingIcon: 'size-6',
+                    }"
+                    class="w-full"
+                    :placeholder="placeholder"
+                    variant="subtle"
+                >
+                    <template #leading>
+                        <UButton
+                            class="px-4"
+                            variant="link"
+                            color="neutral"
+                            size="xl"
+                            icon="material-symbols:add-circle"
+                            aria-label="Chat upload"
+                        />
+                    </template>
+                    <template #trailing>
+                        <UButton
+                            variant="link"
+                            color="neutral"
+                            class="hover:scale-110 transition-transform "
+                            size="xl"
+                            icon="material-symbols:sentiment-excited-rounded"
+                            aria-label="Emoji"
+                        />
+                    </template>
+                </UInput>
+            </UFormField>
+        </UForm>
     </div>
 </template>

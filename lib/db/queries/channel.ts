@@ -19,3 +19,9 @@ export async function insertChannel(insertable: InsertChannel) {
 
     return created;
 }
+
+export async function findChannel(id: number) {
+    return await db.query.channel.findFirst({
+        where: eq(channel.id, id),
+    });
+}
