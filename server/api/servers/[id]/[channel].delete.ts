@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { removeChannel } from "~/lib/db/queries/channel";
-import { findServerWithChannels } from "~/lib/db/queries/server";
+import { findServerWithChannelsAndMembers } from "~/lib/db/queries/server";
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
 
 export default defineAuthenticatedEventHandler(async (event) => {
@@ -22,7 +22,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    const server = await findServerWithChannels(Number(serverId));
+    const server = await findServerWithChannelsAndMembers(Number(serverId));
 
     if (!server) {
         throw createError({

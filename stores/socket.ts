@@ -6,22 +6,19 @@ import { io } from "socket.io-client";
 export const useSocketStore = defineStore("socketio", () => {
     const socket = ref<Socket | null>(null);
     const authStore = useAuthStore();
-    const { token } = authStore;
 
     async function init() {
-        if (!token) {
-            throw new Error("No authentication token available");
-        }
-
         if (socket?.value?.connected) {
             return;
         }
+
+        const token = await authStore.getOneTimeToken();
 
         socket.value = io({
             auth: {
                 token,
             },
-            autoConnect: false,
+            autoConnect: true,
         });
 
         socket.value.on("connect", () => {

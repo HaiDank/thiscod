@@ -21,7 +21,7 @@ export const auth = betterAuth({
     },
     plugins: [
         oneTimeToken({
-            expiresIn: 5,
+            expiresIn: 3,
         }),
     ],
     database: drizzleAdapter(db, {

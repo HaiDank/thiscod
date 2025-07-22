@@ -10,17 +10,19 @@ const authClient = createAuthClient({ plugins: [
 
 export const useAuthStore = defineStore("auth", () => {
     const session = ref<Awaited<ReturnType<typeof authClient.useSession>> | null>(null);
-    const oneTimeToken = ref<Awaited<ReturnType<typeof authClient.oneTimeToken.generate>> | null>(null);
+
     async function init() {
         const data = await authClient.useSession(useFetch);
-        const res = await authClient.oneTimeToken.generate();
-        oneTimeToken.value = res;
         session.value = data;
+    }
+
+    async function getOneTimeToken() {
+        const res = await authClient.oneTimeToken.generate();
+        return res.data?.token;
     }
 
     const user = computed(() => session.value?.data?.user);
     const loading = computed(() => session.value?.isPending);
-    const token = computed(() => oneTimeToken.value?.data?.token);
 
     async function signInWithGithub() {
         const { csrf } = useCsrf();
@@ -82,6 +84,7 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     return {
+        getOneTimeToken,
         init,
         loading,
         signInWithGithub,
@@ -89,6 +92,5 @@ export const useAuthStore = defineStore("auth", () => {
         signUp,
         signOut,
         user,
-        token,
     };
 });

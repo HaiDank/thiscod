@@ -1,9 +1,10 @@
 <script setup lang="ts">
 const authStore = useAuthStore();
+await authStore.init();
 
-onMounted(() => {
+watchEffect(async () => {
     if (authStore.user) {
-        navigateTo("/channels");
+        await navigateTo("/channels");
     }
 });
 </script>

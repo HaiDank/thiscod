@@ -1,10 +1,11 @@
-import type { SelectServerWithChannels } from "~/lib/db/schema";
+import type { SelectChannelWithMessages, SelectServerWithChannels } from "~/lib/db/schema";
 
 export const useServerStore = defineStore("useServerStore", () => {
     const route = useRoute();
     const config = useRuntimeConfig();
 
-    const serverAndChannelUrlWithId = computed(() => `/api/servers/${route.params.server}`);
+    const serverUrlWithId = computed(() => `/api/servers/${route.params.server}`);
+    const channelUrlWithId = computed(() => `/api/servers/${route.params.server}/${route.params.channel}`);
 
     const {
         data: servers,
@@ -18,7 +19,17 @@ export const useServerStore = defineStore("useServerStore", () => {
         data: currentServer,
         status: currentServerStatus,
         refresh: refreshCurrentServer,
-    } = useFetch<SelectServerWithChannels>(serverAndChannelUrlWithId, {
+    } = useFetch<SelectServerWithChannels>(serverUrlWithId, {
+        lazy: true,
+        immediate: false,
+        watch: false,
+    });
+
+    const {
+        data: currentChannel,
+        status: currentChannelStatus,
+        refresh: refreshCurrentChannel,
+    } = useFetch<SelectChannelWithMessages>(channelUrlWithId, {
         lazy: true,
         immediate: false,
         watch: false,
@@ -55,5 +66,8 @@ export const useServerStore = defineStore("useServerStore", () => {
         currentServer,
         currentServerStatus,
         refreshCurrentServer,
+        currentChannel,
+        currentChannelStatus,
+        refreshCurrentChannel,
     };
 });

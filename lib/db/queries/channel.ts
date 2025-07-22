@@ -20,8 +20,23 @@ export async function insertChannel(insertable: InsertChannel) {
     return created;
 }
 
-export async function findChannel(id: number) {
+export async function findChannel(id: number, serverId: number) {
     return await db.query.channel.findFirst({
-        where: eq(channel.id, id),
+        where: and(
+            eq(channel.id, id),
+            eq(channel.serverId, serverId),
+        ),
+    });
+}
+
+export async function findChannelWithMessages(id: number, serverId: number) {
+    return await db.query.channel.findFirst({
+        where: and(
+            eq(channel.id, id),
+            eq(channel.serverId, serverId),
+        ),
+        with: {
+            messages: true,
+        },
     });
 }

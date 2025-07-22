@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-import { findServerWithChannels } from "~/lib/db/queries/server";
+import { findMember } from "~/lib/db/queries/member";
+import { findServerWithChannelsAndMembers } from "~/lib/db/queries/server";
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
 
 export default defineAuthenticatedEventHandler(async (event) => {
@@ -13,12 +14,21 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    const server = await findServerWithChannels(Number(serverId));
+    const member = await findMember(event.context.user.id, Number(serverId));
+
+    if (!member) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: "No permission.",
+        });
+    }
+
+    const server = await findServerWithChannelsAndMembers(Number(serverId));
 
     if (!server) {
         throw createError({
             statusCode: 404,
-            statusMessage: "server not found.",
+            statusMessage: "Server not found.",
         });
     }
 

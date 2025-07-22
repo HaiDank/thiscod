@@ -4,6 +4,8 @@ import { relations } from "drizzle-orm";
 import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 
+import type { SelectMessage } from "./message";
+
 import { message } from "./message";
 import { server } from "./servers";
 
@@ -38,3 +40,6 @@ export const InsertChannel = createInsertSchema(channel, {
 
 export type InsertChannel = z.infer<typeof InsertChannel>;
 export type SelectChannel = typeof channel.$inferSelect;
+export type SelectChannelWithMessages = SelectChannel & {
+    messages: SelectMessage[];
+};

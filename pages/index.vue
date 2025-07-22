@@ -2,6 +2,10 @@
 import { DEFAULT_PAGE_AFTER_AUTH } from "~/lib/constants";
 
 await navigateTo(DEFAULT_PAGE_AFTER_AUTH);
+
+definePageMeta({
+    layout: false,
+});
 </script>
 
 <template>

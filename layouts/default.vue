@@ -2,13 +2,21 @@
 import { cn } from "~/lib/utils";
 
 const serverStore = useServerStore();
+const socket = useSocketStore();
+const authStore = useAuthStore();
+await authStore.init();
 
 const {
     serversStatus,
 } = storeToRefs(serverStore);
 
-onMounted(() => {
+onMounted(async () => {
     serverStore.refreshServers();
+    await socket.init();
+});
+
+onUnmounted(() => {
+    socket.disconnect();
 });
 
 const isResizing = useIsResizing();

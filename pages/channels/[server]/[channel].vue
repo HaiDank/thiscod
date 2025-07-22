@@ -2,14 +2,36 @@
 import * as z from "zod";
 
 const route = useRoute();
-
-const channel = ref<SidebarChannelItem | null>(null);
+const { $csrfFetch } = useNuxtApp();
 
 if (!z.coerce.number().safeParse(route.params.channel).success) {
     await navigateTo({ name: "channels-server", params: {
         server: route.params.server,
     } });
 }
+
+const sidebarStore = useSidebarStore();
+const {
+    chosenChannels,
+} = storeToRefs(sidebarStore);
+const channel = ref<SidebarChannelItem | undefined>(undefined);
+
+onMounted(async () => {
+    try {
+        const res = await $csrfFetch(`/api/channels/${route.params.server}/${route.params.channel}`);
+        console.log(res);
+    }
+    catch (error) {
+        await navigateTo({ name: "channels-server", params: {
+            server: route.params.server,
+        } });
+        console.log(error);
+    }
+});
+
+watchEffect(() => {
+    channel.value = chosenChannels.value.get(`${route.params.server}`);
+});
 </script>
 
 <template>

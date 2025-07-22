@@ -12,11 +12,12 @@ export async function findServers(userId: number) {
         .where(eq(member.userId, userId));
 }
 
-export async function findServerWithChannels(id: number) {
+export async function findServerWithChannelsAndMembers(id: number) {
     return db.query.server.findFirst({
         where: eq(server.id, id),
         with: {
             channels: true,
+            members: true,
         },
     });
 }

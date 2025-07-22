@@ -19,7 +19,7 @@ export type SidebarChannelItem = {
 export const useSidebarStore = defineStore("useSidebarStore", () => {
     const topSidebarItem = ref<SidebarItem>({
         icon: "mdi:jellyfish",
-        to: "{ name: 'channels-me' }",
+        to: { name: "channels-me" },
     });
     const sidebarItems = ref<SidebarItem[]>([]);
     const sidebarChannelItems = ref<SidebarChannelItem[]>([]);

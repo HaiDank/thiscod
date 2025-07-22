@@ -51,7 +51,7 @@ async function handleDeleteServer() {
                 method: "DELETE",
             });
             serverStore.refreshServers();
-            navigateTo({ name: "channels-me" });
+            await navigateTo({ name: "channels-me" });
         }
         catch (e) {
             const error = e as FetchError;

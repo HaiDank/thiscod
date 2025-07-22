@@ -6,23 +6,27 @@ const props = defineProps<{
     highlighted?: boolean;
     tooltip?: string;
     onClick?: () => void;
-    sidebarItem: SidebarItem;
+    icon?: string;
+    alt?: string;
+    avatarUrl?: string;
+    sidebarItem?: SidebarItem;
 }>();
 
 const route = useRoute();
 const router = useRouter();
 
-const activeBg = (props.sidebarItem.icon || !props.sidebarItem.avatarUrl) ? "bg-primary/90 active" : "active";
+const activeBg = ((props.sidebarItem && (props.sidebarItem.icon || !props.sidebarItem.avatarUrl)) || (props.icon || !props.avatarUrl)) ? "bg-primary/90 active" : "active";
 
 async function handleOnClick() {
     if (props.onClick) {
         props.onClick();
     }
-    if (!props.sidebarItem.to || route.fullPath.includes(router.resolve(props.sidebarItem.to).fullPath)) {
+    // avoid routing back to the current server if already in the server
+    if (!props.sidebarItem?.to || route.fullPath.includes(router.resolve(props.sidebarItem?.to).fullPath)) {
         return null;
     }
     else {
-        await navigateTo(props.sidebarItem.to);
+        await navigateTo(props.sidebarItem?.to);
     }
 }
 </script>
@@ -37,23 +41,23 @@ async function handleOnClick() {
                 sideOffset: 4,
             }"
             :ui="{
-                content: !sidebarItem.alt && `hidden`,
+                content: !sidebarItem?.alt && `hidden`,
                 text: 'font-semibold',
             }"
-            :text="sidebarItem.alt"
+            :text="sidebarItem?.alt"
         >
             <ULink
                 as="button"
-                :to="sidebarItem.to"
+                :to="sidebarItem?.to"
                 class="h-10 w-10 rounded-lg overflow-hidden text-default cursor-pointer flex items-center peer justify-center mx-auto hover:bg-primary/90"
                 :active-class="activeBg"
                 inactive-class="bg-background"
                 @click.prevent="handleOnClick"
             >
                 <UAvatar
-                    :icon="sidebarItem.icon"
-                    :alt="sidebarItem.alt"
-                    :src="sidebarItem.avatarUrl"
+                    :icon="sidebarItem?.icon ?? icon"
+                    :alt="sidebarItem?.alt ?? alt"
+                    :src="sidebarItem?.avatarUrl ?? avatarUrl"
                     :ui="{
                         root: 'rounded-none bg-inherit/0 h-full w-full',
                         icon: 'size-6 text-default',

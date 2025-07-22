@@ -116,11 +116,12 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 <template>
     <UModal
+
         v-model:open="open"
         title="Create Your Server"
         description="Give you server a personality with a name and an icon. You can always change it later."
     >
-        <ServerButton icon="material-symbols:add-circle" />
+        <ServerButton icon="material-symbols:add-circle" alt="Create a server" />
 
         <template #body>
             <UForm
