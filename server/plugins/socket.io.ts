@@ -6,13 +6,11 @@ import { Server as Engine } from "engine.io";
 import { defineEventHandler } from "h3";
 import { Server } from "socket.io";
 
-import type { InsertMessage } from "~/lib/db/schema";
+import type { InsertMessage, SelectServerWithChannels } from "~/lib/db/schema";
 import type { UserWithId } from "~/lib/types";
 
 import { auth } from "~/lib/auth";
-import { findChannel } from "~/lib/db/queries/channel";
 import { findMember } from "~/lib/db/queries/member";
-import { findServerWithChannels } from "~/lib/db/queries/server";
 import env from "~/lib/env";
 
 export default defineNitroPlugin((nitroApp: NitroApp) => {
@@ -30,25 +28,22 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
     io.use(async (socket, next) => {
         try {
             const token = socket.handshake.auth.token;
-            console.log(token);
             if (!token) {
-                return next(new Error("Unauthentication."));
+                return next(new Error("Unauthenticated."));
             }
 
-            const requestHeaders = new Headers();
-            requestHeaders.set("Authorization", `Bearer ${token}`);
-
             // Verify token with Better Auth
-            const session = await auth.api.getSession({
-                headers: requestHeaders,
+            const res = await auth.api.verifyOneTimeToken({
+                body: {
+                    token,
+                },
             });
-            console.log(session);
-            if (!session) {
+            if (!res) {
                 return next(new Error("Invalid token"));
             }
 
             // Attach user info to socket
-            socket.user = session.user as unknown as UserWithId;
+            socket.user = res.user as unknown as UserWithId;
             next();
         }
         catch (e) {
@@ -61,20 +56,18 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
         console.log("User connected:", socket.id, "User:", socket.user?.name);
 
         // Join user to their server channels
-        socket.on("join-server", async (serverId: number) => {
+        socket.on("join-server", async (server: SelectServerWithChannels) => {
             try {
                 const userId = socket.user?.id;
                 if (!userId)
                     return;
-
-                const server = await findServerWithChannels(serverId);
 
                 if (!server) {
                     socket.emit("error", { message: "Server not found" });
                     return;
                 }
 
-                const member = await findMember(userId, serverId);
+                const member = await findMember(userId, server.id);
 
                 if (!member) {
                     socket.emit("error", { message: "Unauthorized server access" });
@@ -82,14 +75,14 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
                 }
 
                 // Join server
-                socket.join(`server:${serverId}`);
+                socket.join(`server:${server.id}`);
 
                 // Join channels
                 for (const channel of server.channels) {
                     socket.join(`channel:${channel.id}`);
                 }
 
-                console.log(`User ${userId} joined server ${serverId}`);
+                console.log(`User ${userId} joined server ${server.id}`);
             }
             catch (error) {
                 console.log("SOCKET ERROR JOIN SERVER EVENT: ", error);
@@ -97,33 +90,19 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
             }
         });
         // Leave server
-        socket.on("leave-server", async (serverId: number) => {
+        socket.on("leave-server", async (server: SelectServerWithChannels) => {
             try {
                 const userId = socket.user?.id;
                 if (!userId)
                     return;
 
-                const server = await findServerWithChannels(serverId);
-
-                if (!server) {
-                    socket.emit("error", { message: "Server not found" });
-                    return;
-                }
-
-                const member = await findMember(userId, serverId);
-
-                if (!member) {
-                    socket.emit("error", { message: "Unauthorized server access" });
-                    return;
-                }
-
-                socket.leave(`server:${serverId}`);
+                socket.leave(`server:${server.id}`);
 
                 for (const channel of server.channels) {
                     socket.leave(`channel:${channel.id}`);
                 }
 
-                console.log(`User ${socket.user?.id} left server ${serverId}`);
+                console.log(`User ${socket.user?.id} left server ${server.id}`);
             }
             catch (error) {
                 console.log("SOCKET ERROR LEAVE SERVER EVENT: ", error);
@@ -136,33 +115,15 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
             channelId: number;
         }) => {
             try {
-                console.log("send message", data.content);
                 const user = socket.user;
                 if (!user)
                     return;
 
                 const { channelId, content } = data;
 
-                // Verify the channel belongs to the specified server
-                const channel = await findChannel(channelId);
-                if (!channel) {
-                    socket.emit("error", { message: "Channel not found " });
-                    return;
-                }
-
-                // Create message object
-                const message: InsertMessage = {
-                    content,
-                };
-
-                await $fetch(`api/channels/${channelId}/send-message`, {
-                    method: "POST",
-
-                });
-
                 // Broadcast message only to users in the specific channel
                 io.to(`channel:${channelId}`).emit("message", {
-                    ...message,
+                    content,
                     sender: {
                         id: user.id,
                         name: user.name,

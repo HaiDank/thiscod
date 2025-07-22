@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import type { SelectMessage } from "~/lib/db/schema";
 
-const socket = useSocket();
+const socket = useSocketStore();
 const messages = ref<SelectMessage[]>([]);
 
 function onMessage(data: SelectMessage) {
     messages.value.push(data);
 }
+
+watchEffect(() => {
+    console.log(messages);
+});
 
 onMounted(() => {
     socket.on("message", onMessage);
@@ -14,9 +18,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     socket.off("message", onMessage);
-});
-onUnmounted(() => {
-    socket.disconnect();
 });
 </script>
 

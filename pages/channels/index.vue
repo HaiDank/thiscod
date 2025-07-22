@@ -1,9 +1,16 @@
 <script setup lang="ts">
-navigateTo({ name: "channels-me" });
+const socket = useSocketStore();
+
+onMounted(async () => {
+    await socket.init();
+});
+onUnmounted(() => {
+    socket.disconnect();
+});
 </script>
 
 <template>
-    <div>
-        Rerouting...
+    <div class="w-full h-full">
+        <NuxtPage />
     </div>
 </template>

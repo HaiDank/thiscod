@@ -7,7 +7,8 @@ defineProps<{
     placeholder?: string;
 }>();
 
-const socket = useSocket();
+const socket = useSocketStore();
+const route = useRoute();
 
 const schema = z.object({
     content: z.string().min(1).max(250).optional(),
@@ -31,12 +32,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 function sendMessage(msg: string) {
     socket.emit("send-message", {
         content: msg,
+        channelId: Number(route.params.channel),
     });
 }
-
-onUnmounted(() => {
-    socket.disconnect();
-});
 </script>
 
 <template>

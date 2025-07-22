@@ -1,11 +1,7 @@
 <script setup lang="ts">
-const route = useRoute();
-if (route.path === "/channels") {
-    navigateTo("/channels/me");
-}
-else {
-    navigateTo("/channels");
-}
+import { DEFAULT_PAGE_AFTER_AUTH } from "~/lib/constants";
+
+await navigateTo(DEFAULT_PAGE_AFTER_AUTH);
 </script>
 
 <template>

@@ -14,10 +14,6 @@ const { refreshCurrentServer } = serverStore;
 
 const { server } = route.params;
 
-if (Number.isNaN(Number(server)) || !Number.isInteger(Number(server))) {
-    navigateTo({ name: "channels-me" });
-}
-
 function openModal() {
     open.value = true;
 }
@@ -26,6 +22,10 @@ function close() {
     open.value = false;
 }
 defineExpose({ openModal });
+
+if (Number.isNaN(Number(server)) || !Number.isInteger(Number(server))) {
+    await navigateTo({ name: "channels-me" });
+}
 
 const items = ref<RadioGroupItem[]>([
 

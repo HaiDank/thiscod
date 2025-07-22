@@ -2,6 +2,7 @@
 import { cn } from "~/lib/utils";
 
 const serverStore = useServerStore();
+
 const {
     serversStatus,
 } = storeToRefs(serverStore);
@@ -9,12 +10,13 @@ const {
 onMounted(() => {
     serverStore.refreshServers();
 });
+
 const isResizing = useIsResizing();
 </script>
 
 <template>
     <section :class="cn('w-screen h-screen overflow-hidden', isResizing && 'cursor-ew-resize ')">
-        <div v-if="serversStatus === 'pending'" class="w-screen h-screen bg-background absolute top-0 left-0 z-100 flex items-center justify-center">
+        <div v-if="serversStatus !== 'success'" class="w-screen h-screen bg-background absolute top-0 left-0 z-100 flex items-center justify-center">
             <UIcon name="mdi:jellyfish" class="animate-spin-ease-loop size-32" />
         </div>
         <Header />

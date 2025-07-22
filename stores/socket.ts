@@ -1,76 +1,75 @@
 import type { Socket } from "socket.io-client";
 
+import { defineStore } from "pinia";
 import { io } from "socket.io-client";
 
-let socket: Socket | null = null;
-
-export function useSocket() {
+export const useSocketStore = defineStore("socketio", () => {
+    const socket = ref<Socket | null>(null);
     const authStore = useAuthStore();
     const { token } = authStore;
 
-    const connect = () => {
+    async function init() {
         if (!token) {
             throw new Error("No authentication token available");
         }
 
-        if (socket?.connected) {
-            return socket;
+        if (socket?.value?.connected) {
+            return;
         }
 
-        socket = io({
+        socket.value = io({
             auth: {
                 token,
             },
             autoConnect: false,
         });
 
-        socket.on("connect", () => {
+        socket.value.on("connect", () => {
             console.log("Connected to server");
         });
 
-        socket.on("connect_error", (error) => {
+        socket.value.on("connect_error", (error) => {
             console.error("Connection failed:", error.message);
         });
 
-        socket.connect();
-        return socket;
-    };
+        socket.value.connect();
+    }
 
     const disconnect = () => {
-        if (socket) {
-            socket.disconnect();
-            socket = null;
+        if (socket.value) {
+            socket.value.disconnect();
+            socket.value = null;
         }
     };
 
     const emit = (event: string, data: any) => {
-        if (!socket?.connected) {
+        if (!socket?.value?.connected) {
             throw new Error("Socket not connected");
         }
-        socket.emit(event, data);
+        socket.value.emit(event, data);
     };
 
     const on = (event: string, callback: (...args: any[]) => void) => {
-        if (!socket) {
+        if (!socket.value) {
             throw new Error("Socket not initialized");
         }
-        socket.on(event, callback);
+        socket.value.on(event, callback);
     };
 
     const off = (event: string, callback?: (...args: any[]) => void) => {
-        if (!socket)
+        if (!socket.value)
             return;
-        socket.off(event, callback);
+        socket.value.off(event, callback);
     };
 
     return {
-        connect,
+        init,
         disconnect,
         emit,
         on,
         off,
         get connected() {
-            return socket?.connected ?? false;
+            return socket?.value?.connected ?? false;
         },
     };
-}
+});

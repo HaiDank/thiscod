@@ -6,6 +6,8 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 import { Icon } from "#components";
 import * as z from "zod";
 
+import { DEFAULT_PAGE_AFTER_AUTH } from "~/lib/constants";
+
 const authStore = useAuthStore();
 const loading = ref(false);
 const formSchema = z.object({
@@ -36,7 +38,7 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
         errorMsg.value = error.message;
     }
     else {
-        await navigateTo("/channels");
+        await navigateTo(DEFAULT_PAGE_AFTER_AUTH);
     }
 }
 

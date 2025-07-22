@@ -1,11 +1,10 @@
 import { z } from "zod";
 
+import { findChannel } from "~/lib/db/queries/channel";
 import { insertMessage } from "~/lib/db/queries/message";
 import { InsertMessage } from "~/lib/db/schema";
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
 import sendZodError from "~/utils/send-zod-error";
-
-import { findChannel } from "../../../../lib/db/queries/channel";
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const result = await readValidatedBody(event, InsertMessage.safeParse);
