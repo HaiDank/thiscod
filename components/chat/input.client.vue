@@ -7,9 +7,7 @@ defineProps<{
     placeholder?: string;
 }>();
 
-const socket = useSocketStore();
-const route = useRoute();
-
+const chat = useChatMessages();
 const schema = z.object({
     content: z.string().min(1).max(250).optional(),
     file: z.string().optional(),
@@ -24,16 +22,8 @@ const state = reactive<Partial<Schema>>({
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     if (event.data.content && event.data.content.trim().length > 0) {
-        sendMessage(event.data.content);
-        console.log(event.data);
+        chat.sendMessage(event.data.content);
     }
-}
-
-function sendMessage(msg: string) {
-    socket.emit("send-message", {
-        content: msg,
-        channelId: Number(route.params.channel),
-    });
 }
 </script>
 

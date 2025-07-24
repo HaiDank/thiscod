@@ -6,7 +6,7 @@ import { Server as Engine } from "engine.io";
 import { defineEventHandler } from "h3";
 import { Server } from "socket.io";
 
-import type { InsertMessage, SelectServerWithChannels } from "~/lib/db/schema";
+import type { InsertMessage, SelectServer, SelectServerWithChannels } from "~/lib/db/schema";
 import type { UserWithId } from "~/lib/types";
 
 import { auth } from "~/lib/auth";
@@ -56,7 +56,7 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
         console.log("User connected:", socket.id, "User:", socket.user?.name);
 
         // Join user to their server channels
-        socket.on("join-server", async (server: SelectServerWithChannels) => {
+        socket.on("join-server", async (server: SelectServer) => {
             try {
                 const userId = socket.user?.id;
                 if (!userId)
@@ -77,11 +77,6 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
                 // Join server
                 socket.join(`server:${server.id}`);
 
-                // Join channels
-                for (const channel of server.channels) {
-                    socket.join(`channel:${channel.id}`);
-                }
-
                 console.log(`User ${userId} joined server ${server.id}`);
             }
             catch (error) {
@@ -90,7 +85,7 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
             }
         });
         // Leave server
-        socket.on("leave-server", async (server: SelectServerWithChannels) => {
+        socket.on("leave-server", async (server: SelectServer) => {
             try {
                 const userId = socket.user?.id;
                 if (!userId)
@@ -98,11 +93,55 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
 
                 socket.leave(`server:${server.id}`);
 
+                console.log(`User ${socket.user?.id} left server ${server.id}`);
+            }
+            catch (error) {
+                console.log("SOCKET ERROR LEAVE SERVER EVENT: ", error);
+                socket.emit("error", { message: "Failed to leave server" });
+            }
+        });
+
+        // Join Channels
+        socket.on("join-channels", async (server: SelectServerWithChannels) => {
+            try {
+                const userId = socket.user?.id;
+                if (!userId)
+                    return;
+
+                if (!server) {
+                    socket.emit("error", { message: "Server not found" });
+                    return;
+                }
+
+                const member = await findMember(userId, server.id);
+
+                if (!member) {
+                    socket.emit("error", { message: "Unauthorized server access" });
+                    return;
+                }
+
+                // Join channels
+                for (const channel of server.channels) {
+                    socket.join(`channel:${channel.id}`);
+                }
+            }
+            catch (error) {
+                console.log("SOCKET ERROR JOIN CHANNELS EVENT: ", error);
+                socket.emit("error", { message: "Failed to join channels" });
+            }
+        });
+
+        // Leave channels
+        socket.on("leave-channels", async (server: SelectServerWithChannels) => {
+            try {
+                const userId = socket.user?.id;
+                if (!userId)
+                    return;
+
+                // leave channels
                 for (const channel of server.channels) {
                     socket.leave(`channel:${channel.id}`);
                 }
-
-                console.log(`User ${socket.user?.id} left server ${server.id}`);
             }
             catch (error) {
                 console.log("SOCKET ERROR LEAVE SERVER EVENT: ", error);
@@ -113,17 +152,30 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
         // Send message to channel
         socket.on("send-message", async (data: InsertMessage & {
             channelId: number;
+            serverId: number;
         }) => {
             try {
                 const user = socket.user;
                 if (!user)
                     return;
 
-                const { channelId, content } = data;
+                const { channelId, content, serverId } = data;
+
+                console.log(socket.rooms);
 
                 // Broadcast message only to users in the specific channel
                 io.to(`channel:${channelId}`).emit("message", {
                     content,
+                    sender: {
+                        id: user.id,
+                        name: user.name,
+                        avatar: user.image,
+                    },
+                });
+
+                io.to(`server:${serverId}`).emit("notification", {
+                    content,
+                    channelId,
                     sender: {
                         id: user.id,
                         name: user.name,

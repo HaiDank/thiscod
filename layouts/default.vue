@@ -5,13 +5,13 @@ const serverStore = useServerStore();
 const socket = useSocketStore();
 const authStore = useAuthStore();
 await authStore.init();
+await serverStore.refreshServers();
 
 const {
     serversStatus,
 } = storeToRefs(serverStore);
 
 onMounted(async () => {
-    serverStore.refreshServers();
     await socket.init();
 });
 

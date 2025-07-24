@@ -20,6 +20,7 @@ onMounted(async () => {
     try {
         const res = await $csrfFetch(`/api/channels/${route.params.server}/${route.params.channel}`);
         console.log(res);
+        channel.value = res;
     }
     catch (error) {
         await navigateTo({ name: "channels-server", params: {
@@ -37,7 +38,7 @@ watchEffect(() => {
 <template>
     <div class="w-full h-full ">
         <section v-if="channel" class="w-full h-full bg-background flex flex-col gap-2">
-            <ChatHeader :channel-name="channel.name" :icon="channel.icon" />
+            <ChatHeader :channel-name="channel.name" :type="channel.channelType" />
             <div class="w-full h-full flex flex-col grow overflow-hidden">
                 <div class="flex w-full h-1/2 flex-col items-center justify-center text-3xl font-semibold">
                     <h4>

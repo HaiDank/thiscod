@@ -1,24 +1,5 @@
 <script setup lang="ts">
-import type { SelectMessage } from "~/lib/db/schema";
-
-const socket = useSocketStore();
-const messages = ref<SelectMessage[]>([]);
-
-function onMessage(data: SelectMessage) {
-    messages.value.push(data);
-}
-
-watchEffect(() => {
-    console.log(messages);
-});
-
-onMounted(() => {
-    socket.on("message", onMessage);
-});
-
-onBeforeUnmount(() => {
-    socket.off("message", onMessage);
-});
+const { messages } = useChatMessages();
 </script>
 
 <template>
