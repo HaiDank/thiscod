@@ -5,7 +5,7 @@ export default defineAppConfig({
         },
         tooltip: {
             slots: {
-                text: "text-base",
+                text: "text-base test-default",
                 content: " bg-card border border-border/50 ring-0 h-auto",
             },
 

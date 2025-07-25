@@ -1,5 +1,8 @@
+import type { z } from "zod/v4";
+
 import { relations } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { createInsertSchema } from "drizzle-zod";
 
 import { user } from "./auth";
 import { channel } from "./channel";
@@ -11,7 +14,7 @@ export const message = sqliteTable("message", {
     channelId: int().notNull().references(() => channel.id, { onDelete: "cascade" }),
 
     content: text(),
-    fileUrl: text(),
+    file: text(),
 
     edited: int({ mode: "boolean" }).default(false),
     seen: int({ mode: "boolean" }).default(false),
@@ -35,7 +38,7 @@ export const messageRelations = relations(message, ({ one }) => ({
 export const directMessage = sqliteTable("directMessage", {
     id: int().primaryKey({ autoIncrement: true }),
     content: text(),
-    fileUrl: text(),
+    file: text(),
 
     conversationId: int().notNull().references(() => channel.id, { onDelete: "cascade" }),
     edited: int({ mode: "boolean" }).default(false),
@@ -56,3 +59,19 @@ export const directMessageRelations = relations(directMessage, ({ one }) => ({
         references: [user.id],
     }),
 }));
+
+export const InsertMessage = createInsertSchema(message, {
+    content: field => field.min(1).max(250).optional(),
+    file: field => field.regex(/^\d+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.jpg$/, "Invalid key").optional(),
+}).omit({
+    id: true,
+    edited: true,
+    seen: true,
+    userId: true,
+    channelId: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
+export type InsertMessage = z.infer<typeof InsertMessage>;
+export type SelectMessage = typeof message.$inferSelect;

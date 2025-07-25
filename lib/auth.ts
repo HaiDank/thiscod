@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { createAuthMiddleware } from "better-auth/plugins";
+import { createAuthMiddleware, oneTimeToken } from "better-auth/plugins";
 
 import db from "./db/index";
 import env from "./env";
@@ -19,6 +19,11 @@ export const auth = betterAuth({
             }
         }),
     },
+    plugins: [
+        oneTimeToken({
+            expiresIn: 3,
+        }),
+    ],
     database: drizzleAdapter(db, {
         provider: "sqlite",
     }),

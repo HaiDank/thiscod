@@ -1,34 +1,32 @@
 <script setup lang="ts">
-import type { RouteLocationRaw } from "vue-router";
-
 import { cn } from "~/lib/utils";
 
 const props = defineProps<{
     selected?: boolean;
     highlighted?: boolean;
-    icon?: string;
     tooltip?: string;
-    avatarUrl?: string;
-    alt?: string;
-    href?: string;
-    to?: RouteLocationRaw;
     onClick?: () => void;
+    icon?: string;
+    alt?: string;
+    avatarUrl?: string;
+    sidebarItem?: SidebarItem;
 }>();
 
 const route = useRoute();
 const router = useRouter();
 
-const activeBg = (props.icon || !props.avatarUrl) ? "bg-primary/90 active" : "active";
+const activeBg = ((props.sidebarItem && (props.sidebarItem.icon || !props.sidebarItem.avatarUrl)) || (props.icon || !props.avatarUrl)) ? "bg-primary/90 active" : "active";
 
-function handleOnClick() {
+async function handleOnClick() {
     if (props.onClick) {
         props.onClick();
     }
-    if (!props.to || route.fullPath.includes(router.resolve(props.to).fullPath)) {
+    // avoid routing back to the current server if already in the server
+    if (!props.sidebarItem?.to || route.fullPath.includes(router.resolve(props.sidebarItem?.to).fullPath)) {
         return null;
     }
     else {
-        navigateTo(props.to);
+        await navigateTo(props.sidebarItem?.to);
     }
 }
 </script>
@@ -43,23 +41,23 @@ function handleOnClick() {
                 sideOffset: 4,
             }"
             :ui="{
-                content: !alt && `hidden`,
+                content: !sidebarItem?.alt && `hidden`,
                 text: 'font-semibold',
             }"
-            :text="alt"
+            :text="sidebarItem?.alt"
         >
             <ULink
                 as="button"
-                :to="to"
-                class="h-10 w-10 rounded-lg overflow-hidden text-foreground cursor-pointer flex items-center peer justify-center mx-auto hover:bg-primary/90"
+                :to="sidebarItem?.to"
+                class="h-10 w-10 rounded-lg overflow-hidden text-default cursor-pointer flex items-center peer justify-center mx-auto hover:bg-primary/90"
                 :active-class="activeBg"
                 inactive-class="bg-background"
                 @click.prevent="handleOnClick"
             >
                 <UAvatar
-                    :icon="icon"
-                    :alt="alt"
-                    :src="avatarUrl"
+                    :icon="sidebarItem?.icon ?? icon"
+                    :alt="sidebarItem?.alt ?? alt"
+                    :src="sidebarItem?.avatarUrl ?? avatarUrl"
                     :ui="{
                         root: 'rounded-none bg-inherit/0 h-full w-full',
                         icon: 'size-6 text-default',

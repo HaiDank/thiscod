@@ -1,13 +1,24 @@
+import { oneTimeTokenClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/vue";
 import { defineStore } from "pinia";
 
-const authClient = createAuthClient();
+import { DEFAULT_PAGE_AFTER_AUTH } from "~/lib/constants";
+
+const authClient = createAuthClient({ plugins: [
+    oneTimeTokenClient(),
+] });
 
 export const useAuthStore = defineStore("auth", () => {
     const session = ref<Awaited<ReturnType<typeof authClient.useSession>> | null>(null);
+
     async function init() {
         const data = await authClient.useSession(useFetch);
         session.value = data;
+    }
+
+    async function getOneTimeToken() {
+        const res = await authClient.oneTimeToken.generate();
+        return res.data?.token;
     }
 
     const user = computed(() => session.value?.data?.user);
@@ -20,7 +31,7 @@ export const useAuthStore = defineStore("auth", () => {
 
         return await authClient.signIn.social({
             provider: "github",
-            callbackURL: "/channels",
+            callbackURL: DEFAULT_PAGE_AFTER_AUTH,
             errorCallbackURL: "/error",
             fetchOptions: {
                 headers,
@@ -73,6 +84,7 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     return {
+        getOneTimeToken,
         init,
         loading,
         signInWithGithub,

@@ -1,9 +1,7 @@
 <script setup lang="ts">
-navigateTo({ name: "channels-me" });
+
 </script>
 
 <template>
-    <div>
-        Rerouting...
-    </div>
+    <div />
 </template>
