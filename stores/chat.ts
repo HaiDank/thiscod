@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 
-import type { InsertMessage, SelectMessage, SelectMessageWithUser } from "~/lib/db/schema";
+import type { InsertMessage, SelectMessageWithUser } from "~/lib/db/schema";
 import type { UserWithId } from "~/lib/types";
 
 export const useChatStore = defineStore("useChatStore", () => {
@@ -15,7 +15,7 @@ export const useChatStore = defineStore("useChatStore", () => {
     const {
         status: messagesStatus,
         refresh: refreshMessages,
-    } = useFetch<SelectMessage[]>(api, {
+    } = useFetch<SelectMessageWithUser[]>(api, {
         lazy: true,
         key: api.value,
     });
@@ -38,7 +38,7 @@ export const useChatStore = defineStore("useChatStore", () => {
             edited: false,
             channelId,
             userId: Number(authStore.user.id),
-            sender: authStore.user as unknown as UserWithId,
+            user: authStore.user as unknown as UserWithId,
         };
 
         const originalMessages = messages.value;

@@ -57,7 +57,7 @@ function close() {
         raw
         class="w-full flex items-center group rounded-md py-1 px-2 gap-2 font-semibold"
         active-class="text-default active bg-selected/75"
-        inactive-class="text-dimmed hover:text-default hover:bg-card/75"
+        inactive-class="text-dimmed hover:text-default hover:bg-highlight"
     >
         <AppDialog
             confirm-color="error"

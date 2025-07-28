@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import type { ChannelType } from "~/lib/types";
+
 defineProps<{
     channelName?: string;
-    type?: ChannelType;
+    type?: ChannelType | null;
 }>();
 </script>
 

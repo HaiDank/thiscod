@@ -74,5 +74,5 @@ export const InsertMessage = createInsertSchema(message, {
 
 export type InsertMessage = z.infer<typeof InsertMessage>;
 export type SelectMessage = typeof message.$inferSelect;
-export type SelectMessageWithUser = SelectMessage & { sender: UserWithId };
+export type SelectMessageWithUser = SelectMessage & { user: UserWithId };
 export type SelectDirectMessage = typeof directMessage.$inferSelect;

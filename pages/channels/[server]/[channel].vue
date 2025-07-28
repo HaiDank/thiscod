@@ -27,7 +27,7 @@ onBeforeUnmount(() => {
         <section v-if="currentChannel" class="w-full h-full bg-background flex flex-col gap-2">
             <ChatHeader :channel-name="currentChannel.name" :type="currentChannel.channelType" />
             <div class="w-full h-full flex flex-col grow overflow-hidden">
-                <div class="flex w-full h-1/2 flex-col items-center justify-center text-3xl font-semibold">
+                <div class="flex w-full h-1/4 flex-col items-center justify-center text-3xl font-semibold">
                     <h4>
                         Welcome to
                     </h4>

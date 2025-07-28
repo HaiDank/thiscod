@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 
 import type { InsertMessage } from "../schema";
 
@@ -17,7 +17,7 @@ export async function findMessages(channelId: number) {
         with: {
             user: true,
         },
-        orderBy: [desc(message.createdAt)],
+        orderBy: [asc(message.createdAt)],
         limit: 25,
     });
 }
