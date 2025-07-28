@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { messages } = useChatMessages();
+const { messages } = useChatStore();
 </script>
 
 <template>

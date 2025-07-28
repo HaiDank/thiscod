@@ -3,11 +3,15 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 
 import * as z from "zod";
 
-defineProps<{
+const props = defineProps<{
     placeholder?: string;
+    channelId: number;
+    serverId: number;
 }>();
 
-const chat = useChatMessages();
+const { sendMessage } = useChatStore();
+const { csrf } = useCsrf();
+
 const schema = z.object({
     content: z.string().min(1).max(250).optional(),
     file: z.string().optional(),
@@ -21,8 +25,13 @@ const state = reactive<Partial<Schema>>({
 });
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    if (event.data.content && event.data.content.trim().length > 0) {
-        chat.sendMessage(event.data.content);
+    if ((event.data.content && event.data.content.trim().length > 0) || event.data.file) {
+        const res = await sendMessage(event.data, props.channelId, props.serverId, csrf);
+
+        if (res) {
+            state.content = undefined;
+            state.file = undefined;
+        }
     }
 }
 </script>

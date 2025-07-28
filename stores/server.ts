@@ -5,7 +5,7 @@ export const useServerStore = defineStore("useServerStore", () => {
     const config = useRuntimeConfig();
 
     const serverUrlWithId = computed(() => `/api/servers/${route.params.server}`);
-    const channelUrlWithId = computed(() => `/api/servers/${route.params.server}/${route.params.channel}`);
+    const channelUrlWithId = computed(() => `/api/channels/${route.params.server}/${route.params.channel}`);
 
     const {
         data: servers,

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { findChannelWithMessages } from "~/lib/db/queries/channel";
+import { findChannel } from "~/lib/db/queries/channel";
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
 
 export default defineAuthenticatedEventHandler(async (event) => {
@@ -21,7 +21,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    const channel = await findChannelWithMessages(Number(channelId), Number(serverId));
+    const channel = await findChannel(Number(channelId), Number(serverId));
 
     if (!channel) {
         throw createError({

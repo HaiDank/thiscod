@@ -1,9 +1,10 @@
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import env from "~/lib/env";
 import createS3Client from "~/utils/create-s3-client";
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
+import sendZodError from "~/utils/send-zod-error";
 
 const MAX_CONTENT_LENGTH = 1024 * 1024 * 4;
 
@@ -16,17 +17,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
     const result = await readValidatedBody(event, ImageSchema.safeParse);
 
     if (!result.success) {
-        const statusMessage = result.error.issues.map(issue => `${issue.path.join("")}: ${issue.message}`).join(";");
-        const data = result.error.issues.reduce((errors, issue) => {
-            errors[issue.path.join("")] = issue.message;
-            return errors;
-        }, {} as Record<string, string>);
-
-        return sendError(event, createError({
-            statusCode: 422,
-            statusMessage,
-            data,
-        }));
+        return sendZodError(event, result.error);
     }
 
     const client = createS3Client();
