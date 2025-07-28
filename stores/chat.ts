@@ -78,7 +78,6 @@ export const useChatStore = defineStore("useChatStore", () => {
 
     async function init() {
         await socketStore.init();
-        console.log("initialize store", socketStore.isConnected, serverStore.currentChannel, messages.value);
         if (socketStore.isConnected && serverStore.currentChannel) {
             socketStore.joinChannelRoom(serverStore.currentChannel);
             currentChatId.value = serverStore.currentChannel.id;
