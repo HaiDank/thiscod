@@ -2,9 +2,15 @@ import { z } from "zod";
 
 import { findMessages } from "~/lib/db/queries/message";
 import { findServerWithChannelsAndMembers } from "~/lib/db/queries/server";
+import { PaginationRequest } from "~/lib/db/schema";
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
+import sendZodError from "~/utils/send-zod-error";
 
 export default defineAuthenticatedEventHandler(async (event) => {
+    const result = await getValidatedQuery(event, PaginationRequest.safeParse);
+    if (!result.success) {
+        return sendZodError(event, result.error);
+    }
     const channelId = getRouterParam(event, "channel") as string;
     const serverId = getRouterParam(event, "server") as string;
 
@@ -48,7 +54,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    const messages = await findMessages(Number(channelId));
+    const messages = await findMessages(Number(channelId), result.data.limit, result.data.cursor);
 
     return messages;
 });

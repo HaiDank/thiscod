@@ -174,7 +174,7 @@
         @apply border-border outline-ring/50 transition-colors duration-200;
     }
     body {
-        @apply bg-background text-foreground transition-colors ease-in-out;
+        @apply bg-background transition-colors ease-in-out;
     }
 }
 
@@ -186,4 +186,24 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+}
+
+/* Global custom scrollbar */
+* {
+    /* For Firefox */
+    scrollbar-width: thin;
+}
+
+/* For Webkit browsers */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
 }

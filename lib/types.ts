@@ -4,6 +4,18 @@ import type { H3Event, H3EventContext } from "h3";
 export type ChannelType = "TEXT" | "VOICE";
 export type MemberRole = "ADMIN" | "GUEST";
 
+export type ClientMessageType = {
+    id: number;
+    createdAt: number;
+    updatedAt: number;
+    content: string | null;
+    file: string | null;
+    edited: boolean | null;
+    isConnected: boolean | null;
+    pending?: boolean;
+    user: UserWithId;
+};
+
 export type UserWithId = Omit<User, "id"> & {
     id: number;
 };

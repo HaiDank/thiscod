@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { and, desc, eq, lt } from "drizzle-orm";
 
 import type { InsertMessage } from "../schema";
 
@@ -11,13 +11,13 @@ export async function insertMessage(insertable: InsertMessage, userId: number, c
     return created;
 }
 
-export async function findMessages(channelId: number) {
+export async function findMessages(channelId: number, limit: number, cursor?: number) {
     return await db.query.message.findMany({
-        where: eq(message.channelId, channelId),
+        where: and(eq(message.channelId, channelId), cursor ? lt(message.createdAt, cursor) : undefined),
         with: {
             user: true,
         },
-        orderBy: [asc(message.createdAt)],
-        limit: 25,
+        orderBy: [desc(message.createdAt)],
+        limit,
     });
 }

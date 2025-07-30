@@ -44,7 +44,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             class="w-full"
             @submit="onSubmit"
         >
-            <UFormField name="content">
+            <UFormField name="content" :ui="{ error: 'hidden' }">
                 <UInput
                     v-model="state.content"
                     :ui="{

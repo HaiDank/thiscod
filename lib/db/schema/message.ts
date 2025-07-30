@@ -1,8 +1,7 @@
-import type { z } from "zod/v4";
-
 import { relations } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod/v4";
 
 import type { UserWithId } from "~/lib/types";
 
@@ -76,3 +75,10 @@ export type InsertMessage = z.infer<typeof InsertMessage>;
 export type SelectMessage = typeof message.$inferSelect;
 export type SelectMessageWithUser = SelectMessage & { user: UserWithId };
 export type SelectDirectMessage = typeof directMessage.$inferSelect;
+
+export const PaginationRequest = z.object({
+    limit: z.coerce.number(),
+    cursor: z.coerce.number().optional(),
+});
+
+export type PaginationRequest = z.output<typeof PaginationRequest>;
