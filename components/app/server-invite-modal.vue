@@ -30,7 +30,9 @@ async function generateCode() {
         const code = await $csrfFetch(`/api/servers/${currentServer.value.id}/generate-invite-code`, {
             method: "PATCH",
         });
-        inviteCode.value = `${origin}/invite/${code}`;
+        inviteCode.value = `${origin}/invite/${code.code}`;
+        currentServer.value.inviteCode = code.code;
+        currentServer.value.inviteCodeExpiresAt = code.expiresAt;
     }
     catch (e) {
         const error = e as FetchError;

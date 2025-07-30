@@ -13,5 +13,5 @@ export default defineAuthenticatedEventHandler(async (event) => {
     const inviteCodeExpiresAt = Date.now() + 1000 * 60 * 60 * 24; // 1 day
     const inviteCode = nanoid();
     const [code] = await patchNewInviteCode(Number(serverId), inviteCode, inviteCodeExpiresAt);
-    return code.code;
+    return code;
 });

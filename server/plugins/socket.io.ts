@@ -102,6 +102,7 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
         socket.on("join-channels", async (channel: SelectChannel) => {
             try {
                 const userId = socket.user?.id;
+                console.log(`User ${userId} trying to join channel ${channel.id}`);
                 if (!userId)
                     return;
 
@@ -112,7 +113,7 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
                     return;
                 }
 
-                const member = server.members.find(member => member.userId === userId);
+                const member = server.members.find(member => member.userId === Number(userId));
 
                 if (!member) {
                     socket.emit("error", { message: "Unauthorized server access" });
@@ -147,9 +148,9 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
                     return;
                 const { msg, channelId, serverId } = data;
                 // Broadcast message only to users in the specific channel
-                io.to(`channel:${channelId}`).emit("message", msg);
+                socket.to(`channel:${channelId}`).emit("message", msg);
 
-                io.to(`server:${serverId}`).emit("notification", msg);
+                socket.to(`server:${serverId}`).emit("notification", msg);
 
                 console.log(`Message sent in channel ${channelId} by user ${user.name}`);
             }

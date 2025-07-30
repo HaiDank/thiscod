@@ -155,7 +155,8 @@ export const useSocketStore = defineStore("socketio", () => {
     function joinChannelRoom(channel: SelectChannel) {
         try {
             socket.value?.emit("join-channels", channel);
-            console.log("joined channel room:", channel.id);
+            console.log("joining channel room:", channel.id);
+            console.log("joining channel room:", socket.value);
         }
         catch (error) {
             console.error("Failed to join room :", error);

@@ -10,7 +10,10 @@ const chatStore = useChatStore();
 // const { fetchNextMessages, refreshMessages } = chatStore;
 const { messages } = storeToRefs(chatStore);
 const messageContainer = ref(null);
+const firstMessageRef = ref(null);
 // Initialize auto-scroll
+
+useChatScroll(messageContainer, firstMessageRef, () => {}, true);
 </script>
 
 <template>
@@ -24,7 +27,7 @@ const messageContainer = ref(null);
         <div
             v-for="message in messages"
             :key="`msg-${message.createdAt}-${message.content}`"
-            class="hover:bg-highlight group px-4 py-0.5 flex gap-4 items-center"
+            :class="cn('hover:bg-highlight group px-4 py-0.5 flex gap-4 items-center', !message.isConnected && 'mt-4')"
         >
             <div class=" w-10 flex justify-end">
                 <span v-if="message.isConnected" class="group-hover:flex hidden text-dimmed text-[0.75rem]">
@@ -51,13 +54,12 @@ const messageContainer = ref(null);
                 </p>
             </div>
         </div>
-        <div class="flex w-full h-1/4 flex-col items-center justify-center text-3xl font-semibold">
-            <h4>
-                Welcome to
-            </h4>
-            <h4>
-                {{ server?.name }}
-            </h4>
-        </div>
+        <ChatSkeleton
+            ref="firstMessageRef"
+        />
+        <ChatSkeleton
+            v-for="msg in 10"
+            :key="msg"
+        />
     </div>
 </template>

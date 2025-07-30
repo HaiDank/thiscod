@@ -112,13 +112,6 @@ export const useChatStore = defineStore("useChatStore", () => {
 
         const originalMessages = messages.value;
 
-        if (socketStore.isConnected) {
-            socketStore.emit("send-message", {
-                msg,
-                channelId,
-                serverId,
-            });
-        }
         const res = await $fetch(api.value, {
             method: "POST",
             body: data,
@@ -141,6 +134,13 @@ export const useChatStore = defineStore("useChatStore", () => {
             },
             async onResponse() {
                 messages.value[0].pending = false;
+                if (socketStore.isConnected) {
+                    socketStore.emit("send-message", {
+                        msg,
+                        channelId,
+                        serverId,
+                    });
+                }
             },
         });
 

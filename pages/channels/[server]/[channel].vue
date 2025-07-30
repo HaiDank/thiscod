@@ -24,7 +24,7 @@ onBeforeUnmount(() => {
 
 <template>
     <div class="w-full h-full ">
-        <section v-if="currentChannel" class="w-full h-full bg-background flex flex-col gap-2">
+        <section v-if="currentChannel" class="w-full h-full bg-background flex flex-col gap-2 grow-0">
             <ChatHeader :channel-name="currentChannel.name" :type="currentChannel.channelType" />
 
             <ChatMessage :server="currentServer" />

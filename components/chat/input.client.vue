@@ -27,17 +27,18 @@ const state = reactive<Partial<Schema>>({
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     if ((event.data.content && event.data.content.trim().length > 0) || event.data.file) {
         const res = await sendMessage(event.data, props.channelId, props.serverId, csrf);
-
-        if (res) {
-            state.content = undefined;
-            state.file = undefined;
+        state.content = undefined;
+        state.file = undefined;
+        if (!res) {
+            state.content = event.data.content;
+            state.file = event.data.file;
         }
     }
 }
 </script>
 
 <template>
-    <div class="w-full px-1.5 py-6 flex items-center ">
+    <div class="w-full px-1.5 pb-6 pt-2 flex items-center ">
         <UForm
             :schema="schema"
             :state="state"

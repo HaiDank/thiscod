@@ -18,7 +18,7 @@ export function isInThePast(unix: number) {
 
 export function getTimeUntilX(x: number) {
     if (isInThePast(x)) {
-        return null;
+        return "EXPIRED";
     }
     const now = Date.now();
     const delta = x - now;

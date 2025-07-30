@@ -52,5 +52,5 @@ export async function removeServerById(id: number, ownerId: number) {
 }
 
 export async function patchNewInviteCode(serverId: number, inviteCode: string, inviteCodeExpiresAt: number) {
-    return await db.update(server).set({ inviteCode, inviteCodeExpiresAt }).where(eq(server.id, serverId)).returning({ code: server.inviteCode });
+    return await db.update(server).set({ inviteCode, inviteCodeExpiresAt }).where(eq(server.id, serverId)).returning({ code: server.inviteCode, expiresAt: server.inviteCodeExpiresAt });
 }
