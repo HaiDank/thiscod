@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { findChannel } from "~/lib/db/queries/channel";
 import { insertMessage } from "~/lib/db/queries/message";
+import { findServerWithChannelsAndMembers } from "~/lib/db/queries/server";
 import { InsertMessage } from "~/lib/db/schema";
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
 import sendZodError from "~/utils/send-zod-error";
@@ -12,7 +12,8 @@ export default defineAuthenticatedEventHandler(async (event) => {
         return sendZodError(event, result.error);
     }
 
-    const channelId = getRouterParam(event, "id") as string;
+    const channelId = getRouterParam(event, "channel") as string;
+    const serverId = getRouterParam(event, "server") as string;
 
     if (!z.coerce.number().safeParse(channelId).success) {
         throw createError({
@@ -21,12 +22,37 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    const channel = await findChannel(Number(channelId));
+    if (!z.coerce.number().safeParse(serverId).success) {
+        throw createError({
+            statusCode: 422,
+            statusMessage: "Invalid server id.",
+        });
+    }
+
+    const server = await findServerWithChannelsAndMembers(Number(serverId));
+
+    if (!server) {
+        throw createError({
+            statusCode: 404,
+            statusMessage: "Server not found.",
+        });
+    }
+
+    const channel = server.channels.find(channel => channel.id === Number(channelId));
 
     if (!channel) {
         throw createError({
             statusCode: 404,
             statusMessage: "Channel not found.",
+        });
+    }
+
+    const user = server.members.find(user => user.userId === Number(event.context.user.id));
+
+    if (!user) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: "No permission to server.",
         });
     }
 

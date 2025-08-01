@@ -18,7 +18,7 @@ export function isInThePast(unix: number) {
 
 export function getTimeUntilX(x: number) {
     if (isInThePast(x)) {
-        return null;
+        return "EXPIRED";
     }
     const now = Date.now();
     const delta = x - now;
@@ -41,4 +41,88 @@ export function getTimeUntilX(x: number) {
     else {
         return `${day} days`;
     }
+}
+
+export function formatSimpleMessageTime(timestamp: number): string {
+    // Handle both seconds and milliseconds
+    const ms = timestamp.toString().length <= 10 ? timestamp * 1000 : timestamp;
+    const date = new Date(ms);
+
+    return date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    });
+}
+
+export function formatMessageTime(timestamp: number): string {
+    // Handle both seconds and milliseconds
+    const ms = timestamp.toString().length <= 10 ? timestamp * 1000 : timestamp;
+    const date = new Date(ms);
+    const now = new Date();
+
+    // Today
+    if (date.toDateString() === now.toDateString()) {
+        return date.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: false,
+        });
+    }
+
+    // Yesterday
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (date.toDateString() === yesterday.toDateString()) {
+        return `Yesterday at ${date.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: false,
+        })}`;
+    }
+
+    // // Within this week
+    // const diffTime = Math.abs(now.getTime() - date.getTime());
+    // const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    // if (diffDays < 7) {
+    //     return date.toLocaleDateString("en-US", {
+    //         weekday: "long",
+    //         hour: "numeric",
+    //         minute: "2-digit",
+    //         hour12: false,
+    //     });
+    // }
+
+    // // This year
+    // if (date.getFullYear() === now.getFullYear()) {
+    //     return date.toLocaleDateString("en-US", {
+    //         month: "short",
+    //         day: "numeric",
+    //     });
+    // }
+
+    // Long time
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: false,
+    });
+}
+
+export function formatFullDate(timestamp: number): string {
+    const ms = timestamp.toString().length <= 10 ? timestamp * 1000 : timestamp;
+    const date = new Date(ms);
+
+    return date.toLocaleString("en-US", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    });
 }

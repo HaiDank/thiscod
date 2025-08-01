@@ -6,14 +6,12 @@ const socket = useSocketStore();
 const authStore = useAuthStore();
 await authStore.init();
 await serverStore.refreshServers();
+await socket.init();
 
 const {
     serversStatus,
-} = storeToRefs(serverStore);
 
-onMounted(async () => {
-    await socket.init();
-});
+} = storeToRefs(serverStore);
 
 onUnmounted(() => {
     socket.disconnect();
@@ -24,7 +22,7 @@ const isResizing = useIsResizing();
 
 <template>
     <section :class="cn('w-screen h-screen overflow-hidden', isResizing && 'cursor-ew-resize ')">
-        <div v-if="serversStatus !== 'success'" class="w-screen h-screen bg-background absolute top-0 left-0 z-100 flex items-center justify-center">
+        <div :class="cn('w-screen h-screen bg-background absolute top-0 left-0 z-100 flex items-center justify-center', serversStatus === 'pending' ? '' : 'hidden')">
             <UIcon name="mdi:jellyfish" class="animate-spin-ease-loop size-32" />
         </div>
         <Header />

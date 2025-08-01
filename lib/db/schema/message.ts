@@ -1,8 +1,9 @@
-import type { z } from "zod/v4";
-
 import { relations } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod/v4";
+
+import type { UserWithId } from "~/lib/types";
 
 import { user } from "./auth";
 import { channel } from "./channel";
@@ -17,7 +18,6 @@ export const message = sqliteTable("message", {
     file: text(),
 
     edited: int({ mode: "boolean" }).default(false),
-    seen: int({ mode: "boolean" }).default(false),
     userId: int().references(() => user.id, { onDelete: "set null" }),
 
     createdAt: int().notNull().$default(() => Date.now()),
@@ -42,7 +42,6 @@ export const directMessage = sqliteTable("directMessage", {
 
     conversationId: int().notNull().references(() => channel.id, { onDelete: "cascade" }),
     edited: int({ mode: "boolean" }).default(false),
-    seen: int({ mode: "boolean" }).default(false),
     userId: int().references(() => user.id, { onDelete: "set null" }),
 
     createdAt: int().notNull().$default(() => Date.now()),
@@ -66,7 +65,6 @@ export const InsertMessage = createInsertSchema(message, {
 }).omit({
     id: true,
     edited: true,
-    seen: true,
     userId: true,
     channelId: true,
     createdAt: true,
@@ -75,3 +73,12 @@ export const InsertMessage = createInsertSchema(message, {
 
 export type InsertMessage = z.infer<typeof InsertMessage>;
 export type SelectMessage = typeof message.$inferSelect;
+export type SelectMessageWithUser = SelectMessage & { user: UserWithId };
+export type SelectDirectMessage = typeof directMessage.$inferSelect;
+
+export const PaginationRequest = z.object({
+    limit: z.coerce.number(),
+    cursor: z.coerce.number().optional(),
+});
+
+export type PaginationRequest = z.output<typeof PaginationRequest>;

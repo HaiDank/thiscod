@@ -3,7 +3,7 @@ import type { Socket } from "socket.io-client";
 import { defineStore } from "pinia";
 import { io } from "socket.io-client";
 
-import type { SelectServer, SelectServerWithChannels } from "~/lib/db/schema";
+import type { SelectChannel, SelectServer } from "~/lib/db/schema";
 
 export const useSocketStore = defineStore("socketio", () => {
     const authStore = useAuthStore();
@@ -16,6 +16,7 @@ export const useSocketStore = defineStore("socketio", () => {
 
     async function init() {
         if (isConnected.value) {
+            console.log("socket already connected");
             return;
         }
 
@@ -33,10 +34,10 @@ export const useSocketStore = defineStore("socketio", () => {
         if (isConnected.value) {
             return;
         }
-        console.log("Initializing socket!");
 
         try {
             const token = await authStore.getOneTimeToken();
+            console.log("Initializing socket!", token);
 
             socket.value = io({
                 auth: {
@@ -131,8 +132,6 @@ export const useSocketStore = defineStore("socketio", () => {
         try {
             rooms.value.add(roomString);
             socket.value?.emit("join-server", server);
-
-            console.log(`Joined room : ${roomString}`);
         }
         catch (error) {
             console.error("Failed to join room :", error);
@@ -147,39 +146,36 @@ export const useSocketStore = defineStore("socketio", () => {
                 return;
             rooms.value.delete(roomString);
             socket.value?.emit("leave-server", server);
-
-            console.log(`Left room : ${roomString}`);
         }
         catch (error) {
             console.error("Failed to leave room :", error);
         }
     }
 
-    async function joinChannelRoom(server: SelectServerWithChannels) {
+    function joinChannelRoom(channel: SelectChannel) {
         try {
-            socket.value?.emit("join-channels", server);
+            socket.value?.emit("join-channels", channel);
+            console.log("joining channel room:", channel.id);
+            console.log("joining channel room:", socket.value);
         }
         catch (error) {
             console.error("Failed to join room :", error);
         }
         finally {
-            server.channels.forEach((channel) => {
-                rooms.value.add(`channel:${channel.id}`);
-            });
+            rooms.value.add(`channel:${channel.id}`);
         }
     }
 
-    async function leaveChannelRoom(server: SelectServerWithChannels) {
+    function leaveChannelRoom(channelId: number) {
         try {
-            socket.value?.emit("leave-channels", server);
+            socket.value?.emit("leave-channels", channelId);
+            console.log("left channel room:", channelId);
         }
         catch (error) {
             console.error("Failed to leave room :", error);
         }
         finally {
-            server.channels.forEach((channel) => {
-                rooms.value.delete(`channel:${channel.id}`);
-            });
+            rooms.value.delete(`channel:${channelId}`);
         }
     }
 
