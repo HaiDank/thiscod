@@ -111,3 +111,18 @@ export function formatMessageTime(timestamp: number): string {
         hour12: false,
     });
 }
+
+export function formatFullDate(timestamp: number): string {
+    const ms = timestamp.toString().length <= 10 ? timestamp * 1000 : timestamp;
+    const date = new Date(ms);
+
+    return date.toLocaleString("en-US", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    }).replace(",", " at");
+}

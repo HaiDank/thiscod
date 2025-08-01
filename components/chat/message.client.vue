@@ -7,13 +7,13 @@ defineProps<{
     server: SelectServerWithChannels | null;
 }>();
 const chatStore = useChatStore();
-// const { fetchNextMessages, refreshMessages } = chatStore;
-const { messages } = storeToRefs(chatStore);
+const { fetchNextMessages } = chatStore;
+const { messages, messagesStatus } = storeToRefs(chatStore);
 const messageContainer = ref(null);
 const firstMessageRef = ref(null);
 // Initialize auto-scroll
 
-useChatScroll(messageContainer, firstMessageRef, () => {}, true);
+useChatScroll(messageContainer, firstMessageRef, fetchNextMessages, messagesStatus.value !== "pending");
 </script>
 
 <template>
@@ -30,9 +30,18 @@ useChatScroll(messageContainer, firstMessageRef, () => {}, true);
             :class="cn('hover:bg-highlight group px-4 py-0.5 flex gap-4 items-center', !message.isConnected && 'mt-4')"
         >
             <div class=" w-10 flex justify-end">
-                <span v-if="message.isConnected" class="group-hover:flex hidden text-dimmed text-[0.75rem]">
-                    {{ formatSimpleMessageTime(message.createdAt) }}
-                </span>
+                <UTooltip
+                    v-if="message.isConnected"
+                    :content="{
+                        align: 'center',
+                        side: 'top',
+                    }"
+                    :text="formatFullDate(message.createdAt)"
+                >
+                    <span class="group-hover:flex hidden text-dimmed text-[0.75rem] cursor-default">
+                        {{ formatSimpleMessageTime(message.createdAt) }}
+                    </span>
+                </UTooltip>
                 <UAvatar
                     v-else
                     size="xl"
@@ -45,21 +54,35 @@ useChatScroll(messageContainer, firstMessageRef, () => {}, true);
                     <span class="font-semibold">
                         {{ message.user.name }}
                     </span>
-                    <span class="text-dimmed text-xs">
-                        {{ formatMessageTime(message.createdAt) }}
-                    </span>
+                    <UTooltip
+                        :content="{
+                            align: 'center',
+                            side: 'top',
+                        }"
+                        :text="formatFullDate(message.createdAt)"
+                    >
+                        <span class="text-dimmed text-xs cursor-default">
+                            {{ formatMessageTime(message.createdAt) }}
+                        </span>
+                    </UTooltip>
                 </div>
                 <p :class="cn('text-base', message.pending ? 'text-dimmed' : '')">
                     {{ message.content }}
                 </p>
             </div>
         </div>
-        <ChatSkeleton
+        <div
             ref="firstMessageRef"
+            class="h-10 w-full"
         />
-        <ChatSkeleton
-            v-for="msg in 10"
-            :key="msg"
-        />
+        <div
+            v-if="messagesStatus === 'pending'"
+            class="w-full"
+        >
+            <ChatSkeleton
+                v-for="msg in 10"
+                :key="msg"
+            />
+        </div>
     </div>
 </template>

@@ -34,10 +34,10 @@ export const useSocketStore = defineStore("socketio", () => {
         if (isConnected.value) {
             return;
         }
-        console.log("Initializing socket!");
 
         try {
             const token = await authStore.getOneTimeToken();
+            console.log("Initializing socket!", token);
 
             socket.value = io({
                 auth: {

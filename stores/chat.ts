@@ -132,11 +132,11 @@ export const useChatStore = defineStore("useChatStore", () => {
                     color: "error",
                 });
             },
-            async onResponse() {
+            async onResponse({ response }) {
                 messages.value[0].pending = false;
                 if (socketStore.isConnected) {
                     socketStore.emit("send-message", {
-                        msg,
+                        msg: response._data,
                         channelId,
                         serverId,
                     });

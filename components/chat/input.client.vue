@@ -11,6 +11,7 @@ const props = defineProps<{
 
 const { sendMessage } = useChatStore();
 const { csrf } = useCsrf();
+const form = useTemplateRef("form");
 
 const schema = z.object({
     content: z.string().min(1).max(250).optional(),
@@ -20,14 +21,25 @@ const schema = z.object({
 type Schema = z.output<typeof schema>;
 
 const state = reactive<Partial<Schema>>({
-    content: undefined,
+    content: "",
     file: undefined,
 });
+
+function handleKeydown(event: KeyboardEvent) {
+    if (event.key === "Enter" && !event.altKey) {
+        event.preventDefault();
+
+        form.value?.submit();
+    }
+    else if (event.key === "Enter" && event.altKey) {
+        state.content += "\n";
+    }
+}
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     if ((event.data.content && event.data.content.trim().length > 0) || event.data.file) {
         const res = await sendMessage(event.data, props.channelId, props.serverId, csrf);
-        state.content = undefined;
+        state.content = "";
         state.file = undefined;
         if (!res) {
             state.content = event.data.content;
@@ -38,20 +50,23 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 </script>
 
 <template>
-    <div class="w-full px-1.5 pb-6 pt-2 flex items-center ">
+    <div class="w-full px-1.5 pb-6 pt-2 flex items-center grow ">
         <UForm
+            ref="form"
             :schema="schema"
             :state="state"
             class="w-full"
             @submit="onSubmit"
         >
             <UFormField name="content" :ui="{ error: 'hidden' }">
-                <UInput
+                <UTextarea
                     v-model="state.content"
+                    :rows="1"
+                    autoresize
                     :ui="{
                         base: 'p-4 pl-18 text-base gap-2 ring-1 bg-card ring-border/75 focus-visible:ring-ring focus-visible:ring shadow-sm',
-                        leading: 'ps-0',
-                        trailing: 'pe-0',
+                        leading: 'ps-0 py-0.5',
+                        trailing: 'pe-0 py-0.5',
                         leadingIcon: 'size-6',
                         leadingAvatarSize: 'xs',
                         trailingIcon: 'size-6',
@@ -59,6 +74,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                     class="w-full"
                     :placeholder="placeholder"
                     variant="subtle"
+                    @keydown="handleKeydown"
                 >
                     <template #leading>
                         <UButton
@@ -80,7 +96,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                             aria-label="Emoji"
                         />
                     </template>
-                </UInput>
+                </UTextarea>
             </UFormField>
         </UForm>
     </div>
