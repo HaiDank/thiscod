@@ -11,7 +11,7 @@ import { server } from "./servers";
 
 export const channel = sqliteTable("channel", {
     id: int().primaryKey({ autoIncrement: true }),
-    channelType: text({ mode: "text", enum: ["TEXT", "VOICE"] }).default("TEXT"),
+    channelType: text({ mode: "text", enum: ["TEXT", "VOICE"] }).default("TEXT").notNull(),
     name: text().notNull(),
 
     serverId: int().notNull().references(() => server.id, { onDelete: "cascade" }),

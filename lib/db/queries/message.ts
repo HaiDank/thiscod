@@ -1,4 +1,4 @@
-import { and, desc, eq, lt } from "drizzle-orm";
+import { and, count, desc, eq, lt } from "drizzle-orm";
 
 import type { InsertMessage } from "../schema";
 
@@ -20,4 +20,8 @@ export async function findMessages(channelId: number, limit: number, cursor?: nu
         orderBy: [desc(message.createdAt)],
         limit,
     });
+}
+
+export async function countMessages(channelId: number) {
+    return await db.select({ count: count(message.channelId) }).from(message).where(eq(message.channelId, channelId));
 }

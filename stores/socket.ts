@@ -37,7 +37,6 @@ export const useSocketStore = defineStore("socketio", () => {
 
         try {
             const token = await authStore.getOneTimeToken();
-            console.log("Initializing socket!", token);
 
             socket.value = io({
                 auth: {

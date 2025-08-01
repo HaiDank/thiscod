@@ -1,5 +1,7 @@
 import type { SelectChannelWithMessages, SelectServerWithChannels } from "~/lib/db/schema";
 
+import { getChannelIcon } from "~/utils/utils";
+
 export const useServerStore = defineStore("useServerStore", () => {
     const route = useRoute();
     const config = useRuntimeConfig();
@@ -51,7 +53,7 @@ export const useServerStore = defineStore("useServerStore", () => {
                 id: channel.id,
                 name: channel.name,
                 to: { name: "channels-server-channel", params: { server: currentServer.value!.id, channel: channel.id } },
-                icon: channel.channelType === "TEXT" ? "ic:round-numbers" : "material-symbols:volume-up",
+                icon: getChannelIcon(channel.channelType),
             }));
         }
 

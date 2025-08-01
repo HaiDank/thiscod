@@ -31,13 +31,6 @@ const items = ref<DropdownMenuItem[]>([
         },
     },
     {
-        label: "Create Channels",
-        icon: "material-symbols:add-circle",
-        onSelect() {
-            handleCreateChannel();
-        },
-    },
-    {
         label: `Leave Server`,
         icon: "material-symbols:logout-rounded",
         onSelect() {
@@ -50,13 +43,50 @@ const items = ref<DropdownMenuItem[]>([
 watchEffect(() => {
     if (isServerOwner.value) {
         serverActionLabel.value = "Delete";
-        items.value[2].label = "Delete Server";
-        items.value[2].icon = "material-symbols:delete-rounded";
+        items.value = [
+            {
+                label: "Invite People",
+                icon: "material-symbols:group-add-rounded",
+                onSelect() {
+                    handleServerInvite();
+                },
+            },
+            {
+                label: "Create Channels",
+                icon: "material-symbols:add-circle",
+                onSelect() {
+                    handleCreateChannel();
+                },
+            },
+            {
+                label: `Delete Server`,
+                icon: "material-symbols:delete-rounded",
+                onSelect() {
+                    openConfirmDialog.value = true;
+                },
+                color: "error",
+            },
+        ];
     }
     else {
         serverActionLabel.value = "Leave";
-        items.value[2].label = "Leave Server";
-        items.value[2].icon = "material-symbols:logout-rounded";
+        items.value = [
+            {
+                label: "Invite People",
+                icon: "material-symbols:group-add-rounded",
+                onSelect() {
+                    handleServerInvite();
+                },
+            },
+            {
+                label: `Leave Server`,
+                icon: "material-symbols:logout-rounded",
+                onSelect() {
+                    openConfirmDialog.value = true;
+                },
+                color: "error",
+            },
+        ];
     }
 });
 

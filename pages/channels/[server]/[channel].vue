@@ -4,7 +4,7 @@ import * as z from "zod";
 const route = useRoute();
 const serverStore = useServerStore();
 const chatStore = useChatStore();
-const { currentServer, currentChannel } = storeToRefs(serverStore);
+const { currentChannel } = storeToRefs(serverStore);
 
 if (!z.coerce.number().safeParse(route.params.channel).success) {
     await navigateTo({ name: "channels-server", params: {
@@ -27,7 +27,7 @@ onBeforeUnmount(() => {
         <section v-if="currentChannel" class="w-full h-full bg-background flex flex-col gap-2 grow-0">
             <ChatHeader :channel-name="currentChannel.name" :type="currentChannel.channelType" />
 
-            <ChatMessage :server="currentServer" />
+            <ChatMessage :channel="currentChannel" />
             <ChatInput
                 :server-id="Number(route.params.server)"
                 :channel-id="Number(route.params.channel)"
