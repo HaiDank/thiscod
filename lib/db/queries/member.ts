@@ -19,3 +19,12 @@ export async function findMember(userId: number, serverId: number) {
         ),
     });
 }
+
+export async function removeMemberFromServer(userId: number, serverId: number) {
+    const [remove] = await db.delete(member).where(and(
+        eq(member.userId, userId),
+        eq(member.serverId, serverId),
+    )).returning();
+
+    return [remove];
+}

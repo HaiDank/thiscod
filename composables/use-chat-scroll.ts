@@ -1,6 +1,6 @@
 import { useIntersectionObserver } from "@vueuse/core";
 
-export function useChatScroll(messageContainerRef: Ref<HTMLElement | null>, firstMessageRef: Ref<HTMLElement | null>, fetchNext: () => void, shouldFetchNext: boolean) {
+export function useChatScroll(messageContainerRef: Ref<HTMLElement | null>, firstMessageRef: Ref<HTMLElement | null>, fetchNext: () => void) {
     const scrollToBottom = () => {
         if (!messageContainerRef.value)
             return;
@@ -14,9 +14,8 @@ export function useChatScroll(messageContainerRef: Ref<HTMLElement | null>, firs
     useIntersectionObserver(
         firstMessageRef,
         ([entry]) => {
-            if (entry?.isIntersecting && shouldFetchNext) {
+            if (entry?.isIntersecting) {
                 fetchNext();
-                console.log("fetching Next");
             }
         },
     );

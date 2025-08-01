@@ -37,7 +37,6 @@ export const useSocketStore = defineStore("socketio", () => {
 
         try {
             const token = await authStore.getOneTimeToken();
-            console.log("Initializing socket!", token);
 
             socket.value = io({
                 auth: {
@@ -139,13 +138,14 @@ export const useSocketStore = defineStore("socketio", () => {
     };
 
     // Leave room  (server-side leave)
-    async function leaveServerRoom(server: SelectServer) {
-        const roomString = `server:${server.id}`;
+    async function leaveServerRoom(serverId: number) {
+        const roomString = `server:${serverId}`;
         try {
-            if (!rooms.value.has(roomString))
-                return;
-            rooms.value.delete(roomString);
-            socket.value?.emit("leave-server", server);
+            if (rooms.value.has(roomString)) {
+                rooms.value.delete(roomString);
+            }
+            socket.value?.emit("leave-server", serverId);
+            console.log("leaving server room:", roomString);
         }
         catch (error) {
             console.error("Failed to leave room :", error);
@@ -156,7 +156,6 @@ export const useSocketStore = defineStore("socketio", () => {
         try {
             socket.value?.emit("join-channels", channel);
             console.log("joining channel room:", channel.id);
-            console.log("joining channel room:", socket.value);
         }
         catch (error) {
             console.error("Failed to join room :", error);
@@ -200,6 +199,7 @@ export const useSocketStore = defineStore("socketio", () => {
         leaveServerRoom,
         leaveChannelRoom,
         removeEventListeners,
+        rooms,
         get connected() {
             return socket?.value?.connected ?? false;
         },

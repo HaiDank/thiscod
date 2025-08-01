@@ -86,11 +86,11 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
             }
         });
         // Leave server
-        socket.on("leave-server", async (server: SelectServer) => {
+        socket.on("leave-server", async (serverId: number) => {
             try {
-                socket.leave(`server:${server.id}`);
+                socket.leave(`server:${serverId}`);
 
-                console.log(`User ${socket.user?.id} left server ${server.id}`);
+                console.log(`User ${socket.user?.id} left server ${serverId}`);
             }
             catch (error) {
                 console.error("SOCKET ERROR LEAVE SERVER EVENT: ", error);

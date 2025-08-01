@@ -13,6 +13,7 @@ export const useChatStore = defineStore("useChatStore", () => {
         limit: 25,
         cursor: undefined,
     });
+    const msgCount = ref(0);
     const cacheKey = computed(() => `messages-${route.params.server}-${route.params.channel}-cursor-${pagination.value.cursor ?? 0}`);
     const {
         data,
@@ -22,10 +23,13 @@ export const useChatStore = defineStore("useChatStore", () => {
     } = useFetch(api, {
         key: cacheKey,
         lazy: true,
+        immediate: false,
+        watch: false,
         query: pagination,
-        transform(data: SelectMessageWithUser[]) {
-            if (data.length > 0) {
-                return processMessagesForClient(data);
+        transform(data: { messages: SelectMessageWithUser[]; count: number }) {
+            msgCount.value = data.count;
+            if (data.messages.length > 0) {
+                return processMessagesForClient(data.messages);
             }
             else {
                 return [];
@@ -36,6 +40,7 @@ export const useChatStore = defineStore("useChatStore", () => {
     const processedMessagesKey = ref<Set<number>>(new Set());
 
     const messages = ref<ClientMessageType[]>([]);
+    const hasNext = computed(() => messages.value.length < msgCount.value);
 
     const currentChatId = ref<number | undefined>(serverStore.currentChannel?.id);
 
@@ -48,7 +53,7 @@ export const useChatStore = defineStore("useChatStore", () => {
 
     function ClientMessageBuilder(curr: SelectMessageWithUser, prevCreatedAt?: number | null, prevUserId?: number | null, pending?: boolean): ClientMessageType {
         let isConnected = false;
-        if ((Number(prevUserId) === Number(curr.userId)) && (prevCreatedAt && curr.createdAt - prevCreatedAt <= 7 * 60 * 1000)) { // considered connected when sent within 5 minutes of each other and of the same sender
+        if ((prevUserId && Number(prevUserId) === Number(curr.userId)) && (prevCreatedAt && curr.createdAt - prevCreatedAt <= 7 * 60 * 1000)) { // considered connected when sent within 5 minutes of each other and of the same sender
             isConnected = true;
         }
         const clientMsg: ClientMessageType = {
@@ -85,13 +90,14 @@ export const useChatStore = defineStore("useChatStore", () => {
         return messages.value;
     }
 
-    function fetchNextMessages() {
+    async function fetchNextMessages() {
         if (messages.value && messages.value.length > 0) {
             pagination.value.cursor = messages.value[messages.value.length - 1].createdAt;
         }
         else {
             pagination.value.cursor = undefined;
         }
+        await refreshMessages();
     }
 
     const sendMessage = async (data: InsertMessage, channelId: number, serverId: number, csrf: string) => {
@@ -121,7 +127,7 @@ export const useChatStore = defineStore("useChatStore", () => {
             onRequest() {
                 // process the message and add it to the begining of the array
                 console.log(messages.value);
-                const clientMsg = ClientMessageBuilder(msg, messages.value[0].createdAt, messages.value[0].user.id, true);
+                const clientMsg = ClientMessageBuilder(msg, messages.value[0]?.createdAt, messages.value[0]?.user.id, true);
                 messages.value.unshift(clientMsg);
             },
             onResponseError(error) {
@@ -149,7 +155,6 @@ export const useChatStore = defineStore("useChatStore", () => {
 
     async function init() {
         await socketStore.init();
-        console.log("initialize chat store");
         if (socketStore.isConnected && serverStore.currentChannel) {
             resetState();
             socketStore.joinChannelRoom(serverStore.currentChannel);
@@ -184,5 +189,6 @@ export const useChatStore = defineStore("useChatStore", () => {
         fetchNextMessages,
         cacheKey,
         error,
+        hasNext,
     };
 });

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { ChannelType } from "~/lib/types";
+
 export function isNumber(param: string) {
     if (!z.coerce.number().safeParse(param).success) {
         throw createError({
@@ -125,4 +127,8 @@ export function formatFullDate(timestamp: number): string {
         minute: "2-digit",
         hour12: false,
     });
+}
+
+export function getChannelIcon(channelType: ChannelType) {
+    return channelType === "TEXT" ? "ic:round-numbers" : "material-symbols:volume-up";
 }

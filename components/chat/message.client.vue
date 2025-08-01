@@ -1,19 +1,27 @@
 <script setup lang="ts">
-import type { SelectServerWithChannels } from "~/lib/db/schema";
+import type { SelectChannelWithMessages } from "~/lib/db/schema";
 
 import { cn } from "~/lib/utils";
+import { getChannelIcon } from "~/utils/utils";
 
 defineProps<{
-    server: SelectServerWithChannels | null;
+    channel: SelectChannelWithMessages;
 }>();
 const chatStore = useChatStore();
 const { fetchNextMessages } = chatStore;
-const { messages, messagesStatus } = storeToRefs(chatStore);
+const { messages, messagesStatus, hasNext } = storeToRefs(chatStore);
 const messageContainer = ref(null);
 const firstMessageRef = ref(null);
+const shouldFetchNext = computed(() => messagesStatus.value !== "pending" && hasNext.value);
 // Initialize auto-scroll
 
-useChatScroll(messageContainer, firstMessageRef, fetchNextMessages, messagesStatus.value !== "pending");
+function handleFetchNext() {
+    if (shouldFetchNext.value) {
+        fetchNextMessages();
+    }
+}
+
+useChatScroll(messageContainer, firstMessageRef, handleFetchNext);
 </script>
 
 <template>
@@ -73,7 +81,7 @@ useChatScroll(messageContainer, firstMessageRef, fetchNextMessages, messagesStat
         </div>
         <div
             ref="firstMessageRef"
-            class="h-10 w-full"
+            class="w-full"
         />
         <div
             v-if="messagesStatus === 'pending'"
@@ -83,6 +91,21 @@ useChatScroll(messageContainer, firstMessageRef, fetchNextMessages, messagesStat
                 v-for="msg in 10"
                 :key="msg"
             />
+        </div>
+        <div v-else class="w-full px-4">
+            <UAvatar
+                :ui="{
+                    icon: 'text-default size-12',
+                }"
+                class="size-16 text-default"
+                :icon="getChannelIcon(channel.channelType)"
+            />
+            <h1 class="text-4xl font-bold flex items-end">
+                Welcome to <span class="flex items-end"><UIcon :name="getChannelIcon(channel.channelType)" /></span>{{ channel.name }}!
+            </h1>
+            <p class="flex items-end">
+                This is the start of <span class="flex items-end"><UIcon :name="getChannelIcon(channel.channelType)" /></span>{{ channel.name }} channel
+            </p>
         </div>
     </div>
 </template>
