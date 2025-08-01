@@ -22,6 +22,7 @@ export const useChatStore = defineStore("useChatStore", () => {
     } = useFetch(api, {
         key: cacheKey,
         lazy: true,
+        immediate: false,
         query: pagination,
         transform(data: SelectMessageWithUser[]) {
             if (data.length > 0) {
