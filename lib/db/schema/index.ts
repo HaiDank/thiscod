@@ -3,4 +3,5 @@ export * from "./channel";
 export * from "./conversation";
 export * from "./member";
 export * from "./message";
+export * from "./relationship";
 export * from "./servers";
