@@ -32,9 +32,23 @@ export async function updateFriendship(requestId: number, status: FriendshipStat
     return await db.update(friendship).set({ status }).where(eq(friendship.id, requestId)).returning();
 }
 
+export async function deleteFriendship(requestId: number) {
+    return await db.delete(friendship).where(eq(friendship.id, requestId)).returning();
+}
+
 export async function findFriendships(userId: number, status: "PENDING" | "ACCEPTED" | "REJECTED" | "BLOCKED") {
     return await db.query.friendship.findMany({
         where: and(or(eq(friendship.userOneId, userId), eq(friendship.userTwoId, userId)), eq(friendship.status, status)),
+        with: {
+            userOne: true,
+            userTwo: true,
+        },
+    });
+}
+
+export async function findFriendship(requestId: number, userId: number, status: "PENDING" | "ACCEPTED" | "REJECTED" | "BLOCKED") {
+    return await db.query.friendship.findFirst({
+        where: and(or(eq(friendship.userOneId, userId), eq(friendship.userTwoId, userId)), eq(friendship.status, status), eq(friendship.id, requestId)),
         with: {
             userOne: true,
             userTwo: true,

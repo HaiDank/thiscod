@@ -26,12 +26,12 @@ const state = reactive<Partial<Schema>>({
 });
 
 function handleKeydown(event: KeyboardEvent) {
-    if (event.key === "Enter" && !event.altKey) {
+    if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
 
         form.value?.submit();
     }
-    else if (event.key === "Enter" && event.altKey) {
+    else if (event.key === "Enter" && event.shiftKey) {
         state.content += "\n";
     }
 }

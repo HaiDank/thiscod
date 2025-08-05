@@ -1,67 +1,39 @@
 <script setup lang="ts">
-import type { DropdownMenuItem } from "@nuxt/ui";
-import type { RouteLocationRaw } from "vue-router";
-
 defineProps<{
-    to: RouteLocationRaw;
+    onClick: () => void;
     avatar: string | null;
     name: string;
     email: string;
-    status: "Online" | "Offline";
-
+    subString: string;
 }>();
-
-const items = ref<DropdownMenuItem[]>([
-    {
-        label: "Start Voice Call",
-        color: "neutral",
-        onSelect() {
-        },
-    },
-    {
-        label: "Remove Friend",
-        color: "error",
-        onSelect() {
-        },
-    },
-]);
 </script>
 
 <template>
     <ULink
         as="button"
-        :to="to"
         raw
-        class="w-full flex items-center group rounded-md py-1 px-2 gap-2 font-semibold"
+        class="w-full rounded-md px-2 group"
         active-class="text-default active bg-selected/75"
-        inactive-class="text-dimmed hover:text-default hover:bg-highlight"
+        inactive-class=" hover:bg-highlight"
+        @click="onClick"
     >
-        <UAvatar :avatar="avatar" :alt="name" />
-        <div class="flex gap-2 ">
-            <span class="grow font-semibold">
-                {{ name }}
-            </span>
-            <span class="grow font-semibold">
-                {{ email }}
-            </span>
+        <div class="border-t border-border items-center flex w-full gap-2 py-2 ">
+            <UAvatar :avatar="avatar" :alt="name" />
+            <div class="flex flex-col justify-baseline items-start grow w-full">
+                <div class="flex gap-2 items-end">
+                    <span class="grow font-semibold ">
+                        {{ name }}
+                    </span>
+                    <span class="grow font-semibold text-sm hidden group-hover:flex ">
+                        {{ email }}
+                    </span>
+                </div>
+                <span class="grow font-semibold text-dimmed text-sm">
+                    {{ subString }}
+                </span>
+            </div>
+
+            <slot name="trailing" class="flex items-center gap-2" />
         </div>
-        <UDropdownMenu
-            :items="items"
-            :content="{
-                align: 'center',
-                side: 'bottom',
-                sideOffset: 8,
-            }"
-            :ui="{
-                content: 'w-48',
-            }"
-        >
-            <UButton
-                icon="material-symbols:more-vert"
-                variant="ghost"
-                color="neutral"
-                class="bg-transparent hover:bg-transparent cursor-pointer p-0 size-5 group-[.active]:opacity-100 group-hover:opacity-100 opacity-0 transition-all"
-            />
-        </UDropdownMenu>
     </ULink>
 </template>

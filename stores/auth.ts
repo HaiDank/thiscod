@@ -23,7 +23,14 @@ export const useAuthStore = defineStore("auth", () => {
         return res.data?.token;
     }
 
-    const user = computed(() => session.value?.data?.user as unknown as User);
+    const user = computed(() => {
+        if (session.value && session.value.data && session.value.data.user) {
+            return { ...session.value?.data?.user, id: Number(session.value?.data?.user.id) } as unknown as User;
+        }
+        else {
+            return undefined;
+        }
+    });
     const loading = computed(() => session.value?.isPending);
 
     async function signInWithGithub() {

@@ -1,19 +1,41 @@
 <script setup lang="ts">
+import type { DropdownMenuItem } from "@nuxt/ui";
+
 import { cn } from "~/lib/utils";
 import { useFriendStore } from "~/stores/friend";
 
 const sidebarStore = useSidebarStore();
 const friendStore = useFriendStore();
-const { friends } = storeToRefs(friendStore);
+const { friends, receivedRequestsUsers } = storeToRefs(friendStore);
 
 const friendStatusFilter = ref<"Online" | "All" | "Pending" | "Add">("Online");
 
 sidebarStore.setHeaderToFriend();
 
-function handleChangeFetchFilter(value: "Online" | "All" | "Pending") {
+function handleFetchPendingRequest() {
+    friendStatusFilter.value = "Pending";
+    friendStore.refreshFriendRequests();
+}
+
+function handleChangeFetchFilter(value: "Online" | "All") {
     friendStatusFilter.value = value;
     friendStore.fetchFriends(value);
 }
+
+const items = ref<DropdownMenuItem[]>([
+    {
+        label: "Start Voice Call",
+        color: "neutral",
+        onSelect() {
+        },
+    },
+    {
+        label: "Remove Friend",
+        color: "error",
+        onSelect() {
+        },
+    },
+]);
 </script>
 
 <template>
@@ -62,9 +84,16 @@ function handleChangeFetchFilter(value: "Online" | "All" | "Pending") {
                         active-color="neutral"
                         active-variant="soft"
                         color="neutral"
-                        @click="handleChangeFetchFilter('Pending')"
+                        @click="handleFetchPendingRequest"
                     >
                         Pending
+                        <template v-if="receivedRequestsUsers && receivedRequestsUsers.length > 0" #trailing>
+                            <UChip
+                                standalone
+                                inset
+                                :text="receivedRequestsUsers.length"
+                            />
+                        </template>
                     </UButton>
                 </li>
                 <li>
@@ -85,7 +114,7 @@ function handleChangeFetchFilter(value: "Online" | "All" | "Pending") {
         </div>
 
         <!-- page -->
-        <div v-if="friendStatusFilter !== 'Add'" class="w-full h-full flex flex-col px-4 gap-2">
+        <div v-if="friendStatusFilter === 'Online' || friendStatusFilter === 'All'" class="w-full h-full flex flex-col px-4 gap-2">
             <!-- Searchbar -->
             <UInput
                 trailing-icon="material-symbols:search-rounded"
@@ -105,6 +134,7 @@ function handleChangeFetchFilter(value: "Online" | "All" | "Pending") {
             <FriendListItem
                 v-for="friend in friends"
                 :key="`${friend.id}`"
+                :on-click="() => {}"
                 :to="{ name: `channel-me-id`,
                        params: {
                            id: friend.id,
@@ -112,8 +142,29 @@ function handleChangeFetchFilter(value: "Online" | "All" | "Pending") {
                 :avatar="friend.image"
                 :email="friend.email"
                 :name="friend.name"
-                :status="friend.status === 'Online' ? 'Online' : 'Offline'"
-            />
+                :sub-string="friend.status === 'Online' ? 'Online' : 'Offline'"
+            >
+                <template #trailing>
+                    <UDropdownMenu
+                        :items="items"
+                        :content="{
+                            align: 'center',
+                            side: 'bottom',
+                            sideOffset: 8,
+                        }"
+                        :ui="{
+                            content: 'w-48',
+                        }"
+                    >
+                        <UButton
+                            icon="material-symbols:more-vert"
+                            variant="ghost"
+                            color="neutral"
+                            class="bg-transparent hover:bg-transparent cursor-pointer p-0 size-5 group-[.active]:opacity-100 group-hover:opacity-100 opacity-0 transition-all"
+                        />
+                    </UDropdownMenu>
+                </template>
+            </FriendListItem>
         </div>
 
         <!-- pending request -->

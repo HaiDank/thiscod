@@ -4,6 +4,8 @@ export type ClientUser = Omit<User, "status"> & {
     status: "Online" | "Offline";
 };
 
+type FriendRequestData = ClientUser & { requestId: number };
+
 export const useFriendStore = defineStore("useFriendStore", () => {
     const authStore = useAuthStore();
     const friendFetchFilter = ref<"Online" | "All">("Online");
@@ -25,31 +27,34 @@ export const useFriendStore = defineStore("useFriendStore", () => {
     });
 
     const friends = ref<ClientUser[]>([]);
-    const friendRequests = ref<ClientUser[]>([]);
+    const receivedRequestsUsers = ref<FriendRequestData[]>([]);
+    const sentRequestsUsers = ref<FriendRequestData[]>([]);
 
     watchEffect(() => {
         if (data.value && !!authStore.user) {
             if (friendFetchFilter.value === "Online") {
+                const array: ClientUser[] = [];
                 data.value.forEach((friend) => {
-                    if (friend.userOneId === authStore.user.id) {
+                    if (friend.userOneId === authStore.user!.id) {
                         if (friend.userTwo.status === "Online") {
-                            friends.value.push({ ...friend.userTwo, status: "Online" });
+                            array.push({ ...friend.userTwo, status: "Online" });
                         }
                     }
                     else {
                         if (friend.userOne.status === "Online") {
-                            friends.value.push({ ...friend.userOne, status: "Online" });
+                            array.push({ ...friend.userOne, status: "Online" });
                         }
                     }
                 });
+                friends.value = array;
             }
             else {
-                data.value.forEach((friend) => {
-                    if (friend.userOneId === authStore.user.id) {
-                        friends.value.push({ ...friend.userTwo, status: friend.userTwo.status === "Online" ? "Online" : "Offline" });
+                friends.value = data.value.map((friend) => {
+                    if (friend.userOneId === authStore.user!.id) {
+                        return { ...friend.userTwo, status: friend.userTwo.status === "Online" ? "Online" : "Offline" };
                     }
                     else {
-                        friends.value.push({ ...friend.userOne, status: friend.userOne.status === "Online" ? "Online" : "Offline" });
+                        return { ...friend.userOne, status: friend.userOne.status === "Online" ? "Online" : "Offline" };
                     }
                 });
             }
@@ -58,14 +63,30 @@ export const useFriendStore = defineStore("useFriendStore", () => {
 
     watchEffect(() => {
         if (requestsData.value && !!authStore.user) {
+            const received: FriendRequestData[] = [];
+            const sent: FriendRequestData[] = [];
+
             requestsData.value.forEach((request) => {
-                if (request.userOneId === authStore.user.id) {
-                    friendRequests.value.push({ ...request.userTwo, status: request.userTwo.status === "Online" ? "Online" : "Offline" });
+                if (request.userOneId === authStore.user!.id) {
+                    if (request.actionUserId === authStore.user!.id) {
+                        sent.push({ ...request.userTwo, status: request.userTwo.status === "Online" ? "Online" : "Offline", requestId: request.id });
+                    }
+                    else {
+                        received.push({ ...request.userTwo, status: request.userTwo.status === "Online" ? "Online" : "Offline", requestId: request.id });
+                    }
                 }
                 else {
-                    friendRequests.value.push({ ...request.userOne, status: request.userOne.status === "Online" ? "Online" : "Offline" });
+                    if (request.actionUserId === authStore.user!.id) {
+                        sent.push({ ...request.userOne, status: request.userOne.status === "Online" ? "Online" : "Offline", requestId: request.id });
+                    }
+                    else {
+                        received.push({ ...request.userOne, status: request.userOne.status === "Online" ? "Online" : "Offline", requestId: request.id });
+                    }
                 }
             });
+
+            sentRequestsUsers.value = sent;
+            receivedRequestsUsers.value = received;
         }
     });
 
@@ -79,8 +100,10 @@ export const useFriendStore = defineStore("useFriendStore", () => {
         friendsStatus,
         refreshFriends,
         fetchFriends,
-        friendRequests,
+        sentRequestsUsers,
+        receivedRequestsUsers,
         friendRequestsStatus,
         refreshFriendRequests,
+        requestsData,
     };
 });
