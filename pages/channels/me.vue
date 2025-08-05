@@ -91,6 +91,10 @@ const items = ref<DropdownMenuItem[]>([
                             <UChip
                                 standalone
                                 inset
+                                :ui="{
+                                    base: 'text-default text-[10px] size-4 font-bold dark:bg-red-600  ring-0 text-center ',
+                                }"
+                                color="error"
                                 :text="receivedRequestsUsers.length"
                             />
                         </template>
@@ -135,10 +139,6 @@ const items = ref<DropdownMenuItem[]>([
                 v-for="friend in friends"
                 :key="`${friend.id}`"
                 :on-click="() => {}"
-                :to="{ name: `channel-me-id`,
-                       params: {
-                           id: friend.id,
-                       } }"
                 :avatar="friend.image"
                 :email="friend.email"
                 :name="friend.name"
@@ -156,12 +156,22 @@ const items = ref<DropdownMenuItem[]>([
                             content: 'w-48',
                         }"
                     >
-                        <UButton
-                            icon="material-symbols:more-vert"
-                            variant="ghost"
-                            color="neutral"
-                            class="bg-transparent hover:bg-transparent cursor-pointer p-0 size-5 group-[.active]:opacity-100 group-hover:opacity-100 opacity-0 transition-all"
-                        />
+                        <UTooltip
+                            text="More"
+                            :delay-duration="0"
+                            :content="{
+                                align: 'center',
+                                sideOffset: 4,
+                                side: 'top',
+                            }"
+                        >
+                            <UButton
+                                icon="material-symbols:more-vert"
+                                variant="ghost"
+                                class="rounded-full group-hover:bg-sidebar hover:bg-sidebar"
+                                color="neutral"
+                            />
+                        </UTooltip>
                     </UDropdownMenu>
                 </template>
             </FriendListItem>

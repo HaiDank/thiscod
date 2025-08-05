@@ -7,6 +7,8 @@ import type { StatusError } from "~/lib/types";
 
 const { $csrfFetch } = useNuxtApp();
 
+const loading = ref(false);
+
 const schema = z.object({
     email: z.string().email("Please enter a valid email.").optional(),
 });
@@ -21,11 +23,11 @@ const toast = useToast();
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     if (event.data.email && event.data.email.trim().length > 0) {
         try {
-            const res = await $csrfFetch(`/api/friends/${event.data.email}`, {
+            loading.value = true;
+            await $csrfFetch(`/api/friends/${event.data.email}`, {
                 method: "POST",
             });
 
-            console.log(res);
             toast.add({ title: "Success", description: "The form has been submitted.", color: "success" });
         }
         catch (e) {
@@ -33,6 +35,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             toast.add({ title: "Friend request failed", description: error.statusMessage, color: "error" });
         }
     }
+    loading.value = false;
 }
 </script>
 
@@ -58,6 +61,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                         type="submit"
                         variant="solid"
                         class="text-default"
+                        :loading="loading"
                     >
                         Send Friend Request
                     </UButton>

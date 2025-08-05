@@ -35,9 +35,9 @@ useChatScroll(messageContainer, firstMessageRef, handleFetchNext);
         <div
             v-for="message in messages"
             :key="`msg-${message.createdAt}-${message.content}`"
-            :class="cn('hover:bg-highlight group px-4 py-0.5 flex gap-4 items-center', !message.isConnected && 'mt-4')"
+            :class="cn('hover:bg-highlight group px-4 py-0.5 flex gap-4 items-start', !message.isConnected && 'mt-4')"
         >
-            <div class=" w-10 flex justify-end">
+            <div class=" w-10 flex justify-end pt-1">
                 <UTooltip
                     v-if="message.isConnected"
                     :content="{
@@ -74,9 +74,7 @@ useChatScroll(messageContainer, firstMessageRef, handleFetchNext);
                         </span>
                     </UTooltip>
                 </div>
-                <p :class="cn('text-base', message.pending ? 'text-dimmed' : '')">
-                    {{ message.content }}
-                </p>
+                <pre :class="cn('text-base ', message.pending ? 'text-dimmed' : '')">{{ message.content }}</pre>
             </div>
         </div>
         <div
@@ -100,11 +98,11 @@ useChatScroll(messageContainer, firstMessageRef, handleFetchNext);
                 class="size-16 text-default"
                 :icon="getChannelIcon(channel.channelType)"
             />
-            <h1 class="text-4xl font-bold flex items-end">
-                Welcome to <span class="flex items-end"><UIcon :name="getChannelIcon(channel.channelType)" /></span>{{ channel.name }}!
+            <h1 class="text-4xl font-bold flex items-end gap-1">
+                Welcome to <span class="flex items-end"><UIcon :name="getChannelIcon(channel.channelType)" /> {{ channel.name }}!</span>
             </h1>
-            <p class="flex items-end">
-                This is the start of <span class="flex items-end"><UIcon :name="getChannelIcon(channel.channelType)" /></span>{{ channel.name }} channel
+            <p class="flex items-end gap-1">
+                This is the start of <span class="flex items-end"> <UIcon :name="getChannelIcon(channel.channelType)" /> {{ channel.name }} channel</span>
             </p>
         </div>
     </div>

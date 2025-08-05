@@ -31,9 +31,6 @@ function handleKeydown(event: KeyboardEvent) {
 
         form.value?.submit();
     }
-    else if (event.key === "Enter" && event.shiftKey) {
-        state.content += "\n";
-    }
 }
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
