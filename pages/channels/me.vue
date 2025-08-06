@@ -145,6 +145,22 @@ const items = ref<DropdownMenuItem[]>([
                 :sub-string="friend.status === 'Online' ? 'Online' : 'Offline'"
             >
                 <template #trailing>
+                    <UTooltip
+                        text="Message"
+                        :delay-duration="0"
+                        :content="{
+                            align: 'center',
+                            sideOffset: 4,
+                            side: 'top',
+                        }"
+                    >
+                        <UButton
+                            icon="mdi:chat"
+                            variant="ghost"
+                            class="rounded-full group-hover:bg-sidebar hover:bg-sidebar cursor-pointer"
+                            color="neutral"
+                        />
+                    </UTooltip>
                     <UDropdownMenu
                         :items="items"
                         :content="{
@@ -168,7 +184,7 @@ const items = ref<DropdownMenuItem[]>([
                             <UButton
                                 icon="material-symbols:more-vert"
                                 variant="ghost"
-                                class="rounded-full group-hover:bg-sidebar hover:bg-sidebar"
+                                class="rounded-full group-hover:bg-sidebar hover:bg-sidebar cursor-pointer"
                                 color="neutral"
                             />
                         </UTooltip>

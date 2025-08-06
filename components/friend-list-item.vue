@@ -12,7 +12,7 @@ defineProps<{
     <ULink
         as="button"
         raw
-        class="w-full rounded-md px-2 group"
+        class="w-full rounded-md px-2 group cursor-pointer"
         active-class="text-default active bg-selected/75"
         inactive-class=" hover:bg-highlight"
         @click="onClick"
