@@ -12,6 +12,7 @@ import type { UserWithId } from "~/lib/types";
 import { auth } from "~/lib/auth";
 import { findMember } from "~/lib/db/queries/member";
 import { findServerWithChannelsAndMembers } from "~/lib/db/queries/server";
+import { updateUserLastSeen, updateUserStatus } from "~/lib/db/queries/user";
 import env from "~/lib/env";
 
 export default defineNitroPlugin((nitroApp: NitroApp) => {
@@ -55,8 +56,10 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
 
     io.on("connection", (socket) => {
         console.log("User connected:", socket.id, "User:", socket.user?.name);
-
         // Join user to their server channels
+        if (socket.user) {
+            updateUserStatus(socket.user.id, "Online");
+        }
         socket.on("join-server", async (server: SelectServer) => {
             try {
                 const userId = socket.user?.id;
@@ -153,6 +156,7 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
                 socket.to(`server:${serverId}`).emit("notification", msg);
 
                 console.log(`Message sent in channel ${channelId} by user ${user.name}`);
+                updateUserLastSeen(user.id);
             }
             catch (error) {
                 console.error(error);
@@ -192,6 +196,9 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
         // Handle disconnect
         socket.on("disconnect", () => {
             console.log("User disconnected:", socket.id);
+            if (socket.user) {
+                updateUserStatus(socket.user.id, "Offline");
+            }
         });
     });
 

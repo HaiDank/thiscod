@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "58b0d94c-4f67-4509-95c5-924a50b72126",
+  "id": "169c68da-67fc-46c1-890f-111a117eb1f4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -245,6 +245,21 @@
           "notNull": false,
           "autoincrement": false
         },
+        "last_seen_at": {
+          "name": "last_seen_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'Offline'"
+        },
         "created_at": {
           "name": "created_at",
           "type": "integer",
@@ -340,7 +355,7 @@
           "name": "channel_type",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": "'TEXT'"
         },
@@ -632,8 +647,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "file_url": {
-          "name": "file_url",
+        "file": {
+          "name": "file",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -648,14 +663,6 @@
         },
         "edited": {
           "name": "edited",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
-        },
-        "seen": {
-          "name": "seen",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -741,8 +748,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "file_url": {
-          "name": "file_url",
+        "file": {
+          "name": "file",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -750,14 +757,6 @@
         },
         "edited": {
           "name": "edited",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
-        },
-        "seen": {
-          "name": "seen",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -818,6 +817,120 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
+    },
+    "friendship": {
+      "name": "friendship",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "user_one_id": {
+          "name": "user_one_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_two_id": {
+          "name": "user_two_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'PENDING'"
+        },
+        "action_user_id": {
+          "name": "action_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "friendship_userOneId_userTwoId_unique": {
+          "name": "friendship_userOneId_userTwoId_unique",
+          "columns": [
+            "user_one_id",
+            "user_two_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "friendship_user_one_id_user_id_fk": {
+          "name": "friendship_user_one_id_user_id_fk",
+          "tableFrom": "friendship",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_one_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "friendship_user_two_id_user_id_fk": {
+          "name": "friendship_user_two_id_user_id_fk",
+          "tableFrom": "friendship",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_two_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "friendship_action_user_id_user_id_fk": {
+          "name": "friendship_action_user_id_user_id_fk",
+          "tableFrom": "friendship",
+          "tableTo": "user",
+          "columnsFrom": [
+            "action_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "friendship_user_id_order_check": {
+          "name": "friendship_user_id_order_check",
+          "value": "\"friendship\".\"user_one_id\" < \"friendship\".\"user_two_id\""
+        }
+      }
     },
     "server": {
       "name": "server",
@@ -880,6 +993,13 @@
         }
       },
       "indexes": {
+        "server_inviteCode_unique": {
+          "name": "server_inviteCode_unique",
+          "columns": [
+            "invite_code"
+          ],
+          "isUnique": true
+        },
         "server_owner_idx": {
           "name": "server_owner_idx",
           "columns": [

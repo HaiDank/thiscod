@@ -2,6 +2,8 @@ import { oneTimeTokenClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/vue";
 import { defineStore } from "pinia";
 
+import type { User } from "~/lib/db/schema";
+
 import { DEFAULT_PAGE_AFTER_AUTH } from "~/lib/constants";
 
 const authClient = createAuthClient({ plugins: [
@@ -21,7 +23,14 @@ export const useAuthStore = defineStore("auth", () => {
         return res.data?.token;
     }
 
-    const user = computed(() => session.value?.data?.user);
+    const user = computed(() => {
+        if (session.value && session.value.data && session.value.data.user) {
+            return { ...session.value?.data?.user, id: Number(session.value?.data?.user.id) } as unknown as User;
+        }
+        else {
+            return undefined;
+        }
+    });
     const loading = computed(() => session.value?.isPending);
 
     async function signInWithGithub() {

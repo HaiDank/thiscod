@@ -1,5 +1,6 @@
-import type { User } from "better-auth";
 import type { H3Event, H3EventContext } from "h3";
+
+import type { User } from "./db/schema";
 
 export type ChannelType = "TEXT" | "VOICE";
 export type MemberRole = "ADMIN" | "GUEST";
@@ -14,6 +15,11 @@ export type ClientMessageType = {
     isConnected: boolean | null;
     pending?: boolean;
     user: UserWithId;
+};
+
+export type StatusError = {
+    statusCode: number;
+    statusMessage: string;
 };
 
 export type UserWithId = Omit<User, "id"> & {

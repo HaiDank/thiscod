@@ -34,6 +34,8 @@ CREATE TABLE `user` (
 	`email` text NOT NULL,
 	`email_verified` integer NOT NULL,
 	`image` text,
+	`last_seen_at` integer NOT NULL,
+	`status` text DEFAULT 'Offline' NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL
 );
@@ -50,7 +52,7 @@ CREATE TABLE `verification` (
 --> statement-breakpoint
 CREATE TABLE `channel` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`channel_type` text DEFAULT 'TEXT',
+	`channel_type` text DEFAULT 'TEXT' NOT NULL,
 	`name` text NOT NULL,
 	`server_id` integer NOT NULL,
 	`created_at` integer NOT NULL,
@@ -93,10 +95,9 @@ CREATE UNIQUE INDEX `member_serverId_userId_unique` ON `member` (`server_id`,`us
 CREATE TABLE `directMessage` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`content` text,
-	`file_url` text,
+	`file` text,
 	`conversation_id` integer NOT NULL,
 	`edited` integer DEFAULT false,
-	`seen` integer DEFAULT false,
 	`user_id` integer,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL,
@@ -108,9 +109,8 @@ CREATE TABLE `message` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`channel_id` integer NOT NULL,
 	`content` text,
-	`file_url` text,
+	`file` text,
 	`edited` integer DEFAULT false,
-	`seen` integer DEFAULT false,
 	`user_id` integer,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL,
@@ -118,6 +118,21 @@ CREATE TABLE `message` (
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
+CREATE TABLE `friendship` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`user_one_id` integer NOT NULL,
+	`user_two_id` integer NOT NULL,
+	`status` text DEFAULT 'PENDING' NOT NULL,
+	`action_user_id` integer NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	FOREIGN KEY (`user_one_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`user_two_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`action_user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	CONSTRAINT "friendship_user_id_order_check" CHECK("friendship"."user_one_id" < "friendship"."user_two_id")
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `friendship_userOneId_userTwoId_unique` ON `friendship` (`user_one_id`,`user_two_id`);--> statement-breakpoint
 CREATE TABLE `server` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -130,4 +145,5 @@ CREATE TABLE `server` (
 	FOREIGN KEY (`owner_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `server_inviteCode_unique` ON `server` (`invite_code`);--> statement-breakpoint
 CREATE INDEX `server_owner_idx` ON `server` (`owner_id`);

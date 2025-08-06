@@ -18,7 +18,7 @@ const {
 const {
     currentServer,
 } = storeToRefs(serverStore);
-const isServerOwner = computed(() => user.value?.id === `${currentServer.value?.ownerId}`);
+const isServerOwner = computed(() => `${user.value?.id}` === `${currentServer.value?.ownerId}`);
 
 const serverActionLabel = ref("Leave");
 

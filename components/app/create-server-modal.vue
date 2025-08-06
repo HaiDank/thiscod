@@ -4,6 +4,8 @@ import type { FetchError } from "ofetch";
 
 import * as z from "zod";
 
+import getFetchErrorMessage from "~/utils/get-fetch-error-message";
+
 const authStore = useAuthStore();
 const {
     user,
@@ -107,7 +109,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     }
     catch (e) {
         const error = e as FetchError;
-        toast.add({ title: error.statusMessage || "An unknown error occurred", color: "error" });
+        toast.add({ title: getFetchErrorMessage(error) || "An unknown error occurred", color: "error" });
     }
     loading.value = false;
     close();

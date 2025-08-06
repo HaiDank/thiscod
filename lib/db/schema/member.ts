@@ -37,4 +37,4 @@ export const InsertMember = createInsertSchema(member, {
 });
 
 export type InsertMember = z.infer<typeof InsertMember>;
-export type SelectMember = typeof server.$inferSelect;
+export type SelectMember = typeof member.$inferSelect;

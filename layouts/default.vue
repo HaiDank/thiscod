@@ -13,7 +13,7 @@ const {
 
 } = storeToRefs(serverStore);
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
     socket.disconnect();
 });
 
