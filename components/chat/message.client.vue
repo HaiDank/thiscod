@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import type { SelectChannelWithMessages } from "~/lib/db/schema";
+import type { AsyncDataRequestStatus } from "#app";
+
+import type { ClientMessageType } from "~/lib/types";
 
 import { cn } from "~/lib/utils";
-import { getChannelIcon } from "~/utils/utils";
 
-defineProps<{
-    channel: SelectChannelWithMessages;
+const { fetchNextMessages, hasNext, messages, messagesStatus } = defineProps<{
+    fetchNextMessages: () => Promise<void>;
+    messages: ClientMessageType[];
+    messagesStatus: AsyncDataRequestStatus;
+    hasNext: boolean;
 }>();
-const chatStore = useChatStore();
-const { fetchNextMessages } = chatStore;
-const { messages, messagesStatus, hasNext } = storeToRefs(chatStore);
+
 const messageContainer = ref(null);
 const firstMessageRef = ref(null);
-const shouldFetchNext = computed(() => messagesStatus.value !== "pending" && hasNext.value);
+const shouldFetchNext = computed(() => messagesStatus !== "pending" && hasNext);
 // Initialize auto-scroll
 
 function handleFetchNext() {
@@ -21,17 +23,15 @@ function handleFetchNext() {
     }
 }
 
+watchEffect(() => {
+    console.log(messages);
+});
+
 useChatScroll(messageContainer, firstMessageRef, handleFetchNext);
 </script>
 
 <template>
     <div ref="messageContainer" class="w-full h-full flex flex-col-reverse grow overflow-y-scroll ">
-        <!-- <UButton @click="fetchNextMessages">
-            Fetch next
-        </UButton>
-        <UButton @click="() => refreshMessages()">
-            reFetch
-        </UButton> -->
         <div
             v-for="message in messages"
             :key="`msg-${message.createdAt}-${message.content}`"
@@ -90,20 +90,7 @@ useChatScroll(messageContainer, firstMessageRef, handleFetchNext);
                 :key="msg"
             />
         </div>
-        <div v-else class="w-full px-4">
-            <UAvatar
-                :ui="{
-                    icon: 'text-default size-12',
-                }"
-                class="size-16 text-default"
-                :icon="getChannelIcon(channel.channelType)"
-            />
-            <h1 class="text-4xl font-bold flex items-end gap-1">
-                Welcome to <span class="flex items-end"><UIcon :name="getChannelIcon(channel.channelType)" /> {{ channel.name }}!</span>
-            </h1>
-            <p class="flex items-end gap-1">
-                This is the start of <span class="flex items-end"> <UIcon :name="getChannelIcon(channel.channelType)" /> {{ channel.name }} channel</span>
-            </p>
-        </div>
+
+        <slot v-else name="start" />
     </div>
 </template>

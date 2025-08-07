@@ -3,7 +3,7 @@ import type { Socket } from "socket.io-client";
 import { defineStore } from "pinia";
 import { io } from "socket.io-client";
 
-import type { SelectChannel, SelectServer } from "~/lib/db/schema";
+import type { SelectChannel, SelectConversation, SelectServer } from "~/lib/db/schema";
 
 export const useSocketStore = defineStore("socketio", () => {
     const authStore = useAuthStore();
@@ -178,6 +178,32 @@ export const useSocketStore = defineStore("socketio", () => {
         }
     }
 
+    function joinConversationRoom(conversation: SelectConversation) {
+        try {
+            socket.value?.emit("join-conversation", conversation);
+            console.log("joining conversation room:", conversation.id);
+        }
+        catch (error) {
+            console.error("Failed to join room :", error);
+        }
+        finally {
+            rooms.value.add(`conversation:${conversation.id}`);
+        }
+    }
+
+    function leaveConversationRoom(conversationId: number) {
+        try {
+            socket.value?.emit("leave-conversation", conversationId);
+            console.log("left conversation room:", conversationId);
+        }
+        catch (error) {
+            console.error("Failed to leave room :", error);
+        }
+        finally {
+            rooms.value.delete(`conversation:${conversationId}`);
+        }
+    }
+
     function removeEventListeners() {
         if (socket.value) {
             socket.value.off("connect");
@@ -198,6 +224,8 @@ export const useSocketStore = defineStore("socketio", () => {
         joinServerRoom,
         leaveServerRoom,
         leaveChannelRoom,
+        joinConversationRoom,
+        leaveConversationRoom,
         removeEventListeners,
         rooms,
         get connected() {

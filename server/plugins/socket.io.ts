@@ -6,13 +6,15 @@ import { Server as Engine } from "engine.io";
 import { defineEventHandler } from "h3";
 import { Server } from "socket.io";
 
-import type { SelectChannel, SelectMessageWithUser, SelectServer } from "~/lib/db/schema";
+import type { SelectChannel, SelectConversation, SelectMessageWithUser, SelectServer } from "~/lib/db/schema";
 import type { UserWithId } from "~/lib/types";
 
 import { auth } from "~/lib/auth";
+import { findConversation } from "~/lib/db/queries/conversation";
 import { findMember } from "~/lib/db/queries/member";
 import { findServerWithChannelsAndMembers } from "~/lib/db/queries/server";
 import { updateUserLastSeen, updateUserStatus } from "~/lib/db/queries/user";
+import { user } from "~/lib/db/schema";
 import env from "~/lib/env";
 
 export default defineNitroPlugin((nitroApp: NitroApp) => {
@@ -143,6 +145,48 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
             }
         });
 
+        // Join Channels
+        socket.on("join-conversation", async (conversation: SelectConversation) => {
+            try {
+                const userId = socket.user?.id;
+                console.log(`User ${userId} trying to join conversation ${conversation.id}`);
+                if (!userId)
+                    return;
+
+                const select = await findConversation(conversation.id);
+
+                if (!select) {
+                    socket.emit("error", { message: "Conversation not found" });
+                    return;
+                }
+
+                const isMember = select.userOneId === Number(user.id) || select.userTwoId === Number(user.id);
+
+                if (!isMember) {
+                    socket.emit("error", { message: "Unauthorized access" });
+                    return;
+                }
+
+                socket.join(`conversation:${conversation.id}`);
+                console.log(`User ${userId} joined conversation ${conversation.id}`);
+            }
+            catch (error) {
+                console.error("SOCKET ERROR JOIN CHANNELS EVENT: ", error);
+                socket.emit("error", { message: "Failed to join channels" });
+            }
+        });
+
+        // Leave channels
+        socket.on("leave-conversation", async (conversationId: number) => {
+            try {
+                socket.leave(`conversation:${conversationId}`);
+            }
+            catch (error) {
+                console.error("SOCKET ERROR LEAVE SERVER EVENT: ", error);
+                socket.emit("error", { message: "Failed to leave server" });
+            }
+        });
+
         // Send message to channel
         socket.on("send-message", async (data: { msg: SelectMessageWithUser; channelId: number; serverId: number }) => {
             try {
@@ -156,6 +200,25 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
                 socket.to(`server:${serverId}`).emit("notification", msg);
 
                 console.log(`Message sent in channel ${channelId} by user ${user.name}`);
+                updateUserLastSeen(user.id);
+            }
+            catch (error) {
+                console.error(error);
+                socket.emit("error", { message: "Failed to send message" });
+            }
+        });
+
+        // Send message to convo
+        socket.on("send-direct-message", async (data: { msg: SelectMessageWithUser; conversationId: number }) => {
+            try {
+                const user = socket.user;
+                if (!user)
+                    return;
+                const { msg, conversationId } = data;
+                // Broadcast message only to users in the specific channel
+                socket.to(`conversation:${conversationId}`).emit("message", msg);
+
+                console.log(`Message sent in convo ${conversationId} by user ${user.name}`);
                 updateUserLastSeen(user.id);
             }
             catch (error) {

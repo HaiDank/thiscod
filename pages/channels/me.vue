@@ -41,81 +41,82 @@ const items = ref<DropdownMenuItem[]>([
 <template>
     <section class="w-full h-full bg-background flex flex-col gap-2 grow-0">
         <!-- Header -->
-        <div class="w-full flex items-center box-border shrink-0 h-[calc((var(--spacing)*12)+1px)] px-4 border-t border-b gap-4">
-            <span class="flex items-center justify-center gap-2 cursor-default">
+        <ChatHeader title="Friends">
+            <template #leading>
                 <UIcon name="material-symbols:person-raised-hand-rounded" class="text-dimmed" />
-                Friends
-            </span>
-            <span class="text-dimmed/50 text-xl cursor-default">
-                •
-            </span>
-            <ul class="flex items-center justify-center gap-4">
-                <li>
-                    <UButton
-                        :class="cn('px-4 hover:bg-accent font-semibold cursor-pointer', friendStatusFilter === 'Online' && 'hover:bg-elevated')"
-                        variant="link"
-                        :active="friendStatusFilter === 'Online'"
-                        active-color="neutral"
-                        active-variant="soft"
-                        color="neutral"
-                        @click="handleChangeFetchFilter('Online')"
-                    >
-                        Online
-                    </UButton>
-                </li>
-                <li>
-                    <UButton
-                        :class="cn('px-4 hover:bg-accent font-semibold cursor-pointer', friendStatusFilter === 'All' && 'hover:bg-elevated')"
-                        variant="link"
-                        :active="friendStatusFilter === 'All'"
-                        active-color="neutral"
-                        active-variant="soft"
-                        color="neutral"
-                        @click="handleChangeFetchFilter('All')"
-                    >
-                        All
-                    </UButton>
-                </li>
-                <li>
-                    <UButton
-                        :class="cn('px-4 hover:bg-accent font-semibold cursor-pointer', friendStatusFilter === 'Pending' && 'hover:bg-elevated')"
-                        variant="link"
-                        :active="friendStatusFilter === 'Pending'"
-                        active-color="neutral"
-                        active-variant="soft"
-                        color="neutral"
-                        @click="handleFetchPendingRequest"
-                    >
-                        Pending
-                        <template v-if="receivedRequestsUsers && receivedRequestsUsers.length > 0" #trailing>
-                            <UChip
-                                standalone
-                                inset
-                                :ui="{
-                                    base: 'text-default text-[10px] size-4 font-bold dark:bg-red-600  ring-0 text-center ',
-                                }"
-                                color="error"
-                                :text="receivedRequestsUsers.length"
-                            />
-                        </template>
-                    </UButton>
-                </li>
-                <li>
-                    <UButton
-                        class="px-4 font-semibold text-default hover:text-default cursor-pointer "
-                        variant="link"
-                        :active="friendStatusFilter === 'Add'"
-                        inactive-class="bg-primary"
-                        active-class="text-primary"
-                        active-variant="soft"
-                        color="primary"
-                        @click="friendStatusFilter = 'Add'"
-                    >
-                        Add Friend
-                    </UButton>
-                </li>
-            </ul>
-        </div>
+            </template>
+            <template #trailing>
+                <span class="text-dimmed/50 text-xl cursor-default">
+                    •
+                </span>
+                <ul class="flex items-center justify-center gap-4">
+                    <li>
+                        <UButton
+                            :class="cn('px-4 hover:bg-accent font-semibold cursor-pointer', friendStatusFilter === 'Online' && 'hover:bg-elevated')"
+                            variant="link"
+                            :active="friendStatusFilter === 'Online'"
+                            active-color="neutral"
+                            active-variant="soft"
+                            color="neutral"
+                            @click="handleChangeFetchFilter('Online')"
+                        >
+                            Online
+                        </UButton>
+                    </li>
+                    <li>
+                        <UButton
+                            :class="cn('px-4 hover:bg-accent font-semibold cursor-pointer', friendStatusFilter === 'All' && 'hover:bg-elevated')"
+                            variant="link"
+                            :active="friendStatusFilter === 'All'"
+                            active-color="neutral"
+                            active-variant="soft"
+                            color="neutral"
+                            @click="handleChangeFetchFilter('All')"
+                        >
+                            All
+                        </UButton>
+                    </li>
+                    <li>
+                        <UButton
+                            :class="cn('px-4 hover:bg-accent font-semibold cursor-pointer', friendStatusFilter === 'Pending' && 'hover:bg-elevated')"
+                            variant="link"
+                            :active="friendStatusFilter === 'Pending'"
+                            active-color="neutral"
+                            active-variant="soft"
+                            color="neutral"
+                            @click="handleFetchPendingRequest"
+                        >
+                            Pending
+                            <template v-if="receivedRequestsUsers && receivedRequestsUsers.length > 0" #trailing>
+                                <UChip
+                                    standalone
+                                    inset
+                                    :ui="{
+                                        base: 'text-default text-[10px] size-4 font-bold dark:bg-red-600  ring-0 text-center ',
+                                    }"
+                                    color="error"
+                                    :text="receivedRequestsUsers.length"
+                                />
+                            </template>
+                        </UButton>
+                    </li>
+                    <li>
+                        <UButton
+                            class="px-4 font-semibold text-default hover:text-default cursor-pointer "
+                            variant="link"
+                            :active="friendStatusFilter === 'Add'"
+                            inactive-class="bg-primary"
+                            active-class="text-primary"
+                            active-variant="soft"
+                            color="primary"
+                            @click="friendStatusFilter = 'Add'"
+                        >
+                            Add Friend
+                        </UButton>
+                    </li>
+                </ul>
+            </template>
+        </ChatHeader>
 
         <!-- page -->
         <div v-if="friendStatusFilter === 'Online' || friendStatusFilter === 'All'" class="w-full h-full flex flex-col px-4 gap-2">

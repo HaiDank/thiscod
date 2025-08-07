@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "169c68da-67fc-46c1-890f-111a117eb1f4",
+  "id": "a32976e8-4155-4be8-8577-4cae90f0fafd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -433,39 +433,15 @@
           "notNull": false,
           "autoincrement": false
         },
-        "created_at": {
-          "name": "created_at",
+        "user_one_id": {
+          "name": "user_one_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "users_to_conversations": {
-      "name": "users_to_conversations",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "conversation_id": {
-          "name": "conversation_id",
+        "user_two_id": {
+          "name": "user_two_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -486,46 +462,52 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "conversation_userOneId_userTwoId_unique": {
+          "name": "conversation_userOneId_userTwoId_unique",
+          "columns": [
+            "user_one_id",
+            "user_two_id"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {
-        "users_to_conversations_user_id_user_id_fk": {
-          "name": "users_to_conversations_user_id_user_id_fk",
-          "tableFrom": "users_to_conversations",
+        "conversation_user_one_id_user_id_fk": {
+          "name": "conversation_user_one_id_user_id_fk",
+          "tableFrom": "conversation",
           "tableTo": "user",
           "columnsFrom": [
-            "user_id"
+            "user_one_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "users_to_conversations_conversation_id_conversation_id_fk": {
-          "name": "users_to_conversations_conversation_id_conversation_id_fk",
-          "tableFrom": "users_to_conversations",
-          "tableTo": "conversation",
+        "conversation_user_two_id_user_id_fk": {
+          "name": "conversation_user_two_id_user_id_fk",
+          "tableFrom": "conversation",
+          "tableTo": "user",
           "columnsFrom": [
-            "conversation_id"
+            "user_two_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {
-        "users_to_conversations_user_id_conversation_id_pk": {
-          "columns": [
-            "user_id",
-            "conversation_id"
-          ],
-          "name": "users_to_conversations_user_id_conversation_id_pk"
-        }
-      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "checkConstraints": {}
+      "checkConstraints": {
+        "conversation_user_id_order_check": {
+          "name": "conversation_user_id_order_check",
+          "value": "\"conversation\".\"user_one_id\" < \"conversation\".\"user_two_id\""
+        }
+      }
     },
     "member": {
       "name": "member",

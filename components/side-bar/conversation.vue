@@ -1,4 +1,7 @@
 <script setup lang="ts">
+const conversationStore = useConversationStore();
+await conversationStore.refreshConversations();
+console.log(conversationStore.conversations);
 </script>
 
 <template>

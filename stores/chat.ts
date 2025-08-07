@@ -16,10 +16,8 @@ export const useChatStore = defineStore("useChatStore", () => {
     const msgCount = ref(0);
     const cacheKey = computed(() => `messages-${route.params.server}-${route.params.channel}-cursor-${pagination.value.cursor ?? 0}`);
     const {
-        data,
         status: messagesStatus,
         refresh: refreshMessages,
-        error,
     } = useFetch(api, {
         key: cacheKey,
         lazy: true,
@@ -126,7 +124,6 @@ export const useChatStore = defineStore("useChatStore", () => {
             },
             onRequest() {
                 // process the message and add it to the begining of the array
-                console.log(messages.value);
                 const clientMsg = ClientMessageBuilder(msg, messages.value[0]?.createdAt, messages.value[0]?.user.id, true);
                 messages.value.unshift(clientMsg);
             },
@@ -180,15 +177,11 @@ export const useChatStore = defineStore("useChatStore", () => {
         init,
         leaveRoom,
         sendMessage,
-        api,
         pagination,
-        data,
         messages,
         messagesStatus,
         refreshMessages,
         fetchNextMessages,
-        cacheKey,
-        error,
         hasNext,
     };
 });

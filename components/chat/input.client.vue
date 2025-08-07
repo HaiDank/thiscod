@@ -3,14 +3,12 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 
 import * as z from "zod";
 
-const props = defineProps<{
+defineProps<{
     placeholder?: string;
-    channelId: number;
-    serverId: number;
 }>();
 
-const { sendMessage } = useChatStore();
-const { csrf } = useCsrf();
+const emit = defineEmits(["sendMessage"]);
+
 const form = useTemplateRef("form");
 
 const schema = z.object({
@@ -33,15 +31,18 @@ function handleKeydown(event: KeyboardEvent) {
     }
 }
 
+function resetForm() {
+    state.content = "";
+    state.file = undefined;
+}
+
+defineExpose<{ resetForm: () => void }>({
+    resetForm,
+});
+
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     if ((event.data.content && event.data.content.trim().length > 0) || event.data.file) {
-        const res = await sendMessage(event.data, props.channelId, props.serverId, csrf);
-        state.content = "";
-        state.file = undefined;
-        if (!res) {
-            state.content = event.data.content;
-            state.file = event.data.file;
-        }
+        emit("sendMessage", event.data);
     }
 }
 </script>

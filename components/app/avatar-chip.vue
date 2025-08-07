@@ -2,12 +2,6 @@
 import { cn } from "~/lib/utils";
 
 const authStore = useAuthStore();
-const chipColor = ref<"error" | "neutral" | "primary" | "secondary" | "success" | "info" | "warning">("neutral");
-watchEffect(() => {
-    if (authStore.user) {
-        chipColor.value = "success";
-    }
-});
 </script>
 
 <template>
@@ -17,21 +11,7 @@ watchEffect(() => {
         class="p-0 rounded-tl-4xl rounded-bl-4xl group rounded-tr-md rounded-br-md  grow-1"
         color="neutral"
     >
-        <UChip
-            inset
-            position="bottom-right"
-            :color="chipColor"
-        >
-            <UAvatar
-                :src="authStore.user.image ?? undefined"
-                :alt="authStore.user?.name"
-                icon="material-symbols:account-circle"
-                :ui="{
-                    icon: 'size-full',
-                }"
-                class="size-10"
-            />
-        </UChip>
+        <UserAvatar />
         <p class="relative flex flex-col items-baseline justify-baseline overflow-hidden w-full">
             <span class="font-semibold text-foreground">
                 {{ authStore.user.name }}
