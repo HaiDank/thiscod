@@ -6,6 +6,7 @@ export type SidebarItem = {
     avatarUrl?: string;
     alt?: string;
     href?: string;
+    status?: "Online" | "Offline";
     to: RouteLocationRaw;
 };
 
@@ -57,6 +58,7 @@ export const useSidebarStore = defineStore("useSidebarStore", () => {
     const sidebarChannelItems = ref<SidebarChannelItem[]>([]);
     const sidebarConversationItems = ref<SidebarItem[]>([]);
     const chosenChannels = ref<Map<string, SidebarChannelItem>>(new Map());
+    const conversationLoading = ref(true);
     const channelLoading = ref(true);
     const serverLoading = ref(true);
 
@@ -65,6 +67,7 @@ export const useSidebarStore = defineStore("useSidebarStore", () => {
         topSidebarItem,
         serverLoading,
         channelLoading,
+        conversationLoading,
         sidebarItems,
         sidebarConversationItems,
         sidebarChannelItems,

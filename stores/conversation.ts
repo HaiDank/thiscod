@@ -1,14 +1,15 @@
-import type { InsertMessage, PaginationRequest, SelectConversationWithUsers, SelectDirectMessageWithUser } from "~/lib/db/schema";
+import type { InsertMessage, PaginationRequest, SelectConversationWithOtherUser, SelectDirectMessageWithUser } from "~/lib/db/schema";
 import type { ClientMessageType, UserWithId } from "~/lib/types";
 
 export const useConversationStore = defineStore("useConversationStore", () => {
     const route = useRoute();
     const socketStore = useSocketStore();
     const authStore = useAuthStore();
+    const sidebarStore = useSidebarStore();
     const toast = useToast();
-    const conversationUrlWithId = computed(() => `/api/conversations/${route.params.conversation}`);
+    const conversationUrlWithId = computed(() => `/api/conversations/${route.params.id}`);
 
-    const api = computed(() => `/api/messages/direct/${route.params.conversation}`);
+    const api = computed(() => `/api/messages/direct/${route.params.id}`);
     const pagination = ref<PaginationRequest>({
         limit: 25,
         cursor: undefined,
@@ -49,7 +50,7 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         data: currentConversation,
         status: currentConversationStatus,
         refresh: refreshCurrentConversation,
-    } = useFetch<SelectConversationWithUsers>(conversationUrlWithId, {
+    } = useFetch<SelectConversationWithOtherUser>(conversationUrlWithId, {
         lazy: true,
         watch: false,
         immediate: false,
@@ -130,7 +131,7 @@ export const useConversationStore = defineStore("useConversationStore", () => {
             user: authStore.user as unknown as UserWithId,
         };
 
-        const originalMessages = messages.value;
+        const originalMessages = [...messages.value];
 
         const res = await $fetch(api.value, {
             method: "POST",
@@ -151,13 +152,15 @@ export const useConversationStore = defineStore("useConversationStore", () => {
                     color: "error",
                 });
             },
-            async onResponse({ response }) {
-                messages.value[0].pending = false;
-                if (socketStore.isConnected) {
-                    socketStore.emit("send-direct-message", {
-                        msg: response._data,
-                        conversationId,
-                    });
+            onResponse({ response }) {
+                if (response.status === 200) {
+                    messages.value[0].pending = false;
+                    if (socketStore.isConnected) {
+                        socketStore.emit("send-direct-message", {
+                            msg: response._data,
+                            conversationId,
+                        });
+                    }
                 }
             },
         });
@@ -165,6 +168,7 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         return res;
     };
 
+    // initialize socket for DM chat
     async function init() {
         await socketStore.init();
         if (socketStore.isConnected && currentConversation.value) {
@@ -186,6 +190,23 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         }
         socketStore.off("message");
     }
+
+    // set item for sidebar
+    watchEffect(() => {
+        if (conversations.value) {
+            sidebarStore.sidebarConversationItems = conversations.value.map((item) => {
+                return {
+                    id: item.conversation.id,
+                    to: { name: `channels-conversation-id`, params: { id: item.conversation.id } },
+                    alt: item.conversation.name ?? item.otherUserDetails.name,
+                    avatarUrl: item.otherUserDetails.image ?? undefined,
+                    status: item.otherUserDetails.status === "Online" ? "Online" : "Offline",
+                };
+            });
+        }
+
+        sidebarStore.conversationLoading = conversationsStatus.value === "pending";
+    });
 
     return {
         init,

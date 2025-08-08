@@ -1,13 +1,13 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 
 import { findConversation } from "~/lib/db/queries/conversation";
-import { countDirectMessages, findDirectMessages } from "~/lib/db/queries/message";
-import { PaginationRequest } from "~/lib/db/schema";
+import { insertDirectMessage } from "~/lib/db/queries/message";
+import { InsertMessage } from "~/lib/db/schema";
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
 import sendZodError from "~/utils/send-zod-error";
 
 export default defineAuthenticatedEventHandler(async (event) => {
-    const result = await getValidatedQuery(event, PaginationRequest.safeParse);
+    const result = await readValidatedBody(event, InsertMessage.safeParse);
     if (!result.success) {
         return sendZodError(event, result.error);
     }
@@ -30,7 +30,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    const directMessages = await findDirectMessages(Number(id), result.data.limit, result.data.cursor);
-    const count = await countDirectMessages(Number(id));
-    return { messages: directMessages, count: count[0]?.count };
+    const createdDirectMessage = await insertDirectMessage(result.data, Number(event.context.user.id), Number(id));
+
+    return createdDirectMessage;
 });

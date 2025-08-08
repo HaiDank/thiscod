@@ -39,7 +39,6 @@ function resetForm() {
 defineExpose<{ resetForm: () => void }>({
     resetForm,
 });
-
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     if ((event.data.content && event.data.content.trim().length > 0) || event.data.file) {
         emit("sendMessage", event.data);

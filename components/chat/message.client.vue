@@ -5,12 +5,13 @@ import type { ClientMessageType } from "~/lib/types";
 
 import { cn } from "~/lib/utils";
 
-const { fetchNextMessages, hasNext, messages, messagesStatus } = defineProps<{
-    fetchNextMessages: () => Promise<void>;
+const { hasNext, messages, messagesStatus } = defineProps<{
     messages: ClientMessageType[];
     messagesStatus: AsyncDataRequestStatus;
     hasNext: boolean;
 }>();
+
+const emits = defineEmits(["fetchNextMessages"]);
 
 const messageContainer = ref(null);
 const firstMessageRef = ref(null);
@@ -19,13 +20,9 @@ const shouldFetchNext = computed(() => messagesStatus !== "pending" && hasNext);
 
 function handleFetchNext() {
     if (shouldFetchNext.value) {
-        fetchNextMessages();
+        emits("fetchNextMessages");
     }
 }
-
-watchEffect(() => {
-    console.log(messages);
-});
 
 useChatScroll(messageContainer, firstMessageRef, handleFetchNext);
 </script>

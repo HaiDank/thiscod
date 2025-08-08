@@ -29,9 +29,7 @@ onBeforeUnmount(() => {
 });
 
 async function handleSendMessage(data: InsertMessage) {
-    console.log(data);
-    const res = await sendMessage(data, Number(route.params.channel), Number(route.params.server), csrf);
-    console.log(res);
+    await sendMessage(data, Number(route.params.channel), Number(route.params.server), csrf);
     inputRef.value?.resetForm();
 }
 </script>
@@ -49,7 +47,7 @@ async function handleSendMessage(data: InsertMessage) {
                 :messages="messages"
                 :messages-status="messagesStatus"
                 :has-next="hasNext"
-                :fetch-next-messages="fetchNextMessages"
+                @fetch-next-messages="fetchNextMessages"
             >
                 <template #start>
                     <div class="w-full px-4">

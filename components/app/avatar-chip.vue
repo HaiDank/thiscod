@@ -11,7 +11,12 @@ const authStore = useAuthStore();
         class="p-0 rounded-tl-4xl rounded-bl-4xl group rounded-tr-md rounded-br-md  grow-1"
         color="neutral"
     >
-        <UserAvatar />
+        <UserAvatar
+            :avatar="authStore.user.image ?? undefined"
+            :name="authStore.user.name"
+            size="xl"
+            :status="authStore.user.status === 'Online' ? 'Online' : 'Offline'"
+        />
         <p class="relative flex flex-col items-baseline justify-baseline overflow-hidden w-full">
             <span class="font-semibold text-foreground">
                 {{ authStore.user.name }}

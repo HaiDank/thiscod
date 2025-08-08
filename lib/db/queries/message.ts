@@ -33,7 +33,7 @@ export async function insertDirectMessage(insertable: InsertDirectMessage, userI
 }
 
 export async function findDirectMessages(conversationId: number, limit: number, cursor?: number) {
-    return await db.query.message.findMany({
+    return await db.query.directMessage.findMany({
         where: and(eq(directMessage.conversationId, conversationId), cursor ? lt(directMessage.createdAt, cursor) : undefined),
         with: {
             user: true,

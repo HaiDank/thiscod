@@ -6,15 +6,16 @@ import type { InsertDirectMessage } from "~/lib/db/schema";
 const route = useRoute();
 const { csrf } = useCsrf();
 const conversationStore = useConversationStore();
-const { fetchNextMessages, sendMessage } = conversationStore;
+const { fetchNextMessages, sendMessage, refreshCurrentConversation } = conversationStore;
 const { currentConversation, hasNext, messages, messagesStatus } = storeToRefs(conversationStore);
 
 if (!z.coerce.number().safeParse(route.params.id).success) {
-    await navigateTo({ name: "channels-me" });
+    await navigateTo({ name: "channels-me-friends" });
 }
 
-onMounted(() => {
-    conversationStore.init();
+onMounted(async () => {
+    await refreshCurrentConversation();
+    await conversationStore.init();
 });
 
 onBeforeUnmount(() => {
@@ -22,16 +23,22 @@ onBeforeUnmount(() => {
 });
 
 async function handleSendMessage(data: InsertDirectMessage) {
-    const res = await sendMessage(data, Number(route.params.conversation), csrf);
-    console.log(res);
+    await sendMessage(data, Number(route.params.conversation), csrf);
 }
 </script>
 
 <template>
     <div class="w-full h-full ">
         <section v-if="currentConversation" class="w-full h-full bg-background flex flex-col gap-2 grow-0">
-            <ChatHeader :title="currentConversation.UserOne.name">
-                <template #leading />
+            <ChatHeader :title="currentConversation.otherUser.name">
+                <template #leading>
+                    <UserAvatar
+                        :name="currentConversation.otherUser.name"
+                        :avatar="currentConversation.otherUser.image ?? undefined"
+                        :status="currentConversation.otherUser.status === 'Online' ? 'Online' : 'Offline'"
+                        size="xs"
+                    />
+                </template>
             </ChatHeader>
 
             <ChatMessage
@@ -41,24 +48,25 @@ async function handleSendMessage(data: InsertDirectMessage) {
                 :messages-status="messagesStatus"
             >
                 <template #start>
-                    <div class="w-full px-4">
+                    <div class="w-full px-4 space-y-2">
                         <UAvatar
+                            :alt="currentConversation.otherUser.name"
+                            :avatar="currentConversation.otherUser.image"
                             :ui="{
-                                icon: 'text-default size-12',
+                                root: 'size-16 text-default text-3xl',
                             }"
-                            class="size-16 text-default"
                         />
-                        <h1 class="text-4xl font-bold flex items-end gap-1">
-                            Welcome to <span class="flex items-end">{{ currentConversation.name }}!</span>
+                        <h1 class="text-3xl font-bold flex items-end gap-1">
+                            {{ currentConversation.otherUser.name }}
                         </h1>
                         <p class="flex items-end gap-1">
-                            This is the start of <span class="flex items-end">  {{ currentConversation.name }} channel</span>
+                            This is the beginning of you direct message history with  <span class="flex items-end">  {{ currentConversation.otherUser.name }}</span>
                         </p>
                     </div>
                 </template>
             </ChatMessage>
             <ChatInput
-                :placeholder="`Message @${currentConversation.UserOne.name}`"
+                :placeholder="`Message @${currentConversation.otherUser.name}`"
                 @send-message="handleSendMessage"
             />
         </section>

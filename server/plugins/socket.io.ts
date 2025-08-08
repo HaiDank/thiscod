@@ -153,7 +153,7 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
                 if (!userId)
                     return;
 
-                const select = await findConversation(conversation.id);
+                const select = await findConversation(conversation.id, Number(userId));
 
                 if (!select) {
                     socket.emit("error", { message: "Conversation not found" });
@@ -171,7 +171,7 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
                 console.log(`User ${userId} joined conversation ${conversation.id}`);
             }
             catch (error) {
-                console.error("SOCKET ERROR JOIN CHANNELS EVENT: ", error);
+                console.error("SOCKET ERROR JOIN CONVERSATION EVENT: ", error);
                 socket.emit("error", { message: "Failed to join channels" });
             }
         });

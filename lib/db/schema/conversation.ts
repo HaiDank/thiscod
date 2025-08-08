@@ -65,7 +65,6 @@ export const InsertConversation = createInsertSchema(conversation, {
 
 export type InsertConversation = z.infer<typeof InsertConversation>;
 export type SelectConversation = typeof conversation.$inferSelect;
-export type SelectConversationWithUsers = SelectConversation & {
-    UserOne: User;
-    UserTwo: User;
+export type SelectConversationWithOtherUser = SelectConversation & {
+    otherUser: User;
 };

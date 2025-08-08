@@ -1,31 +1,28 @@
 <script setup lang="ts">
-const { size = "xl", chipSize = "2xl" } = defineProps<{
+const { size = "xl", status = "Online" } = defineProps<{
     size?: "xl" | "2xl" | "md" | "3xs" | "2xs" | "xs" | "sm" | "lg" | "3xl" | undefined;
-    chipSize?: "xl" | "2xl" | "md" | "3xs" | "2xs" | "xs" | "sm" | "lg" | "3xl" | undefined;
+    avatar?: string;
+    name?: string;
+    status?: "Online" | "Offline";
 }>();
-const authStore = useAuthStore();
-const chipColor = ref<"error" | "neutral" | "primary" | "secondary" | "success" | "info" | "warning">("neutral");
-watchEffect(() => {
-    if (authStore.user) {
-        chipColor.value = "success";
-    }
-});
+
+const chipColor = computed(() => status ? { Online: "success", Offline: "neutral" }[status] as any : "Online");
+const show = computed(() => status !== "Offline");
 </script>
 
 <template>
     <UChip
         inset
         position="bottom-right"
-        :size="chipSize"
+        :size="size"
         :ui="{
-            base: 'ring-4 ring-border ',
+            base: `ring-4 ring-border ${show && 'bg-neutral-500'}`,
         }"
         :color="chipColor"
     >
         <UAvatar
-            :src="authStore.user?.image ?? undefined"
-            :alt="authStore.user?.name"
-            icon="material-symbols:account-circle"
+            :src="avatar"
+            :alt="name"
             :ui="{
                 icon: 'size-full',
             }"
