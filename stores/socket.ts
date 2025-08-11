@@ -3,7 +3,7 @@ import type { Socket } from "socket.io-client";
 import { defineStore } from "pinia";
 import { io } from "socket.io-client";
 
-import type { SelectChannel, SelectServer } from "~/lib/db/schema";
+import type { SelectChannel, SelectConversation, SelectServer } from "~/lib/db/schema";
 
 export const useSocketStore = defineStore("socketio", () => {
     const authStore = useAuthStore();
@@ -15,37 +15,28 @@ export const useSocketStore = defineStore("socketio", () => {
     const initializationPromise = ref<Promise<void> | null>(null);
 
     async function init() {
-        if (isConnected.value) {
+        if (isConnected.value || (socket.value && socket.value.connected)) {
             console.log("socket already connected");
             return;
         }
 
-        // Return existing promise if initialization is in progress
-        if (initializationPromise.value) {
-            return initializationPromise.value;
+        // Return if initialization is in progress
+        if (!initializationPromise.value) {
+            initializationPromise.value = _init();
         }
-        // Create new initialization promise
-        initializationPromise.value = _init();
-        await initializationPromise.value;
-        initializationPromise.value = null;
+
+        return initializationPromise.value;
     }
 
     async function _init() {
-        if (isConnected.value) {
+        if (isConnected.value || (socket.value && socket.value.connected)) {
             return;
         }
 
         try {
             const token = await authStore.getOneTimeToken();
 
-            socket.value = io({
-                auth: {
-                    token,
-                },
-                autoConnect: true,
-            });
-
-            setupEventListeners();
+            await setupEventListeners(token);
         }
         catch (error) {
             console.error("Socket initialization failed:", error);
@@ -53,24 +44,31 @@ export const useSocketStore = defineStore("socketio", () => {
         }
     }
 
-    function setupEventListeners() {
-        if (!socket.value)
-            return;
+    function setupEventListeners(token: string | undefined) {
+        return new Promise<void>((resolve) => {
+            console.log("setting up socket");
+            socket.value = io({
+                auth: {
+                    token,
+                },
+                autoConnect: true,
+            });
+            socket.value.on("connect", () => {
+                isConnected.value = true;
+                console.log("Connected to Socket.IO server");
+                resolve();
+            });
 
-        socket.value.on("connect", () => {
-            isConnected.value = true;
-            console.log("Connected to Socket.IO server");
+            socket.value.on("disconnect", () => {
+                isConnected.value = false;
+                console.log("Disconnected from Socket.IO server");
+                initializationPromise.value = null;
+            });
+
+            serverStore.servers?.forEach((server) => {
+                joinServerRoom(server.server);
+            });
         });
-
-        socket.value.on("disconnect", () => {
-            isConnected.value = false;
-            console.log("Disconnected from Socket.IO server");
-        });
-
-        serverStore.servers?.forEach((server) => {
-            joinServerRoom(server.server);
-        });
-
         // socket.value.on("notification", (notification) => {
         //     notifications.value.push(notification);
 
@@ -89,7 +87,7 @@ export const useSocketStore = defineStore("socketio", () => {
         if (socket.value) {
             // Leave all rooms on disconnect
             serverStore.servers?.forEach((server) => {
-                socket.value?.emit("leave-server", server);
+                socket.value?.emit("leave-server", server.server.id);
             });
 
             socket.value.disconnect();
@@ -178,6 +176,32 @@ export const useSocketStore = defineStore("socketio", () => {
         }
     }
 
+    function joinConversationRoom(conversation: SelectConversation) {
+        try {
+            socket.value?.emit("join-conversation", conversation);
+            console.log("joining conversation room:", conversation.id);
+        }
+        catch (error) {
+            console.error("Failed to join room :", error);
+        }
+        finally {
+            rooms.value.add(`conversation:${conversation.id}`);
+        }
+    }
+
+    function leaveConversationRoom(conversationId: number) {
+        try {
+            socket.value?.emit("leave-conversation", conversationId);
+            console.log("left conversation room:", conversationId);
+        }
+        catch (error) {
+            console.error("Failed to leave room :", error);
+        }
+        finally {
+            rooms.value.delete(`conversation:${conversationId}`);
+        }
+    }
+
     function removeEventListeners() {
         if (socket.value) {
             socket.value.off("connect");
@@ -198,6 +222,8 @@ export const useSocketStore = defineStore("socketio", () => {
         joinServerRoom,
         leaveServerRoom,
         leaveChannelRoom,
+        joinConversationRoom,
+        leaveConversationRoom,
         removeEventListeners,
         rooms,
         get connected() {

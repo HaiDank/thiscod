@@ -6,10 +6,11 @@ import { Server as Engine } from "engine.io";
 import { defineEventHandler } from "h3";
 import { Server } from "socket.io";
 
-import type { SelectChannel, SelectMessageWithUser, SelectServer } from "~/lib/db/schema";
+import type { SelectChannel, SelectConversation, SelectDirectMessageWithUser, SelectMessageWithUser, SelectServer } from "~/lib/db/schema";
 import type { UserWithId } from "~/lib/types";
 
 import { auth } from "~/lib/auth";
+import { findConversation } from "~/lib/db/queries/conversation";
 import { findMember } from "~/lib/db/queries/member";
 import { findServerWithChannelsAndMembers } from "~/lib/db/queries/server";
 import { updateUserLastSeen, updateUserStatus } from "~/lib/db/queries/user";
@@ -89,7 +90,7 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
             }
         });
         // Leave server
-        socket.on("leave-server", async (serverId: number) => {
+        socket.on("leave-server", (serverId: number) => {
             try {
                 socket.leave(`server:${serverId}`);
 
@@ -133,9 +134,53 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
         });
 
         // Leave channels
-        socket.on("leave-channels", async (channelId: number) => {
+        socket.on("leave-channels", (channelId: number) => {
             try {
                 socket.leave(`channel:${channelId}`);
+            }
+            catch (error) {
+                console.error("SOCKET ERROR LEAVE SERVER EVENT: ", error);
+                socket.emit("error", { message: "Failed to leave server" });
+            }
+        });
+
+        // Join Channels
+        socket.on("join-conversation", async (conversation: SelectConversation) => {
+            try {
+                const userId = socket.user?.id;
+                console.log(`User ${userId} trying to join conversation ${conversation.id}`);
+                if (!userId)
+                    return;
+
+                const select = await findConversation(conversation.id, Number(userId));
+
+                if (!select) {
+                    socket.emit("error", { message: "Conversation not found" });
+                    console.log(`conversation not found`);
+                    return;
+                }
+
+                const isMember = select.userOneId === Number(userId) || select.userTwoId === Number(userId);
+
+                if (!isMember) {
+                    socket.emit("error", { message: "Unauthorized access" });
+                    console.log(`Unauthorized`, isMember, select);
+                    return;
+                }
+
+                socket.join(`conversation:${conversation.id}`);
+                console.log(`User ${userId} joined conversation ${conversation.id}`);
+            }
+            catch (error) {
+                console.error("SOCKET ERROR JOIN CONVERSATION EVENT: ", error);
+                socket.emit("error", { message: "Failed to join channels" });
+            }
+        });
+
+        // Leave channels
+        socket.on("leave-conversation", (conversationId: number) => {
+            try {
+                socket.leave(`conversation:${conversationId}`);
             }
             catch (error) {
                 console.error("SOCKET ERROR LEAVE SERVER EVENT: ", error);
@@ -156,6 +201,25 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
                 socket.to(`server:${serverId}`).emit("notification", msg);
 
                 console.log(`Message sent in channel ${channelId} by user ${user.name}`);
+                updateUserLastSeen(user.id);
+            }
+            catch (error) {
+                console.error(error);
+                socket.emit("error", { message: "Failed to send message" });
+            }
+        });
+
+        // Send message to convo
+        socket.on("send-direct-message", async (data: { msg: SelectDirectMessageWithUser; conversationId: number }) => {
+            try {
+                const user = socket.user;
+                if (!user)
+                    return;
+                const { msg, conversationId } = data;
+                // Broadcast message only to users in the specific channel
+                socket.to(`conversation:${conversationId}`).emit("direct-message", msg);
+
+                console.log(`Message sent in conversation:${conversationId} by user ${user.name}`, msg);
                 updateUserLastSeen(user.id);
             }
             catch (error) {

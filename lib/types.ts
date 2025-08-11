@@ -14,7 +14,7 @@ export type ClientMessageType = {
     edited: boolean | null;
     isConnected: boolean | null;
     pending?: boolean;
-    user: UserWithId;
+    user: User;
 };
 
 export type StatusError = {

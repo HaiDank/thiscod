@@ -4,7 +4,7 @@ import { findFriendship, updateFriendship } from "~/lib/db/queries/relationship"
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
 
 export default defineAuthenticatedEventHandler(async (event) => {
-    const requestId = getRouterParam(event, "id");
+    const requestId = getRouterParam(event, "id") as string;
 
     if (!z.coerce.number().safeParse(requestId).success) {
         return createError({

@@ -20,5 +20,5 @@ export async function updateUserStatus(id: number, status: "Online" | "Offline")
 }
 
 export async function updateUserLastSeen(id: number) {
-    return await db.update(user).set({ lastSeenAt: Date.now() }).where(eq(user.id, id)).returning();
+    return await db.update(user).set({ lastSeenAt: Date.now(), status: "Online" }).where(eq(user.id, id)).returning();
 }

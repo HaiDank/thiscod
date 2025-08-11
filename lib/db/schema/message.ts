@@ -3,7 +3,7 @@ import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-import type { UserWithId } from "~/lib/types";
+import type { User } from "./auth";
 
 import { user } from "./auth";
 import { channel } from "./channel";
@@ -73,8 +73,23 @@ export const InsertMessage = createInsertSchema(message, {
 
 export type InsertMessage = z.infer<typeof InsertMessage>;
 export type SelectMessage = typeof message.$inferSelect;
-export type SelectMessageWithUser = SelectMessage & { user: UserWithId };
+export type SelectMessageWithUser = SelectMessage & { user: User };
+
+export const InsertDirectMessage = createInsertSchema(directMessage, {
+    content: field => field.min(1).max(250).optional(),
+    file: field => field.regex(/^\d+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.jpg$/, "Invalid key").optional(),
+}).omit({
+    id: true,
+    edited: true,
+    userId: true,
+    conversationId: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
+export type InsertDirectMessage = z.infer<typeof InsertDirectMessage>;
 export type SelectDirectMessage = typeof directMessage.$inferSelect;
+export type SelectDirectMessageWithUser = SelectDirectMessage & { user: User };
 
 export const PaginationRequest = z.object({
     limit: z.coerce.number(),

@@ -1,4 +1,13 @@
 <script setup lang="ts">
+const conversationStore = useConversationStore();
+await conversationStore.refreshConversations();
+
+const sidebarStore = useSidebarStore();
+
+const {
+    sidebarConversationItems,
+    conversationLoading,
+} = storeToRefs(sidebarStore);
 </script>
 
 <template>
@@ -12,5 +21,45 @@
                 Find or start a conversation
             </UButton>
         </div>
+        <div class="w-full p-2 ">
+            <ULink
+                as="button"
+                :to="{ name: 'channels-me-friends' }"
+                raw
+                class="w-full flex items-center group rounded-md p-2 gap-2 font-semibold transition-colors duration-100"
+                active-class="text-default active bg-selected/70 hover:bg-selected/25"
+                inactive-class="text-dimmed hover:text-default hover:bg-highlight"
+            >
+                <UIcon name="material-symbols:person-raised-hand-rounded" />
+                <span class="grow">
+                    Friends
+                </span>
+            </ULink>
+            <div class="w-full border-b border-border/50 mt-2" />
+        </div>
+
+        <ul v-if="sidebarConversationItems && !conversationLoading" class="space-y-1 p-2">
+            <ULink
+                v-for="item in sidebarConversationItems"
+                :key="`convo-${item.id}`"
+                as="button"
+                :to="item.to"
+                raw
+                class="w-full flex items-center group rounded-md py-1 px-2 gap-2 font-semibold transition-colors duration-150"
+                active-class="text-default active bg-selected/70 hover:bg-selected/25"
+                inactive-class="text-dimmed hover:text-default hover:bg-highlight"
+            >
+                <UserAvatar
+                    :avatar="item.avatarUrl ?? undefined"
+                    :name="item.alt"
+                    size="md"
+                    :status="item.status === 'Online' ? 'Online' : 'Offline'"
+                />
+                <span class="grow">
+
+                    {{ item.alt }}
+                </span>
+            </ULink>
+        </ul>
     </div>
 </template>

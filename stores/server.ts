@@ -71,5 +71,7 @@ export const useServerStore = defineStore("useServerStore", () => {
         currentChannel,
         currentChannelStatus,
         refreshCurrentChannel,
+        serverUrlWithId,
+        channelUrlWithId,
     };
 });

@@ -64,20 +64,16 @@ CREATE INDEX `channel_server_idx` ON `channel` (`server_id`);--> statement-break
 CREATE TABLE `conversation` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text,
-	`created_at` integer NOT NULL,
-	`updated_at` integer NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE `users_to_conversations` (
-	`user_id` integer NOT NULL,
-	`conversation_id` integer NOT NULL,
+	`user_one_id` integer NOT NULL,
+	`user_two_id` integer NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL,
-	PRIMARY KEY(`user_id`, `conversation_id`),
-	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`conversation_id`) REFERENCES `conversation`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`user_one_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE set null,
+	FOREIGN KEY (`user_two_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE set null,
+	CONSTRAINT "conversation_user_id_order_check" CHECK("conversation"."user_one_id" < "conversation"."user_two_id")
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `conversation_userOneId_userTwoId_unique` ON `conversation` (`user_one_id`,`user_two_id`);--> statement-breakpoint
 CREATE TABLE `member` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`member_role` text DEFAULT 'GUEST' NOT NULL,
