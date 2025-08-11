@@ -20,14 +20,12 @@ export const useSocketStore = defineStore("socketio", () => {
             return;
         }
 
-        // Return existing promise if initialization is in progress
-        if (initializationPromise.value) {
-            return initializationPromise.value;
+        // Return if initialization is in progress
+        if (!initializationPromise.value) {
+            initializationPromise.value = _init();
         }
-        // Create new initialization promise
-        initializationPromise.value = _init();
-        await initializationPromise.value;
-        initializationPromise.value = null;
+
+        return initializationPromise.value;
     }
 
     async function _init() {
@@ -45,7 +43,7 @@ export const useSocketStore = defineStore("socketio", () => {
                 autoConnect: true,
             });
 
-            setupEventListeners();
+            await setupEventListeners();
         }
         catch (error) {
             console.error("Socket initialization failed:", error);
@@ -54,23 +52,23 @@ export const useSocketStore = defineStore("socketio", () => {
     }
 
     function setupEventListeners() {
-        if (!socket.value)
-            return;
+        return new Promise<void>((resolve) => {
+            socket.value?.on("connect", () => {
+                isConnected.value = true;
+                console.log("Connected to Socket.IO server");
+                resolve();
+            });
 
-        socket.value.on("connect", () => {
-            isConnected.value = true;
-            console.log("Connected to Socket.IO server");
+            socket.value?.on("disconnect", () => {
+                isConnected.value = false;
+                console.log("Disconnected from Socket.IO server");
+                initializationPromise.value = null;
+            });
+
+            serverStore.servers?.forEach((server) => {
+                joinServerRoom(server.server);
+            });
         });
-
-        socket.value.on("disconnect", () => {
-            isConnected.value = false;
-            console.log("Disconnected from Socket.IO server");
-        });
-
-        serverStore.servers?.forEach((server) => {
-            joinServerRoom(server.server);
-        });
-
         // socket.value.on("notification", (notification) => {
         //     notifications.value.push(notification);
 
@@ -89,7 +87,7 @@ export const useSocketStore = defineStore("socketio", () => {
         if (socket.value) {
             // Leave all rooms on disconnect
             serverStore.servers?.forEach((server) => {
-                socket.value?.emit("leave-server", server);
+                socket.value?.emit("leave-server", server.server.id);
             });
 
             socket.value.disconnect();

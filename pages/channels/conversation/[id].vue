@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ChatInput } from "#components";
+
 import * as z from "zod";
 
 import type { InsertDirectMessage } from "~/lib/db/schema";
@@ -7,12 +9,13 @@ const route = useRoute();
 const { csrf } = useCsrf();
 const conversationStore = useConversationStore();
 const { fetchNextMessages, sendMessage, refreshCurrentConversation } = conversationStore;
-const { currentConversation, hasNext, messages, messagesStatus } = storeToRefs(conversationStore);
+const { currentConversation, hasNext, messages, messagesStatus, currentConversationStatus } = storeToRefs(conversationStore);
+
+const inputRef = ref<InstanceType<typeof ChatInput> | null>(null);
 
 if (!z.coerce.number().safeParse(route.params.id).success) {
     await navigateTo({ name: "channels-me-friends" });
 }
-
 onMounted(async () => {
     await refreshCurrentConversation();
     await conversationStore.init();
@@ -23,7 +26,8 @@ onBeforeUnmount(() => {
 });
 
 async function handleSendMessage(data: InsertDirectMessage) {
-    await sendMessage(data, Number(route.params.conversation), csrf);
+    await sendMessage(data, Number(route.params.id), csrf);
+    inputRef.value?.resetForm();
 }
 </script>
 
@@ -66,10 +70,24 @@ async function handleSendMessage(data: InsertDirectMessage) {
                 </template>
             </ChatMessage>
             <ChatInput
+                ref="inputRef"
                 :placeholder="`Message @${currentConversation.otherUser.name}`"
                 @send-message="handleSendMessage"
             />
         </section>
+        <div
+            v-else-if="currentConversationStatus === 'pending'"
+            class="w-full h-full flex flex-col justify-between"
+        >
+            <USkeleton
+                class="w-full  box-border shrink-0 h-[calc((var(--spacing)*12)+1px)] px-4 border-t border-b"
+            />
+            <div class="w-full px-4 pb-4">
+                <USkeleton
+                    class="w-full  shrink-0 h-16 px-4 border-t border-b"
+                />
+            </div>
+        </div>
         <div v-else>
             Conversation not found
         </div>

@@ -16,7 +16,7 @@ const show = computed(() => status !== "Offline");
         position="bottom-right"
         :size="size"
         :ui="{
-            base: `ring-4 ring-border ${show && 'bg-neutral-500'}`,
+            base: `ring-4 ring-border ${!show && 'bg-neutral-500'}`,
         }"
         :color="chipColor"
     >

@@ -1,5 +1,5 @@
 import type { InsertMessage, PaginationRequest, SelectMessageWithUser } from "~/lib/db/schema";
-import type { ClientMessageType, UserWithId } from "~/lib/types";
+import type { ClientMessageType } from "~/lib/types";
 
 export const useChatStore = defineStore("useChatStore", () => {
     const route = useRoute();
@@ -111,7 +111,7 @@ export const useChatStore = defineStore("useChatStore", () => {
             edited: false,
             channelId,
             userId: Number(authStore.user.id),
-            user: authStore.user as unknown as UserWithId,
+            user: authStore.user,
         };
 
         const originalMessages = messages.value;
@@ -139,7 +139,7 @@ export const useChatStore = defineStore("useChatStore", () => {
                 messages.value[0].pending = false;
                 if (socketStore.isConnected) {
                     socketStore.emit("send-message", {
-                        msg: response._data,
+                        msg: { ...response._data, user: authStore.user },
                         channelId,
                         serverId,
                     });

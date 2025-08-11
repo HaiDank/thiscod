@@ -15,7 +15,7 @@ const authStore = useAuthStore();
             :avatar="authStore.user.image ?? undefined"
             :name="authStore.user.name"
             size="xl"
-            :status="authStore.user.status === 'Online' ? 'Online' : 'Offline'"
+            :status="authStore.user ? 'Online' : 'Offline'"
         />
         <p class="relative flex flex-col items-baseline justify-baseline overflow-hidden w-full">
             <span class="font-semibold text-foreground">

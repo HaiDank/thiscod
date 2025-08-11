@@ -1,5 +1,5 @@
 import type { InsertMessage, PaginationRequest, SelectConversationWithOtherUser, SelectDirectMessageWithUser } from "~/lib/db/schema";
-import type { ClientMessageType, UserWithId } from "~/lib/types";
+import type { ClientMessageType } from "~/lib/types";
 
 export const useConversationStore = defineStore("useConversationStore", () => {
     const route = useRoute();
@@ -128,7 +128,7 @@ export const useConversationStore = defineStore("useConversationStore", () => {
             edited: false,
             conversationId,
             userId: Number(authStore.user.id),
-            user: authStore.user as unknown as UserWithId,
+            user: authStore.user,
         };
 
         const originalMessages = [...messages.value];
@@ -157,7 +157,7 @@ export const useConversationStore = defineStore("useConversationStore", () => {
                     messages.value[0].pending = false;
                     if (socketStore.isConnected) {
                         socketStore.emit("send-direct-message", {
-                            msg: response._data,
+                            msg: { ...response._data, user: authStore.user },
                             conversationId,
                         });
                     }
@@ -174,8 +174,9 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         if (socketStore.isConnected && currentConversation.value) {
             resetState();
             socketStore.joinConversationRoom(currentConversation.value);
-            socketStore.on("message", (data: SelectDirectMessageWithUser) => {
+            socketStore.on("direct-message", (data: SelectDirectMessageWithUser) => {
                 const clientMsg = ClientMessageBuilder(data, messages.value[0].createdAt, messages.value[0].user.id);
+                console.log(clientMsg);
                 messages.value.unshift(clientMsg);
             });
 

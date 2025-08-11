@@ -6,7 +6,7 @@ import { Server as Engine } from "engine.io";
 import { defineEventHandler } from "h3";
 import { Server } from "socket.io";
 
-import type { SelectChannel, SelectConversation, SelectMessageWithUser, SelectServer } from "~/lib/db/schema";
+import type { SelectChannel, SelectConversation, SelectDirectMessageWithUser, SelectMessageWithUser, SelectServer } from "~/lib/db/schema";
 import type { UserWithId } from "~/lib/types";
 
 import { auth } from "~/lib/auth";
@@ -14,7 +14,6 @@ import { findConversation } from "~/lib/db/queries/conversation";
 import { findMember } from "~/lib/db/queries/member";
 import { findServerWithChannelsAndMembers } from "~/lib/db/queries/server";
 import { updateUserLastSeen, updateUserStatus } from "~/lib/db/queries/user";
-import { user } from "~/lib/db/schema";
 import env from "~/lib/env";
 
 export default defineNitroPlugin((nitroApp: NitroApp) => {
@@ -91,7 +90,7 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
             }
         });
         // Leave server
-        socket.on("leave-server", async (serverId: number) => {
+        socket.on("leave-server", (serverId: number) => {
             try {
                 socket.leave(`server:${serverId}`);
 
@@ -135,7 +134,7 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
         });
 
         // Leave channels
-        socket.on("leave-channels", async (channelId: number) => {
+        socket.on("leave-channels", (channelId: number) => {
             try {
                 socket.leave(`channel:${channelId}`);
             }
@@ -157,13 +156,15 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
 
                 if (!select) {
                     socket.emit("error", { message: "Conversation not found" });
+                    console.log(`conversation not found`);
                     return;
                 }
 
-                const isMember = select.userOneId === Number(user.id) || select.userTwoId === Number(user.id);
+                const isMember = select.userOneId === Number(userId) || select.userTwoId === Number(userId);
 
                 if (!isMember) {
                     socket.emit("error", { message: "Unauthorized access" });
+                    console.log(`Unauthorized`, isMember, select);
                     return;
                 }
 
@@ -177,7 +178,7 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
         });
 
         // Leave channels
-        socket.on("leave-conversation", async (conversationId: number) => {
+        socket.on("leave-conversation", (conversationId: number) => {
             try {
                 socket.leave(`conversation:${conversationId}`);
             }
@@ -209,16 +210,16 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
         });
 
         // Send message to convo
-        socket.on("send-direct-message", async (data: { msg: SelectMessageWithUser; conversationId: number }) => {
+        socket.on("send-direct-message", async (data: { msg: SelectDirectMessageWithUser; conversationId: number }) => {
             try {
                 const user = socket.user;
                 if (!user)
                     return;
                 const { msg, conversationId } = data;
                 // Broadcast message only to users in the specific channel
-                socket.to(`conversation:${conversationId}`).emit("message", msg);
+                socket.to(`conversation:${conversationId}`).emit("direct-message", msg);
 
-                console.log(`Message sent in convo ${conversationId} by user ${user.name}`);
+                console.log(`Message sent in conversation:${conversationId} by user ${user.name}`, msg);
                 updateUserLastSeen(user.id);
             }
             catch (error) {

@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { ChatInput } from "#components";
+
 import * as z from "zod";
 
 import type { InsertMessage } from "~/lib/db/schema";
 
-const inputRef = ref<{
-    resetForm: () => void;
-}>();
+const inputRef = ref<InstanceType<typeof ChatInput> | null>(null);
+
 const route = useRoute();
 const serverStore = useServerStore();
 const chatStore = useChatStore();
