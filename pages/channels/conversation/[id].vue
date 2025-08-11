@@ -47,7 +47,7 @@ async function handleSendMessage(data: InsertDirectMessage) {
                 </template>
             </ChatHeader>
 
-            <ChatMessage
+            <ChatMessagesContainer
                 :fetch-next-messages="fetchNextMessages"
                 :has-next="hasNext"
                 :messages="messages"
@@ -70,7 +70,7 @@ async function handleSendMessage(data: InsertDirectMessage) {
                         </p>
                     </div>
                 </template>
-            </ChatMessage>
+            </ChatMessagesContainer>
             <ChatInput
                 ref="inputRef"
                 :placeholder="`Message @${currentConversation.otherUser.name}`"

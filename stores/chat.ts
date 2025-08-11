@@ -62,6 +62,7 @@ export const useChatStore = defineStore("useChatStore", () => {
             edited: curr.edited,
             user: curr.user,
             id: curr.id,
+            type: "channel",
             isConnected,
             pending,
         };

@@ -78,6 +78,7 @@ export const useConversationStore = defineStore("useConversationStore", () => {
             edited: curr.edited,
             user: curr.user,
             id: curr.id,
+            type: "direct",
             isConnected,
             pending,
         };

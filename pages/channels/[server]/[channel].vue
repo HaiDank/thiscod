@@ -44,7 +44,7 @@ async function handleSendMessage(data: InsertMessage) {
                 </template>
             </ChatHeader>
 
-            <ChatMessage
+            <ChatMessagesContainer
                 :messages="messages"
                 :messages-status="messagesStatus"
                 :has-next="hasNext"
@@ -67,7 +67,7 @@ async function handleSendMessage(data: InsertMessage) {
                         </p>
                     </div>
                 </template>
-            </ChatMessage>
+            </ChatMessagesContainer>
             <ChatInput
                 ref="inputRef"
                 :placeholder="currentChannel.name"

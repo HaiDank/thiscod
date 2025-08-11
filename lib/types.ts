@@ -14,6 +14,7 @@ export type ClientMessageType = {
     edited: boolean | null;
     isConnected: boolean | null;
     pending?: boolean;
+    type: "direct" | "channel";
     user: User;
 };
 
