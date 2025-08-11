@@ -41,7 +41,6 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         data: conversations,
         status: conversationsStatus,
         refresh: refreshConversations,
-        error,
     } = useFetch("/api/conversations", {
         lazy: true,
     });
@@ -52,8 +51,8 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         refresh: refreshCurrentConversation,
     } = useFetch<SelectConversationWithOtherUser>(conversationUrlWithId, {
         lazy: true,
-        watch: false,
         immediate: false,
+        watch: false,
     });
 
     const processedMessagesKey = ref<Set<number>>(new Set());
@@ -176,7 +175,6 @@ export const useConversationStore = defineStore("useConversationStore", () => {
             socketStore.joinConversationRoom(currentConversation.value);
             socketStore.on("direct-message", (data: SelectDirectMessageWithUser) => {
                 const clientMsg = ClientMessageBuilder(data, messages.value[0].createdAt, messages.value[0].user.id);
-                console.log(clientMsg);
                 messages.value.unshift(clientMsg);
             });
 
@@ -226,8 +224,6 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         currentConversation,
         currentConversationStatus,
         refreshCurrentConversation,
-        cacheKey,
-        error,
         hasNext,
     };
 });

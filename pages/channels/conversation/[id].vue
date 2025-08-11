@@ -7,23 +7,25 @@ import type { InsertDirectMessage } from "~/lib/db/schema";
 
 const route = useRoute();
 const { csrf } = useCsrf();
-const conversationStore = useConversationStore();
-const { fetchNextMessages, sendMessage, refreshCurrentConversation } = conversationStore;
-const { currentConversation, hasNext, messages, messagesStatus, currentConversationStatus } = storeToRefs(conversationStore);
-
 const inputRef = ref<InstanceType<typeof ChatInput> | null>(null);
 
 if (!z.coerce.number().safeParse(route.params.id).success) {
     await navigateTo({ name: "channels-me-friends" });
 }
+
+const conversationStore = useConversationStore();
+
 onMounted(async () => {
-    await refreshCurrentConversation();
-    await conversationStore.init();
+    await conversationStore.refreshCurrentConversation();
+    conversationStore.init();
 });
 
 onBeforeUnmount(() => {
     conversationStore.leaveRoom();
 });
+
+const { fetchNextMessages, sendMessage } = conversationStore;
+const { currentConversation, hasNext, messages, messagesStatus, currentConversationStatus } = storeToRefs(conversationStore);
 
 async function handleSendMessage(data: InsertDirectMessage) {
     await sendMessage(data, Number(route.params.id), csrf);

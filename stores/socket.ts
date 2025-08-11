@@ -15,7 +15,7 @@ export const useSocketStore = defineStore("socketio", () => {
     const initializationPromise = ref<Promise<void> | null>(null);
 
     async function init() {
-        if (isConnected.value) {
+        if (isConnected.value || (socket.value && socket.value.connected)) {
             console.log("socket already connected");
             return;
         }
@@ -29,21 +29,14 @@ export const useSocketStore = defineStore("socketio", () => {
     }
 
     async function _init() {
-        if (isConnected.value) {
+        if (isConnected.value || (socket.value && socket.value.connected)) {
             return;
         }
 
         try {
             const token = await authStore.getOneTimeToken();
 
-            socket.value = io({
-                auth: {
-                    token,
-                },
-                autoConnect: true,
-            });
-
-            await setupEventListeners();
+            await setupEventListeners(token);
         }
         catch (error) {
             console.error("Socket initialization failed:", error);
@@ -51,15 +44,22 @@ export const useSocketStore = defineStore("socketio", () => {
         }
     }
 
-    function setupEventListeners() {
+    function setupEventListeners(token: string | undefined) {
         return new Promise<void>((resolve) => {
-            socket.value?.on("connect", () => {
+            console.log("setting up socket");
+            socket.value = io({
+                auth: {
+                    token,
+                },
+                autoConnect: true,
+            });
+            socket.value.on("connect", () => {
                 isConnected.value = true;
                 console.log("Connected to Socket.IO server");
                 resolve();
             });
 
-            socket.value?.on("disconnect", () => {
+            socket.value.on("disconnect", () => {
                 isConnected.value = false;
                 console.log("Disconnected from Socket.IO server");
                 initializationPromise.value = null;

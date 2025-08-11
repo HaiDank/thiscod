@@ -4,14 +4,20 @@ import { cn } from "~/lib/utils";
 const serverStore = useServerStore();
 const socket = useSocketStore();
 const authStore = useAuthStore();
+const conversationStore = useConversationStore();
 await authStore.init();
 await serverStore.refreshServers();
+await conversationStore.refreshConversations();
 await socket.init();
 
 const {
     serversStatus,
-
 } = storeToRefs(serverStore);
+const {
+    conversationsStatus,
+} = storeToRefs(conversationStore);
+
+const isLoading = computed(() => conversationsStatus.value === "pending" || serversStatus.value === "pending");
 
 onBeforeUnmount(() => {
     socket.disconnect();
@@ -22,7 +28,7 @@ const isResizing = useIsResizing();
 
 <template>
     <section :class="cn('w-screen h-screen overflow-hidden', isResizing && 'cursor-ew-resize ')">
-        <div :class="cn('w-screen h-screen bg-background absolute top-0 left-0 z-100 flex items-center justify-center', serversStatus === 'pending' ? '' : 'hidden')">
+        <div :class="cn('w-screen h-screen bg-background absolute top-0 left-0 z-100 flex items-center justify-center', isLoading ? '' : 'hidden')">
             <UIcon name="mdi:jellyfish" class="animate-spin-ease-loop size-32" />
         </div>
         <Header />
