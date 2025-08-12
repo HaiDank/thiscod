@@ -3,7 +3,7 @@ import type { ChatInput } from "#components";
 
 import * as z from "zod";
 
-import type { InsertDirectMessage } from "~/lib/db/schema";
+import type { InsertDirectMessage, SelectDirectMessage, SelectMessage } from "~/lib/db/schema";
 
 const route = useRoute();
 const { csrf } = useCsrf();
@@ -31,6 +31,12 @@ async function handleSendMessage(data: InsertDirectMessage) {
     await sendMessage(data, Number(route.params.id), csrf);
     inputRef.value?.resetForm();
 }
+
+function handleEditMessage(data: SelectMessage | SelectDirectMessage) {
+    if ("conversationId" in data) {
+        conversationStore.editMessage(data);
+    }
+}
 </script>
 
 <template>
@@ -52,6 +58,7 @@ async function handleSendMessage(data: InsertDirectMessage) {
                 :has-next="hasNext"
                 :messages="messages"
                 :messages-status="messagesStatus"
+                @edit-message="handleEditMessage"
             >
                 <template #start>
                     <div class="w-full px-4 space-y-2">

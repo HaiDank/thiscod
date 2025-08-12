@@ -3,7 +3,7 @@ import type { ChatInput } from "#components";
 
 import * as z from "zod";
 
-import type { InsertMessage } from "~/lib/db/schema";
+import type { InsertMessage, SelectDirectMessage, SelectMessage } from "~/lib/db/schema";
 
 const inputRef = ref<InstanceType<typeof ChatInput> | null>(null);
 
@@ -33,6 +33,12 @@ async function handleSendMessage(data: InsertMessage) {
     await sendMessage(data, Number(route.params.channel), Number(route.params.server), csrf);
     inputRef.value?.resetForm();
 }
+
+function handleEditMessage(data: SelectMessage | SelectDirectMessage) {
+    if ("channelId" in data) {
+        chatStore.editMessage(data, Number(route.params.server));
+    }
+}
 </script>
 
 <template>
@@ -49,6 +55,7 @@ async function handleSendMessage(data: InsertMessage) {
                 :messages-status="messagesStatus"
                 :has-next="hasNext"
                 @fetch-next-messages="fetchNextMessages"
+                @edit-message="handleEditMessage"
             >
                 <template #start>
                     <div class="w-full px-4">

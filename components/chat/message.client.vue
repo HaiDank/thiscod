@@ -134,8 +134,22 @@ async function handleEditMessage(data: InsertMessage) {
                 </UTooltip>
             </div>
             <!-- message content -->
+            <div v-if="!isEditMode" class="flex items-end gap-1">
+                <pre :class="cn('text-base ', message.pending ? 'text-dimmed' : '')">{{ message.content }}</pre>
+                <UTooltip
+                    :content="{
+                        align: 'center',
+                        side: 'top',
+                    }"
+                    :text="formatFullDate(message.updatedAt)"
+                >
+                    <span v-if="message.edited" class="text-dimmed text-xs cursor-default pb-1">
+                        (edited)
+                    </span>
+                </UTooltip>
+            </div>
 
-            <pre v-if="!isEditMode" :class="cn('text-base ', message.pending ? 'text-dimmed' : '')">{{ message.content }}</pre>
+            <!-- edit message -->
             <LazyChatEditMessage
                 v-else
                 :message="message"

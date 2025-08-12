@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { AsyncDataRequestStatus } from "#app";
 
+import type { SelectDirectMessage, SelectMessage } from "~/lib/db/schema";
 import type { ClientMessageType } from "~/lib/types";
 
 const { hasNext, messages, messagesStatus } = defineProps<{
@@ -9,7 +10,7 @@ const { hasNext, messages, messagesStatus } = defineProps<{
     hasNext: boolean;
 }>();
 
-const emits = defineEmits(["fetchNextMessages"]);
+const emits = defineEmits(["fetchNextMessages", "editMessage"]);
 
 const messageContainer = ref(null);
 const firstMessageRef = ref(null);
@@ -22,9 +23,9 @@ function handleFetchNext() {
     }
 }
 
-// function handleEditMessage(data) {
-
-// }
+function handleEditMessage(data: SelectMessage | SelectDirectMessage) {
+    emits("editMessage", data);
+}
 
 useChatScroll(messageContainer, firstMessageRef, handleFetchNext);
 </script>
