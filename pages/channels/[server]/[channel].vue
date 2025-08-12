@@ -30,8 +30,9 @@ onBeforeUnmount(() => {
 });
 
 async function handleSendMessage(data: InsertMessage) {
-    await sendMessage(data, Number(route.params.channel), Number(route.params.server), csrf);
+    const copy = { ...data };
     inputRef.value?.resetForm();
+    await sendMessage(copy, Number(route.params.channel), Number(route.params.server), csrf);
 }
 
 function handleEditMessage(data: SelectMessage | SelectDirectMessage) {

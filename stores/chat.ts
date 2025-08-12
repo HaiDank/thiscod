@@ -49,30 +49,56 @@ export const useChatStore = defineStore("useChatStore", () => {
         processedMessagesKey.value = new Set();
     }
 
+    function reprocessMessagesAfterDelete(data: SelectMessage) {
+        for (let i = 0; i < messages.value.length; i++) {
+            if (messages.value[i].id === data.id) {
+                // if has prev msg
+                if (i > 0) {
+                    if (i !== messages.value.length) {
+                        let isConnected = false;
+                        if ((data.userId && Number(data.userId) === Number(messages.value[i - 1].user.id)) && (data.createdAt && messages.value[i - 1].createdAt - data.createdAt <= 5 * 60 * 1000)) {
+                            isConnected = true;
+                        }
+                        messages.value[i - 1].isConnected = isConnected;
+                    }
+                    else {
+                        messages.value[i - 1].isConnected = true;
+                    }
+                }
+                messages.value.splice(i, 1);
+                return;
+            }
+        }
+    }
+    function reprocessMessagesAfterEdit(data: SelectMessage) {
+        for (let i = 0; i < messages.value.length; i++) {
+            if (messages.value[i].id === data.id) {
+                messages.value[i] = {
+                    ...messages.value[i],
+                    content: data.content,
+                    edited: true,
+                    updatedAt: data.updatedAt,
+                };
+                return;
+            }
+        }
+    }
+
     function deleteMessage(data: SelectMessage) {
-        messages.value.filter(msg => msg.id !== data.id);
+        reprocessMessagesAfterDelete(data);
 
         socketStore.emit("delete-message", data);
     }
 
     function editMessage(data: SelectMessage) {
-        messages.value.forEach((msg, index) => {
-            if (msg.id === data.id) {
-                messages.value[index] = {
-                    ...messages.value[index],
-                    content: data.content,
-                    edited: true,
-                    updatedAt: data.updatedAt,
-                };
-            }
-        });
+        reprocessMessagesAfterEdit(data);
 
         socketStore.emit("edit-message", data);
     }
 
     function ClientMessageBuilder(curr: SelectMessageWithUser, prevCreatedAt?: number | null, prevUserId?: number | null, pending?: boolean): ClientMessageType {
         let isConnected = false;
-        if ((prevUserId && Number(prevUserId) === Number(curr.userId)) && (prevCreatedAt && curr.createdAt - prevCreatedAt <= 7 * 60 * 1000)) { // considered connected when sent within 5 minutes of each other and of the same sender
+        if ((prevUserId && Number(prevUserId) === Number(curr.userId)) && (prevCreatedAt && curr.createdAt - prevCreatedAt <= 5 * 60 * 1000)) { // considered connected when sent within 5 minutes of each other and of the same sender
             isConnected = true;
         }
         const clientMsg: ClientMessageType = {
@@ -184,20 +210,11 @@ export const useChatStore = defineStore("useChatStore", () => {
             });
 
             socketStore.on("message-editted", (data: SelectMessage) => {
-                messages.value.forEach((msg, index) => {
-                    if (msg.id === data.id) {
-                        messages.value[index] = {
-                            ...messages.value[index],
-                            content: data.content,
-                            edited: true,
-                            updatedAt: data.updatedAt,
-                        };
-                    }
-                });
+                reprocessMessagesAfterEdit(data);
             });
 
             socketStore.on("message-deleted", (data: SelectMessage) => {
-                messages.value.filter(msg => msg.id !== data.id);
+                reprocessMessagesAfterDelete(data);
             });
 
             await refreshMessages();

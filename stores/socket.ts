@@ -29,7 +29,7 @@ export const useSocketStore = defineStore("socketio", () => {
     }
 
     async function _init() {
-        if (isConnected.value || (socket.value && socket.value.connected)) {
+        if (isConnected.value) {
             return;
         }
 
@@ -46,7 +46,6 @@ export const useSocketStore = defineStore("socketio", () => {
 
     function setupEventListeners(token: string | undefined) {
         return new Promise<void>((resolve) => {
-            console.log("setting up socket");
             socket.value = io({
                 auth: {
                     token,

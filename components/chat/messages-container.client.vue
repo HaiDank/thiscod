@@ -54,10 +54,13 @@ async function handleDeleteMessage() {
         catch (e) {
             const error = e as unknown as FetchError;
             toast.add({
-                title: "An error occured while editing your message",
+                title: "An error occured while deleting your message",
                 description: getFetchErrorMessage(error),
                 color: "error",
             });
+        }
+        finally {
+            chosenMessage.value = null;
         }
     }
 }

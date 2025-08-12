@@ -288,9 +288,9 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
                 if (!user)
                     return;
                 // Broadcast message only to users in the specific channel
-                socket.to(`conversation:${msg.conversationId}`).emit("direct-message-editted", msg);
+                socket.to(`conversation:${msg.conversationId}`).emit("direct-message-deleted", msg);
 
-                console.log(`Message editted in conversation:${msg.conversationId} by user ${user.name}`);
+                console.log(`Message deleted in conversation:${msg.conversationId} by user ${user.name}`);
                 updateUserLastSeen(user.id);
             }
             catch (error) {

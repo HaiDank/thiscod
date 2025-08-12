@@ -28,8 +28,9 @@ const { fetchNextMessages, sendMessage } = conversationStore;
 const { currentConversation, hasNext, messages, messagesStatus, currentConversationStatus } = storeToRefs(conversationStore);
 
 async function handleSendMessage(data: InsertDirectMessage) {
-    await sendMessage(data, Number(route.params.id), csrf);
+    const copy = { ...data };
     inputRef.value?.resetForm();
+    await sendMessage(copy, Number(route.params.id), csrf);
 }
 
 function handleEditMessage(data: SelectMessage | SelectDirectMessage) {
@@ -60,10 +61,10 @@ function handleDeleteMessage(data: SelectMessage | SelectDirectMessage) {
             </ChatHeader>
 
             <ChatMessagesContainer
-                :fetch-next-messages="fetchNextMessages"
                 :has-next="hasNext"
                 :messages="messages"
                 :messages-status="messagesStatus"
+                @fetch-next-messages="fetchNextMessages"
                 @edit-message="handleEditMessage"
                 @delete-message="handleDeleteMessage"
             >

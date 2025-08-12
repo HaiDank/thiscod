@@ -13,7 +13,12 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    const updated = await deleteMessage(Number(event.context.user.id), Number(id));
-
-    return updated;
+    const deleted = await deleteMessage(Number(event.context.user.id), Number(id));
+    if (!deleted) {
+        throw createError({
+            statusCode: 404,
+            statusMessage: "Message not found.",
+        });
+    }
+    return deleted;
 });

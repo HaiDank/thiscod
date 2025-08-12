@@ -15,7 +15,7 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         cursor: undefined,
     });
     const msgCount = ref(0);
-    const cacheKey = computed(() => `messages-direct-${route.params.conversation}-cursor-${pagination.value.cursor ?? 0}`);
+    const cacheKey = computed(() => `messages-direct-${route.params.id}-cursor-${pagination.value.cursor ?? 0}`);
     const {
         data,
         status: messagesStatus,
@@ -65,9 +65,43 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         processedMessagesKey.value = new Set();
     }
 
-    function deleteMessage(data: SelectDirectMessage) {
-        messages.value.filter(msg => msg.id !== data.id);
+    function reprocessMessagesAfterDelete(data: SelectDirectMessage) {
+        for (let i = 0; i < messages.value.length; i++) {
+            if (messages.value[i].id === data.id) {
+                // if has prev msg
+                if (i > 0) {
+                    if (i !== messages.value.length - 1) {
+                        let isConnected = false;
+                        if ((data.userId && Number(messages.value[i + 1].user.id) === Number(messages.value[i - 1].user.id)) && (messages.value[i + 1].createdAt && messages.value[i - 1].createdAt - messages.value[i + 1].createdAt <= 5 * 60 * 1000)) {
+                            isConnected = true;
+                        }
+                        messages.value[i - 1].isConnected = isConnected;
+                    }
+                    else {
+                        messages.value[i - 1].isConnected = false;
+                    }
+                }
+                messages.value.splice(i, 1);
+                return;
+            }
+        }
+    }
+    function reprocessMessagesAfterEdit(data: SelectDirectMessage) {
+        for (let i = 0; i < messages.value.length; i++) {
+            if (messages.value[i].id === data.id) {
+                messages.value[i] = {
+                    ...messages.value[i],
+                    content: data.content,
+                    edited: true,
+                    updatedAt: data.updatedAt,
+                };
+                return;
+            }
+        }
+    }
 
+    function deleteMessage(data: SelectDirectMessage) {
+        reprocessMessagesAfterDelete(data);
         socketStore.emit("delete-direct-message", data);
     }
 
@@ -85,7 +119,7 @@ export const useConversationStore = defineStore("useConversationStore", () => {
 
     function ClientMessageBuilder(curr: SelectDirectMessageWithUser, prevCreatedAt?: number | null, prevUserId?: number | null, pending?: boolean): ClientMessageType {
         let isConnected = false;
-        if ((prevUserId && Number(prevUserId) === Number(curr.userId)) && (prevCreatedAt && curr.createdAt - prevCreatedAt <= 7 * 60 * 1000)) { // considered connected when sent within 5 minutes of each other and of the same sender
+        if ((prevUserId && Number(prevUserId) === Number(curr.userId)) && (prevCreatedAt && curr.createdAt - prevCreatedAt <= 5 * 60 * 1000)) { // considered connected when sent within 5 minutes of each other and of the same sender
             isConnected = true;
         }
         const clientMsg: ClientMessageType = {
@@ -195,20 +229,11 @@ export const useConversationStore = defineStore("useConversationStore", () => {
             });
 
             socketStore.on("direct-message-editted", (data: SelectDirectMessage) => {
-                messages.value.forEach((msg, index) => {
-                    if (msg.id === data.id) {
-                        messages.value[index] = {
-                            ...messages.value[index],
-                            content: data.content,
-                            edited: true,
-                            updatedAt: data.updatedAt,
-                        };
-                    }
-                });
+                reprocessMessagesAfterEdit(data);
             });
 
             socketStore.on("direct-message-deleted", (data: SelectDirectMessage) => {
-                messages.value.filter(msg => msg.id !== data.id);
+                reprocessMessagesAfterDelete(data);
             });
 
             await refreshMessages();
@@ -260,5 +285,6 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         hasNext,
         editMessage,
         deleteMessage,
+        cacheKey,
     };
 });
