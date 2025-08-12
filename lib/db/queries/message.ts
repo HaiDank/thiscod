@@ -46,3 +46,13 @@ export async function findDirectMessages(conversationId: number, limit: number, 
 export async function countDirectMessages(conversationId: number) {
     return await db.select({ count: count(directMessage.conversationId) }).from(directMessage).where(eq(directMessage.conversationId, conversationId));
 }
+
+export async function updateDirectMessage(userId: number, messageId: number, data: InsertDirectMessage) {
+    const [updated] = await db.update(directMessage).set({ content: data.content, edited: true, updatedAt: Date.now() }).where(and(eq(directMessage.id, messageId), eq(directMessage.userId, userId))).returning();
+    return updated;
+}
+
+export async function updateMessage(userId: number, messageId: number, data: InsertMessage) {
+    const [updated] = await db.update(message).set({ content: data.content, edited: true, updatedAt: Date.now() }).where(and(eq(message.id, messageId), eq(message.userId, userId))).returning();
+    return updated;
+}

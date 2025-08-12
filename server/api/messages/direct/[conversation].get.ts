@@ -12,7 +12,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         return sendZodError(event, result.error);
     }
 
-    const id = getRouterParam(event, "conversation");
+    const id = getRouterParam(event, "conversation") as string;
 
     if (!z.coerce.number().safeParse(id).success) {
         return createError({

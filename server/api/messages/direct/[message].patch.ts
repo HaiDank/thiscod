@@ -1,7 +1,6 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 
-import { findConversation } from "~/lib/db/queries/conversation";
-import { insertDirectMessage } from "~/lib/db/queries/message";
+import { updateDirectMessage } from "~/lib/db/queries/message";
 import { InsertMessage } from "~/lib/db/schema";
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
 import sendZodError from "~/utils/send-zod-error";
@@ -13,7 +12,6 @@ export default defineAuthenticatedEventHandler(async (event) => {
     }
 
     const id = getRouterParam(event, "conversation") as string;
-
     if (!z.coerce.number().safeParse(id).success) {
         return createError({
             statusCode: 422,
@@ -21,16 +19,8 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    const conversation = await findConversation(Number(id), Number(event.context.user.id));
+    const updated = await updateDirectMessage(Number(event.context.user.id), Number(id), result.data);
+    console.log(updated);
 
-    if (!conversation) {
-        return createError({
-            statusCode: 404,
-            statusMessage: "Conversation not found.",
-        });
-    }
-
-    const createdDirectMessage = await insertDirectMessage(result.data, Number(event.context.user.id), Number(id));
-
-    return createdDirectMessage;
+    return updated;
 });

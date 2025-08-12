@@ -1,4 +1,4 @@
-import type { InsertMessage, PaginationRequest, SelectConversationWithOtherUser, SelectDirectMessageWithUser } from "~/lib/db/schema";
+import type { InsertMessage, PaginationRequest, SelectConversationWithOtherUser, SelectDirectMessage, SelectDirectMessageWithUser } from "~/lib/db/schema";
 import type { ClientMessageType } from "~/lib/types";
 
 export const useConversationStore = defineStore("useConversationStore", () => {
@@ -65,6 +65,18 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         processedMessagesKey.value = new Set();
     }
 
+    function editMessage(data: SelectDirectMessage) {
+        messages.value.forEach((msg, index) => {
+            if (msg.id === data.id) {
+                messages.value[index].content = data.content;
+                messages.value[index].updatedAt = data.updatedAt;
+                messages.value[index].edited = true;
+            }
+        });
+
+        socketStore.emit("edit-direct-message", { msg: data, conversationId: data.conversationId });
+    }
+
     function ClientMessageBuilder(curr: SelectDirectMessageWithUser, prevCreatedAt?: number | null, prevUserId?: number | null, pending?: boolean): ClientMessageType {
         let isConnected = false;
         if ((prevUserId && Number(prevUserId) === Number(curr.userId)) && (prevCreatedAt && curr.createdAt - prevCreatedAt <= 7 * 60 * 1000)) { // considered connected when sent within 5 minutes of each other and of the same sender
@@ -78,6 +90,7 @@ export const useConversationStore = defineStore("useConversationStore", () => {
             edited: curr.edited,
             user: curr.user,
             id: curr.id,
+            type: "direct",
             isConnected,
             pending,
         };
@@ -178,6 +191,19 @@ export const useConversationStore = defineStore("useConversationStore", () => {
                 messages.value.unshift(clientMsg);
             });
 
+            socketStore.on("direct-message-editted", (data: SelectDirectMessage) => {
+                messages.value.forEach((msg, index) => {
+                    if (msg.id === data.id) {
+                        messages.value[index] = {
+                            ...messages.value[index],
+                            content: data.content,
+                            edited: true,
+                            updatedAt: data.updatedAt,
+                        };
+                    }
+                });
+            });
+
             await refreshMessages();
         }
     }
@@ -225,5 +251,6 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         currentConversationStatus,
         refreshCurrentConversation,
         hasNext,
+        editMessage,
     };
 });

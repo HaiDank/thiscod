@@ -1,4 +1,4 @@
-import type { InsertMessage, PaginationRequest, SelectMessageWithUser } from "~/lib/db/schema";
+import type { InsertMessage, PaginationRequest, SelectMessage, SelectMessageWithUser } from "~/lib/db/schema";
 import type { ClientMessageType } from "~/lib/types";
 
 export const useChatStore = defineStore("useChatStore", () => {
@@ -49,6 +49,21 @@ export const useChatStore = defineStore("useChatStore", () => {
         processedMessagesKey.value = new Set();
     }
 
+    function editMessage(data: SelectMessage, serverId: number) {
+        messages.value.forEach((msg, index) => {
+            if (msg.id === data.id) {
+                messages.value[index] = {
+                    ...messages.value[index],
+                    content: data.content,
+                    edited: true,
+                    updatedAt: data.updatedAt,
+                };
+            }
+        });
+
+        socketStore.emit("edit-message", { msg: data, channelId: data.channelId, serverId });
+    }
+
     function ClientMessageBuilder(curr: SelectMessageWithUser, prevCreatedAt?: number | null, prevUserId?: number | null, pending?: boolean): ClientMessageType {
         let isConnected = false;
         if ((prevUserId && Number(prevUserId) === Number(curr.userId)) && (prevCreatedAt && curr.createdAt - prevCreatedAt <= 7 * 60 * 1000)) { // considered connected when sent within 5 minutes of each other and of the same sender
@@ -62,6 +77,7 @@ export const useChatStore = defineStore("useChatStore", () => {
             edited: curr.edited,
             user: curr.user,
             id: curr.id,
+            type: "channel",
             isConnected,
             pending,
         };
@@ -161,6 +177,19 @@ export const useChatStore = defineStore("useChatStore", () => {
                 messages.value.unshift(clientMsg);
             });
 
+            socketStore.on("message-editted", (data: SelectMessage) => {
+                messages.value.forEach((msg, index) => {
+                    if (msg.id === data.id) {
+                        messages.value[index] = {
+                            ...messages.value[index],
+                            content: data.content,
+                            edited: true,
+                            updatedAt: data.updatedAt,
+                        };
+                    }
+                });
+            });
+
             await refreshMessages();
         }
     }
@@ -183,5 +212,6 @@ export const useChatStore = defineStore("useChatStore", () => {
         refreshMessages,
         fetchNextMessages,
         hasNext,
+        editMessage,
     };
 });
