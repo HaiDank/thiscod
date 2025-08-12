@@ -34,16 +34,18 @@ function handleKeydown(event: KeyboardEvent) {
 
         form.value?.submit();
     }
-    else if (event.key === "Escape") {
+}
+
+defineShortcuts({
+    Escape: () => {
         resetState();
         emit("cancel");
-    }
-}
+    },
+});
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     if ((event.data.content && event.data.content.trim().length > 0) || event.data.file) {
         emit("editMessage", event.data);
-        console.log(event.data);
     }
 }
 </script>

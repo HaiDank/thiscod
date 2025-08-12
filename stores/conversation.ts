@@ -65,6 +65,12 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         processedMessagesKey.value = new Set();
     }
 
+    function deleteMessage(data: SelectDirectMessage) {
+        messages.value.filter(msg => msg.id !== data.id);
+
+        socketStore.emit("delete-direct-message", data);
+    }
+
     function editMessage(data: SelectDirectMessage) {
         messages.value.forEach((msg, index) => {
             if (msg.id === data.id) {
@@ -74,7 +80,7 @@ export const useConversationStore = defineStore("useConversationStore", () => {
             }
         });
 
-        socketStore.emit("edit-direct-message", { msg: data, conversationId: data.conversationId });
+        socketStore.emit("edit-direct-message", data);
     }
 
     function ClientMessageBuilder(curr: SelectDirectMessageWithUser, prevCreatedAt?: number | null, prevUserId?: number | null, pending?: boolean): ClientMessageType {
@@ -145,7 +151,7 @@ export const useConversationStore = defineStore("useConversationStore", () => {
 
         const originalMessages = [...messages.value];
 
-        const res = await $fetch(api.value, {
+        const res = await $fetch<SelectDirectMessage>(api.value, {
             method: "POST",
             body: data,
             headers: {
@@ -168,10 +174,7 @@ export const useConversationStore = defineStore("useConversationStore", () => {
                 if (response.status === 200) {
                     messages.value[0].pending = false;
                     if (socketStore.isConnected) {
-                        socketStore.emit("send-direct-message", {
-                            msg: { ...response._data, user: authStore.user },
-                            conversationId,
-                        });
+                        socketStore.emit("send-direct-message", { ...response._data, user: authStore.user });
                     }
                 }
             },
@@ -202,6 +205,10 @@ export const useConversationStore = defineStore("useConversationStore", () => {
                         };
                     }
                 });
+            });
+
+            socketStore.on("direct-message-deleted", (data: SelectDirectMessage) => {
+                messages.value.filter(msg => msg.id !== data.id);
             });
 
             await refreshMessages();
@@ -252,5 +259,6 @@ export const useConversationStore = defineStore("useConversationStore", () => {
         refreshCurrentConversation,
         hasNext,
         editMessage,
+        deleteMessage,
     };
 });

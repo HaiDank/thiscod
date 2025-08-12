@@ -49,7 +49,13 @@ export const useChatStore = defineStore("useChatStore", () => {
         processedMessagesKey.value = new Set();
     }
 
-    function editMessage(data: SelectMessage, serverId: number) {
+    function deleteMessage(data: SelectMessage) {
+        messages.value.filter(msg => msg.id !== data.id);
+
+        socketStore.emit("delete-message", data);
+    }
+
+    function editMessage(data: SelectMessage) {
         messages.value.forEach((msg, index) => {
             if (msg.id === data.id) {
                 messages.value[index] = {
@@ -61,7 +67,7 @@ export const useChatStore = defineStore("useChatStore", () => {
             }
         });
 
-        socketStore.emit("edit-message", { msg: data, channelId: data.channelId, serverId });
+        socketStore.emit("edit-message", data);
     }
 
     function ClientMessageBuilder(curr: SelectMessageWithUser, prevCreatedAt?: number | null, prevUserId?: number | null, pending?: boolean): ClientMessageType {
@@ -151,7 +157,7 @@ export const useChatStore = defineStore("useChatStore", () => {
                     color: "error",
                 });
             },
-            async onResponse({ response }) {
+            onResponse({ response }) {
                 messages.value[0].pending = false;
                 if (socketStore.isConnected) {
                     socketStore.emit("send-message", {
@@ -190,6 +196,10 @@ export const useChatStore = defineStore("useChatStore", () => {
                 });
             });
 
+            socketStore.on("message-deleted", (data: SelectMessage) => {
+                messages.value.filter(msg => msg.id !== data.id);
+            });
+
             await refreshMessages();
         }
     }
@@ -213,5 +223,6 @@ export const useChatStore = defineStore("useChatStore", () => {
         fetchNextMessages,
         hasNext,
         editMessage,
+        deleteMessage,
     };
 });

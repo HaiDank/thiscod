@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme static {
+/* @theme static {
     --color-indigo-50: oklch(0.962 0.018 272.314);
     --color-indigo-100: oklch(0.93 0.034 272.788);
     --color-indigo-200: oklch(0.87 0.065 274.039);
@@ -16,7 +16,8 @@
     --color-indigo-800: oklch(0.398 0.195 277.366);
     --color-indigo-900: oklch(0.359 0.144 278.697);
     --color-indigo-950: oklch(0.257 0.09 281.288);
-}
+
+} */
 
 @theme inline {
     --color-background: var(--background);
@@ -97,6 +98,8 @@
     --ui-text: var(--ui-color-neutral-900);
     --ui-text-highlighted: var(--color-black);
     --ui-text-inverted: var(--ui-color-neutral-300);
+    --ui-error: var(--ui-color-error-500);
+    --ui-primary: var(--ui-color-primary-500);
 }
 
 .dark {
@@ -139,6 +142,8 @@
     --ui-text: var(--ui-color-neutral-200);
     --ui-text-highlighted: var(--color-white);
     --ui-text-inverted: var(--ui-color-neutral-900);
+    --ui-error: var(--ui-color-error-600);
+    --ui-primary: var(--ui-color-primary-600);
 }
 
 @theme {

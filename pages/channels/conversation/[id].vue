@@ -37,6 +37,12 @@ function handleEditMessage(data: SelectMessage | SelectDirectMessage) {
         conversationStore.editMessage(data);
     }
 }
+
+function handleDeleteMessage(data: SelectMessage | SelectDirectMessage) {
+    if ("conversationId" in data) {
+        conversationStore.deleteMessage(data);
+    }
+}
 </script>
 
 <template>
@@ -59,6 +65,7 @@ function handleEditMessage(data: SelectMessage | SelectDirectMessage) {
                 :messages="messages"
                 :messages-status="messagesStatus"
                 @edit-message="handleEditMessage"
+                @delete-message="handleDeleteMessage"
             >
                 <template #start>
                     <div class="w-full px-4 space-y-2">

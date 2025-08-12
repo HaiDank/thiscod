@@ -210,16 +210,15 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
         });
 
         // Send message to convo
-        socket.on("send-direct-message", async (data: { msg: SelectDirectMessageWithUser; conversationId: number }) => {
+        socket.on("send-direct-message", async (msg: SelectDirectMessageWithUser) => {
             try {
                 const user = socket.user;
                 if (!user)
                     return;
-                const { msg, conversationId } = data;
                 // Broadcast message only to users in the specific channel
-                socket.to(`conversation:${conversationId}`).emit("direct-message", msg);
+                socket.to(`conversation:${msg.conversationId}`).emit("direct-message", msg);
 
-                console.log(`Message sent in conversation:${conversationId} by user ${user.name}`, msg);
+                console.log(`Message sent in conversation:${msg.conversationId} by user ${user.name}`, msg);
                 updateUserLastSeen(user.id);
             }
             catch (error) {
@@ -229,18 +228,15 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
         });
 
         // Edit message to channel
-        socket.on("edit-message", async (data: { msg: SelectMessage; channelId: number; serverId: number }) => {
+        socket.on("edit-message", async (msg: SelectMessage) => {
             try {
                 const user = socket.user;
                 if (!user)
                     return;
-                const { msg, channelId, serverId } = data;
-                // Broadcast message only to users in the specific channel
-                socket.to(`channel:${channelId}`).emit("message-editted", msg);
 
-                socket.to(`server:${serverId}`).emit("notification", msg);
+                socket.to(`channel:${msg.channelId}`).emit("message-editted", msg);
 
-                console.log(`Message editted in channel ${channelId} by user ${user.name}`);
+                console.log(`Message editted in channel ${msg.channelId} by user ${user.name}`);
                 updateUserLastSeen(user.id);
             }
             catch (error) {
@@ -250,16 +246,51 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
         });
 
         // Edit message to convo
-        socket.on("edit-direct-message", async (data: { msg: SelectDirectMessage; conversationId: number }) => {
+        socket.on("edit-direct-message", async (msg: SelectDirectMessage) => {
             try {
                 const user = socket.user;
                 if (!user)
                     return;
-                const { msg, conversationId } = data;
                 // Broadcast message only to users in the specific channel
-                socket.to(`conversation:${conversationId}`).emit("direct-message-editted", msg);
+                socket.to(`conversation:${msg.conversationId}`).emit("direct-message-editted", msg);
 
-                console.log(`Message editted in conversation:${conversationId} by user ${user.name}`);
+                console.log(`Message editted in conversation:${msg.conversationId} by user ${user.name}`);
+                updateUserLastSeen(user.id);
+            }
+            catch (error) {
+                console.error(error);
+                socket.emit("error", { message: "Failed to send message" });
+            }
+        });
+
+        // Edit message to channel
+        socket.on("delete-message", async (msg: SelectMessage) => {
+            try {
+                const user = socket.user;
+                if (!user)
+                    return;
+
+                socket.to(`channel:${msg.channelId}`).emit("message-deleted", msg);
+
+                console.log(`Message deleted in channel ${msg.channelId} by user ${user.name}`);
+                updateUserLastSeen(user.id);
+            }
+            catch (error) {
+                console.error(error);
+                socket.emit("error", { message: "Failed to send message" });
+            }
+        });
+
+        // Edit message to convo
+        socket.on("delete-direct-message", async (msg: SelectDirectMessage) => {
+            try {
+                const user = socket.user;
+                if (!user)
+                    return;
+                // Broadcast message only to users in the specific channel
+                socket.to(`conversation:${msg.conversationId}`).emit("direct-message-editted", msg);
+
+                console.log(`Message editted in conversation:${msg.conversationId} by user ${user.name}`);
                 updateUserLastSeen(user.id);
             }
             catch (error) {

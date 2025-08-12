@@ -36,7 +36,13 @@ async function handleSendMessage(data: InsertMessage) {
 
 function handleEditMessage(data: SelectMessage | SelectDirectMessage) {
     if ("channelId" in data) {
-        chatStore.editMessage(data, Number(route.params.server));
+        chatStore.editMessage(data);
+    }
+}
+
+function handleDeleteMessage(data: SelectMessage | SelectDirectMessage) {
+    if ("channelId" in data) {
+        chatStore.deleteMessage(data);
     }
 }
 </script>
@@ -56,6 +62,7 @@ function handleEditMessage(data: SelectMessage | SelectDirectMessage) {
                 :has-next="hasNext"
                 @fetch-next-messages="fetchNextMessages"
                 @edit-message="handleEditMessage"
+                @delete-message="handleDeleteMessage"
             >
                 <template #start>
                     <div class="w-full px-4">
