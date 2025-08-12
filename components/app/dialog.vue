@@ -7,10 +7,7 @@ defineProps<{
     description: string;
 }>();
 
-const emit = defineEmits<{
-    onClosed: [];
-    onConfirmed: [];
-}>();
+const emit = defineEmits(["onClosed", "onConfirmed"]);
 
 function onClose() {
     emit("onClosed");
@@ -27,7 +24,13 @@ function onConfirm() {
         :title="title"
         :description="description"
         :ui="{ footer: 'justify-end' }"
+        :close="false"
+        :dismissible="false"
+        @close:prevent="onClose"
     >
+        <template #body>
+            <slot name="body" />
+        </template>
         <template #footer>
             <UButton
                 class="font-semibold"

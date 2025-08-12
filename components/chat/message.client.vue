@@ -10,7 +10,7 @@ const { message } = defineProps<{
     message: ClientMessageType;
 }>();
 
-const emit = defineEmits(["editMessage"]);
+const emit = defineEmits(["editMessage", "deleteMessage"]);
 const authStore = useAuthStore();
 const toast = useToast();
 const { $csrfFetch } = useNuxtApp();
@@ -25,7 +25,6 @@ async function handleEditMessage(data: InsertMessage) {
                 method: "PATCH",
                 body: data,
             });
-            console.log(res);
             emit("editMessage", res);
         }
         else {
@@ -33,7 +32,6 @@ async function handleEditMessage(data: InsertMessage) {
                 method: "PATCH",
                 body: data,
             });
-            console.log(res);
             emit("editMessage", res);
         }
     }
@@ -45,6 +43,10 @@ async function handleEditMessage(data: InsertMessage) {
             color: "error",
         });
     }
+}
+
+function handleDeleteMessage() {
+    emit("deleteMessage", message);
 }
 </script>
 
@@ -90,11 +92,12 @@ async function handleEditMessage(data: InsertMessage) {
                     size="sm"
                     icon="material-symbols:delete-rounded"
                     aria-label="remove"
+                    @click="handleDeleteMessage"
                 />
             </UTooltip>
         </div>
 
-        <!-- avatar and timestamp -->
+        <!-- avatar or timestamp -->
         <div class=" w-10 flex justify-end pt-1">
             <UTooltip
                 v-if="message.isConnected"
@@ -115,8 +118,8 @@ async function handleEditMessage(data: InsertMessage) {
                 :alt="message.user?.name"
             />
         </div>
-
         <div class="flex flex-col justify-between grow">
+            <!-- user name and timestamp -->
             <div v-if="!message.isConnected" class="flex gap-2 items-baseline">
                 <span class="font-semibold">
                     {{ message.user.name }}

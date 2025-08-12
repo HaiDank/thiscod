@@ -28,13 +28,20 @@ const { fetchNextMessages, sendMessage } = conversationStore;
 const { currentConversation, hasNext, messages, messagesStatus, currentConversationStatus } = storeToRefs(conversationStore);
 
 async function handleSendMessage(data: InsertDirectMessage) {
-    await sendMessage(data, Number(route.params.id), csrf);
+    const copy = { ...data };
     inputRef.value?.resetForm();
+    await sendMessage(copy, Number(route.params.id), csrf);
 }
 
 function handleEditMessage(data: SelectMessage | SelectDirectMessage) {
     if ("conversationId" in data) {
         conversationStore.editMessage(data);
+    }
+}
+
+function handleDeleteMessage(data: SelectMessage | SelectDirectMessage) {
+    if ("conversationId" in data) {
+        conversationStore.deleteMessage(data);
     }
 }
 </script>
@@ -54,11 +61,12 @@ function handleEditMessage(data: SelectMessage | SelectDirectMessage) {
             </ChatHeader>
 
             <ChatMessagesContainer
-                :fetch-next-messages="fetchNextMessages"
                 :has-next="hasNext"
                 :messages="messages"
                 :messages-status="messagesStatus"
+                @fetch-next-messages="fetchNextMessages"
                 @edit-message="handleEditMessage"
+                @delete-message="handleDeleteMessage"
             >
                 <template #start>
                     <div class="w-full px-4 space-y-2">

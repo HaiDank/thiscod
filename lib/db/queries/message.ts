@@ -56,3 +56,13 @@ export async function updateMessage(userId: number, messageId: number, data: Ins
     const [updated] = await db.update(message).set({ content: data.content, edited: true, updatedAt: Date.now() }).where(and(eq(message.id, messageId), eq(message.userId, userId))).returning();
     return updated;
 }
+
+export async function deleteMessage(userId: number, messageId: number) {
+    const [deleted] = await db.delete(message).where(and(eq(message.id, messageId), eq(message.userId, userId))).returning();
+    return deleted;
+}
+
+export async function deleteDirectMessage(userId: number, directMessageId: number) {
+    const [deleted] = await db.delete(directMessage).where(and(eq(directMessage.id, directMessageId), eq(directMessage.userId, userId))).returning();
+    return deleted;
+}

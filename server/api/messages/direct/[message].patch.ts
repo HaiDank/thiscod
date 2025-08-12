@@ -20,7 +20,6 @@ export default defineAuthenticatedEventHandler(async (event) => {
     }
 
     const updated = await updateDirectMessage(Number(event.context.user.id), Number(id), result.data);
-    console.log(updated);
 
     return updated;
 });
