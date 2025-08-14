@@ -9,12 +9,12 @@ export const useConversationStore = defineStore("useConversationStore", () => {
     const toast = useToast();
     const conversationUrlWithId = computed(() => `/api/conversations/${route.params.id}`);
 
-    const api = computed(() => `/api/messages/direct/${route.params.id}`);
     const pagination = ref<PaginationRequest>({
         limit: 25,
         cursor: undefined,
     });
     const msgCount = ref(0);
+    const api = computed(() => `/api/messages/direct/${route.params.id}`);
     const cacheKey = computed(() => `messages-direct-${route.params.id}-cursor-${pagination.value.cursor ?? 0}`);
     const {
         data,
@@ -235,9 +235,8 @@ export const useConversationStore = defineStore("useConversationStore", () => {
             socketStore.on("direct-message-deleted", (data: SelectDirectMessage) => {
                 reprocessMessagesAfterDelete(data);
             });
-
-            await refreshMessages();
         }
+        await refreshMessages();
     }
 
     function leaveRoom() {

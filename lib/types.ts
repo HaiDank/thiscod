@@ -1,6 +1,6 @@
 import type { H3Event, H3EventContext } from "h3";
 
-import type { User } from "./db/schema";
+import type { SelectMember, User } from "./db/schema";
 
 export type ChannelType = "TEXT" | "VOICE";
 export type MemberRole = "ADMIN" | "GUEST";
@@ -16,6 +16,17 @@ export type ClientMessageType = {
     pending?: boolean;
     type: "direct" | "channel";
     user: User;
+};
+
+type SelectMemberWithUser = SelectMember & {
+    user: User;
+};
+
+export type MutualServer = {
+    id: number;
+    name: string;
+    image: string | null;
+    members: SelectMemberWithUser[];
 };
 
 export type StatusError = {

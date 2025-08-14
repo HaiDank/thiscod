@@ -27,6 +27,10 @@ export const memberRelations = relations(member, ({ one }) => ({
         fields: [member.serverId],
         references: [server.id],
     }),
+    user: one(user, {
+        fields: [member.userId],
+        references: [user.id],
+    }),
 }));
 
 export const InsertMember = createInsertSchema(member, {

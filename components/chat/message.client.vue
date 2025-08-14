@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { AppUserDetailPopover } from "#components";
 import type { FetchError } from "ofetch";
 
 import type { InsertMessage } from "~/lib/db/schema";
@@ -16,7 +17,13 @@ const toast = useToast();
 const { $csrfFetch } = useNuxtApp();
 const isEditMode = ref(false);
 const isSender = computed(() => `${authStore.user?.id}` === `${message.user.id}`);
+const popoverRef = ref<InstanceType<typeof AppUserDetailPopover> | null>(null);
 
+function togglePopover() {
+    if (popoverRef.value) {
+        popoverRef.value.togglePopover();
+    }
+}
 async function handleEditMessage(data: InsertMessage) {
     isEditMode.value = false;
     try {
@@ -111,12 +118,21 @@ function handleDeleteMessage() {
                     {{ formatSimpleMessageTime(message.createdAt) }}
                 </span>
             </UTooltip>
-            <UAvatar
+            <AppUserDetailPopover
                 v-else
-                size="xl"
-                :src="message.user?.image ?? undefined"
-                :alt="message.user?.name"
-            />
+                ref="popoverRef"
+                :user="message.user"
+            >
+                <template #anchor>
+                    <UAvatar
+                        class="cursor-pointer"
+                        size="xl"
+                        :src="message.user?.image ?? undefined"
+                        :alt="message.user?.name"
+                        @click="togglePopover"
+                    />
+                </template>
+            </AppUserDetailPopover>
         </div>
         <div class="flex flex-col justify-between grow">
             <!-- user name and timestamp -->

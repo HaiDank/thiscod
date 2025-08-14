@@ -1,4 +1,4 @@
-import { and, eq, gt } from "drizzle-orm";
+import { and, eq, gt, inArray, sql } from "drizzle-orm";
 
 import type { InsertServer } from "../schema";
 
@@ -59,4 +59,30 @@ export async function removeServerById(id: number, ownerId: number) {
 
 export async function patchNewInviteCode(serverId: number, inviteCode: string, inviteCodeExpiresAt: number) {
     return await db.update(server).set({ inviteCode, inviteCodeExpiresAt }).where(eq(server.id, serverId)).returning({ code: server.inviteCode, expiresAt: server.inviteCodeExpiresAt });
+}
+
+export async function findMutualServers(userId: number, otherUserId: number) {
+    const mutualServerIdsSubquery = db
+        .select({ serverId: member.serverId })
+        .from(member)
+        .where(inArray(member.userId, [userId, otherUserId]))
+        .groupBy(member.serverId)
+        .having(sql`count(${member.serverId}) = 2`);
+
+    const mutualServers = await db.query.server.findMany({
+        where: (server, { inArray }) => inArray(server.id, mutualServerIdsSubquery),
+        columns: {
+            image: true,
+            id: true,
+            name: true,
+        },
+        with: {
+            members: {
+                with: {
+                    user: true,
+                },
+            },
+        },
+    });
+    return mutualServers;
 }

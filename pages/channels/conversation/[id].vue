@@ -15,8 +15,8 @@ if (!z.coerce.number().safeParse(route.params.id).success) {
 
 const conversationStore = useConversationStore();
 
-onMounted(async () => {
-    await conversationStore.refreshCurrentConversation();
+await conversationStore.refreshCurrentConversation();
+onMounted(() => {
     conversationStore.init();
 });
 

@@ -8,7 +8,6 @@ const conversationStore = useConversationStore();
 await authStore.init();
 await serverStore.refreshServers();
 await conversationStore.refreshConversations();
-await socket.init();
 
 const {
     serversStatus,
@@ -18,6 +17,10 @@ const {
 } = storeToRefs(conversationStore);
 
 const isLoading = computed(() => conversationsStatus.value === "pending" || serversStatus.value === "pending");
+
+onMounted(() => {
+    socket.init();
+});
 
 onBeforeUnmount(() => {
     socket.disconnect();

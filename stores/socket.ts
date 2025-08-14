@@ -13,9 +13,10 @@ export const useSocketStore = defineStore("socketio", () => {
     const currentRoom = ref<string | null>(null);
     const rooms = ref<Set<string>>(new Set());
     const initializationPromise = ref<Promise<void> | null>(null);
+    const retryAttempt = ref(0);
 
     async function init() {
-        if (isConnected.value || (socket.value && socket.value.connected)) {
+        if (isConnected.value) {
             console.log("socket already connected");
             return;
         }
@@ -23,6 +24,7 @@ export const useSocketStore = defineStore("socketio", () => {
         // Return if initialization is in progress
         if (!initializationPromise.value) {
             initializationPromise.value = _init();
+            retryAttempt.value = 0;
         }
 
         return initializationPromise.value;
@@ -40,12 +42,16 @@ export const useSocketStore = defineStore("socketio", () => {
         }
         catch (error) {
             console.error("Socket initialization failed:", error);
-            throw error;
+            if (retryAttempt.value < 7) {
+                retryAttempt.value++;
+                console.log("retry connect");
+                return _init();
+            }
         }
     }
 
     function setupEventListeners(token: string | undefined) {
-        return new Promise<void>((resolve) => {
+        return new Promise<void>((resolve, reject) => {
             socket.value = io({
                 auth: {
                     token,
@@ -56,6 +62,11 @@ export const useSocketStore = defineStore("socketio", () => {
                 isConnected.value = true;
                 console.log("Connected to Socket.IO server");
                 resolve();
+            });
+
+            socket.value.on("connect_error", (error) => {
+                console.log("Fail to connect to Socket.IO server", token);
+                reject(error);
             });
 
             socket.value.on("disconnect", () => {
