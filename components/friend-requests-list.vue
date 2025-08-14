@@ -83,7 +83,7 @@ async function handleCancelRequest(id: number) {
                     :key="`received-request-${request.id}`"
                     :user="request"
                     :sub-string="request.email"
-                    :on-click="() => {}"
+                    :with-detail="true"
                 >
                     <template #trailing>
                         <UTooltip
@@ -100,7 +100,7 @@ async function handleCancelRequest(id: number) {
                                 class="rounded-full hover:text-green-600 group-hover:bg-sidebar hover:bg-sidebar"
                                 color="neutral"
                                 icon="material-symbols:check-rounded"
-                                @click="handleAcceptRequest(request.requestId)"
+                                @click.stop="handleAcceptRequest(request.requestId)"
                             />
                         </UTooltip>
                         <UTooltip
@@ -117,7 +117,7 @@ async function handleCancelRequest(id: number) {
                                 class="rounded-full hover:text-red-600 group-hover:bg-sidebar hover:bg-sidebar"
                                 color="neutral"
                                 icon="material-symbols:close-rounded"
-                                @click="handleRejectRequest(request.requestId)"
+                                @click.stop="handleRejectRequest(request.requestId)"
                             />
                         </UTooltip>
                     </template>
@@ -132,7 +132,7 @@ async function handleCancelRequest(id: number) {
                     :key="`sent-request-${request.requestId}`"
                     :user="request"
                     :sub-string="request.email"
-                    :on-click="() => {}"
+                    :with-detail="true"
                 >
                     <template #trailing>
                         <UTooltip
@@ -149,7 +149,7 @@ async function handleCancelRequest(id: number) {
                                 class="rounded-full hover:text-red-600 group-hover:bg-sidebar hover:bg-sidebar"
                                 color="neutral"
                                 icon="material-symbols:close-rounded"
-                                @click="handleCancelRequest(request.requestId)"
+                                @click.stop="handleCancelRequest(request.requestId)"
                             />
                         </UTooltip>
                     </template>

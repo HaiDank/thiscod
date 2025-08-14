@@ -5,7 +5,7 @@
 <template>
     <div class="sticky rounded-lg bg-card w-full h-full flex items-center px-2 border border-background shadow-md gap-1">
         <AppAvatarChip />
-        <UTooltip
+        <!-- <UTooltip
             text="Mute"
             :delay-duration="0"
             arrow
@@ -47,6 +47,6 @@
                 />
             </UButton>
         </UTooltip>
-        <AppUserSetting />
+        <AppUserSetting /> -->
     </div>
 </template>

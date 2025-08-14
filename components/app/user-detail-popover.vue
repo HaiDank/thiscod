@@ -30,7 +30,6 @@ const { data: mutualServersData, status: mutualServersStatus, error: mutualServe
     },
     getCachedData(key: string, nuxtApp) {
         const data = nuxtApp.payload.data[key] || nuxtApp.static.data[key];
-        console.log("server", key, data);
         if (!data) {
             return;
         }
@@ -58,7 +57,6 @@ const { data: mutualFriendsData, status: mutualFriendsStatus, error: mutualFrien
     },
     getCachedData(key: string, nuxtApp) {
         const data = nuxtApp.payload.data[key] || nuxtApp.static.data[key];
-        console.log("friend", key, data);
         if (!data) {
             return;
         }
@@ -108,6 +106,17 @@ watchPostEffect(async () => {
         rgbString.value = `rgb(${res[0]},${res[1]},${res[2]})`;
     }
 });
+
+async function Logout() {
+    const { error } = await authStore.signOut();
+
+    if (error && error.message) {
+        toast.add({
+            color: "error",
+            title: error.message,
+        });
+    }
+}
 </script>
 
 <template>
@@ -150,13 +159,31 @@ watchPostEffect(async () => {
                             {{ user.email }}
                         </span>
                     </div>
+
                     <div v-if="isUser" class="flex flex-col gap-2 p-2 rounded-md shadow-md bg-highlight mt-2">
-                        <div class="rounded-md  bg-highlight">
-                            edit profile
-                        </div>
+                        <UButton
+                            class="rounded-md bg-highlight text-dimmed hover:text-default font-semibold cursor-pointer"
+                            variant="ghost"
+                            color="neutral"
+                            icon="material-symbols:edit-rounded"
+                        >
+                            Edit profile
+                        </UButton>
+                        <div class="w-full bg-ring/25 rounded-xl h-[1px]" />
+                        <UButton
+                            class="rounded-md bg-highlight  font-semibold cursor-pointer"
+                            variant="ghost"
+                            color="error"
+                            icon="material-symbols:logout-rounded"
+                            @click="Logout"
+                        >
+                            Log out
+                        </UButton>
                     </div>
+                    <!-- display mutual servers and friends -->
                     <div v-else class="flex flex-col gap-2 text-xs text-dimmed">
                         <div class="flex items-center gap-2">
+                            <!-- display mutual friends -->
                             <div v-if="mutualFriendsStatus !== 'pending' && mutualFriendsData && mutualFriendsData.data.length > 0" class="flex items-center gap-2">
                                 <UAvatarGroup size="3xs" :max="3">
                                     <UAvatar
@@ -168,6 +195,8 @@ watchPostEffect(async () => {
                                 </UAvatarGroup>
                                 {{ mutualFriendsData.data.length }} mutual {{ mutualFriendsData.data.length > 1 ? 'friends' : 'friend' }}
                             </div>
+
+                            <!-- display mutual servers -->
                             <div v-if="mutualServersStatus !== 'pending' && mutualServersData && mutualServersData.data.length > 0" class="flex items-center gap-2">
                                 <UAvatarGroup
                                     v-if="!mutualFriendsData || mutualFriendsData.data.length === 0"
@@ -181,7 +210,7 @@ watchPostEffect(async () => {
                                         :src="server.image ?? undefined"
                                     />
                                 </UAvatarGroup>
-                                <span v-else class="font-bold">
+                                <span v-else class="font-bold text-2xl">
                                     ·
                                 </span>
                                 {{ mutualServersData.data.length }} mutual {{ mutualServersData.data.length > 1 ? 'servers' : 'server' }}

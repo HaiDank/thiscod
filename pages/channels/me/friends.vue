@@ -9,8 +9,11 @@ import { useFriendStore } from "~/stores/friend";
 
 const sidebarStore = useSidebarStore();
 const friendStore = useFriendStore();
+const toast = useToast();
 const { $csrfFetch } = useNuxtApp();
 const { friends, receivedRequestsUsers } = storeToRefs(friendStore);
+const chosenFriend = ref<User | null>(null);
+const open = ref(false);
 
 const friendStatusFilter = ref<"Online" | "All" | "Pending" | "Add">("Online");
 
@@ -53,24 +56,65 @@ async function handleNavigateToConversation(friend: User) {
     }
 }
 
+function confirmRemoveFriend() {
+    if (chosenFriend.value) {
+        open.value = true;
+    }
+}
+
+function close() {
+    open.value = false;
+}
+
 const items = ref<DropdownMenuItem[]>([
     {
         label: "Start Voice Call",
         color: "neutral",
         onSelect() {
+            toast.add({
+                title: "Not yet implemented",
+            });
         },
     },
     {
         label: "Remove Friend",
         color: "error",
         onSelect() {
+            confirmRemoveFriend();
         },
     },
 ]);
+
+async function removeFriend() {
+    try {
+        if (chosenFriend.value) {
+            await $csrfFetch(`/api/friends/requests/remove/${chosenFriend.value.id}`, {
+                method: "PATCH",
+            });
+            close();
+            await friendStore.refreshFriends();
+        }
+    }
+    catch (e) {
+        const error = e as unknown as FetchError;
+        console.error(getFetchErrorMessage(error));
+    }
+}
 </script>
 
 <template>
     <section class="w-full h-full bg-background flex flex-col gap-2 grow-0">
+        <LazyAppDialog
+            :open="open"
+            confirm-color="error"
+            confirm-label="Remove Friend"
+            body-style="p-0 sm:p-0"
+            :description="`Are you sure you want to remove ${chosenFriend?.name} from your friend?`"
+            :title="`Remove '${chosenFriend?.name}' `"
+            @after-leave="chosenFriend = null"
+            @on-closed="close"
+            @on-confirmed="removeFriend"
+        />
         <!-- Header -->
         <ChatHeader title="Friends">
             <template #leading>
@@ -216,6 +260,7 @@ const items = ref<DropdownMenuItem[]>([
                                 variant="ghost"
                                 class="rounded-full group-hover:bg-sidebar hover:bg-sidebar cursor-pointer"
                                 color="neutral"
+                                @click.stop="chosenFriend = friend"
                             />
                         </UTooltip>
                     </UDropdownMenu>

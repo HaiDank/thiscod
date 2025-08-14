@@ -4,10 +4,11 @@ defineProps<{
     confirmLabel: string;
     confirmColor: "primary" | "secondary" | "success" | "info" | "warning" | "error" | "neutral";
     title: string;
+    bodyStyle?: string;
     description: string;
 }>();
 
-const emit = defineEmits(["onClosed", "onConfirmed"]);
+const emit = defineEmits(["onClosed", "onConfirmed", "afterLeave"]);
 
 function onClose() {
     emit("onClosed");
@@ -23,9 +24,10 @@ function onConfirm() {
         :open="open"
         :title="title"
         :description="description"
-        :ui="{ footer: 'justify-end' }"
+        :ui="{ footer: 'justify-end', body: bodyStyle }"
         :close="false"
         :dismissible="false"
+        @after:leave="emit('afterLeave')"
         @close:prevent="onClose"
     >
         <template #body>

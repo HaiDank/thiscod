@@ -41,10 +41,10 @@ async function handleOnClick() {
                 sideOffset: 4,
             }"
             :ui="{
-                content: !sidebarItem?.alt && `hidden`,
+                content: !sidebarItem?.alt && !alt && `hidden`,
                 text: 'font-semibold',
             }"
-            :text="sidebarItem?.alt"
+            :text="sidebarItem?.alt ?? alt"
         >
             <ULink
                 as="button"

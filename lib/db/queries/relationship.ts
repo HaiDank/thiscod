@@ -56,6 +56,16 @@ export async function findFriendship(requestId: number, userId: number, status: 
     });
 }
 
+export async function findFriendshipWithUser(userOneId: number, userTwoId: number) {
+    return await db.query.friendship.findFirst({
+        where: and(eq(friendship.userOneId, userOneId), eq(friendship.userTwoId, userTwoId)),
+        with: {
+            userOne: true,
+            userTwo: true,
+        },
+    });
+}
+
 export async function findMutualFriends(userAId: number, userBId: number) {
     const friendsOfA = db
         .select({

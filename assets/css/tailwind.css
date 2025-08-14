@@ -134,6 +134,7 @@
     --ui-bg-muted: var(--card);
     --ui-bg-elevated: var(--selected);
     --ui-bg-accented: var(--highlight);
+    --ui-border: var(--border);
     --ui-bg-inverted: var(--color-white);
 
     --ui-text-dimmed: var(--color-disabled);

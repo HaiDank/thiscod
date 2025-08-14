@@ -23,7 +23,7 @@ function togglePopover() {
             <UButton
                 v-if="authStore.user"
                 variant="ghost"
-                class="p-0 rounded-tl-4xl rounded-bl-4xl group rounded-tr-md rounded-br-md  grow-1"
+                class="p-0 rounded-tl-4xl rounded-bl-4xl group rounded-tr-md rounded-br-md cursor-pointer grow-1"
                 color="neutral"
                 @click="togglePopover"
             >
