@@ -81,9 +81,7 @@ async function handleCancelRequest(id: number) {
                 <FriendListItem
                     v-for="request in receivedRequestsUsers"
                     :key="`received-request-${request.id}`"
-                    :avatar="request.image"
-                    :name="request.name"
-                    :email="request.email"
+                    :user="request"
                     :sub-string="request.email"
                     :on-click="() => {}"
                 >
@@ -132,9 +130,7 @@ async function handleCancelRequest(id: number) {
                 <FriendListItem
                     v-for="request in sentRequestsUsers"
                     :key="`sent-request-${request.requestId}`"
-                    :avatar="request.image"
-                    :name="request.name"
-                    :email="request.email"
+                    :user="request"
                     :sub-string="request.email"
                     :on-click="() => {}"
                 >

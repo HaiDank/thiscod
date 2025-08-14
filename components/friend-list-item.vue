@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import type { User } from "~/lib/db/schema";
+
 defineProps<{
     onClick: () => void;
-    avatar: string | null;
-    name: string;
-    email: string;
+    user: User;
     subString: string;
 }>();
 </script>
@@ -18,14 +18,18 @@ defineProps<{
         @click="onClick"
     >
         <div class="border-t border-border items-center flex w-full gap-2 py-2 ">
-            <UAvatar :src="avatar ?? undefined" :alt="name" />
+            <UserAvatar
+                :avatar="user.image ?? undefined"
+                :name="user.name"
+                :status="user.status === 'Online' ? 'Online' : 'Offline'"
+            />
             <div class="flex flex-col justify-baseline items-start grow w-full">
                 <div class="flex gap-2 items-end">
                     <span class="grow font-semibold ">
-                        {{ name }}
+                        {{ user.name }}
                     </span>
                     <span class="grow font-semibold text-sm hidden group-hover:flex ">
-                        {{ email }}
+                        {{ user.email }}
                     </span>
                 </div>
                 <span class="grow font-semibold text-dimmed text-sm">

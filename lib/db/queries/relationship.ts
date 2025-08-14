@@ -59,10 +59,10 @@ export async function findFriendship(requestId: number, userId: number, status: 
 export async function findMutualFriends(userAId: number, userBId: number) {
     const friendsOfA = db
         .select({
-            friendId: sql<number>`CASE 
+            friendAId: sql<number>`CASE 
         WHEN ${friendship.userOneId} = ${userAId} THEN ${friendship.userTwoId}
         ELSE ${friendship.userOneId}
-      END`.as("friend_id"),
+      END`.as("friend_A_id"),
         })
         .from(friendship)
         .where(and(
@@ -77,10 +77,10 @@ export async function findMutualFriends(userAId: number, userBId: number) {
     // Get all friends of user B
     const friendsOfB = db
         .select({
-            friendId: sql<number>`CASE 
+            friendBId: sql<number>`CASE 
         WHEN ${friendship.userOneId} = ${userBId} THEN ${friendship.userTwoId}
         ELSE ${friendship.userOneId}
-      END`.as("friend_id"),
+      END`.as("friend_B_id"),
         })
         .from(friendship)
         .where(and(
@@ -100,8 +100,8 @@ export async function findMutualFriends(userAId: number, userBId: number) {
             image: user.image,
         })
         .from(user)
-        .innerJoin(friendsOfA, eq(user.id, friendsOfA.friendId))
-        .innerJoin(friendsOfB, eq(user.id, friendsOfB.friendId))
+        .innerJoin(friendsOfA, eq(user.id, friendsOfA.friendAId))
+        .innerJoin(friendsOfB, eq(user.id, friendsOfB.friendBId))
         .where(and(
             ne(user.id, userAId),
             ne(user.id, userBId),

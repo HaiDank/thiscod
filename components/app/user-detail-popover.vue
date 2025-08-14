@@ -13,7 +13,6 @@ const { align = "center", side = "top", sideOffset = 12, user } = defineProps<{
 
 const authStore = useAuthStore();
 const toast = useToast();
-const nuxtApp = useNuxtApp();
 const isUser = computed(() => `${authStore.user?.id}` === `${user.id}`);
 const open = ref(false);
 const rgbString = ref<string>("rgb(255,255,255)");
@@ -29,8 +28,9 @@ const { data: mutualServersData, status: mutualServersStatus, error: mutualServe
             fetchedAt: new Date(),
         };
     },
-    getCachedData(key: string) {
+    getCachedData(key: string, nuxtApp) {
         const data = nuxtApp.payload.data[key] || nuxtApp.static.data[key];
+        console.log("server", key, data);
         if (!data) {
             return;
         }
@@ -56,8 +56,9 @@ const { data: mutualFriendsData, status: mutualFriendsStatus, error: mutualFrien
             fetchedAt: new Date(),
         };
     },
-    getCachedData(key: string) {
+    getCachedData(key: string, nuxtApp) {
         const data = nuxtApp.payload.data[key] || nuxtApp.static.data[key];
+        console.log("friend", key, data);
         if (!data) {
             return;
         }

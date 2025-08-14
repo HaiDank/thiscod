@@ -35,14 +35,14 @@ async function handleNavigateToConversation(friend: User) {
             });
             if (created) {
                 await navigateTo({ name: "channels-conversation-id", params: {
-                    conversation: created.id,
+                    id: created.id,
                 } });
             }
         }
         else {
             if ("id" in res) {
                 await navigateTo({ name: "channels-conversation-id", params: {
-                    conversation: res.id,
+                    id: res.id,
                 } });
             }
         }
@@ -171,9 +171,7 @@ const items = ref<DropdownMenuItem[]>([
                 v-for="friend in friends"
                 :key="`${friend.id}`"
                 :on-click="() => handleNavigateToConversation(friend)"
-                :avatar="friend.image"
-                :email="friend.email"
-                :name="friend.name"
+                :user="friend"
                 :sub-string="friend.status === 'Online' ? 'Online' : 'Offline'"
             >
                 <template #trailing>

@@ -65,7 +65,7 @@ export const useSocketStore = defineStore("socketio", () => {
             });
 
             socket.value.on("connect_error", (error) => {
-                console.log("Fail to connect to Socket.IO server", token);
+                console.log("Fail to connect to Socket.IO server");
                 reject(error);
             });
 
