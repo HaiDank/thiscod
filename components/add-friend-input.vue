@@ -6,6 +6,7 @@ import * as z from "zod";
 import type { StatusError } from "~/lib/types";
 
 const { $csrfFetch } = useNuxtApp();
+const friendStore = useFriendStore();
 
 const loading = ref(false);
 
@@ -28,7 +29,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                 method: "POST",
             });
 
-            toast.add({ title: "Success", description: "The form has been submitted.", color: "success" });
+            toast.add({ title: "Friend request sent successfully", color: "success" });
+            await friendStore.refreshFriendRequests();
         }
         catch (e) {
             const error = e as unknown as StatusError;

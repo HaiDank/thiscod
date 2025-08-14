@@ -18,7 +18,7 @@ defineProps<{
         @click="onClick"
     >
         <div class="border-t border-border items-center flex w-full gap-2 py-2 ">
-            <UAvatar :avatar="avatar" :alt="name" />
+            <UAvatar :src="avatar ?? undefined" :alt="name" />
             <div class="flex flex-col justify-baseline items-start grow w-full">
                 <div class="flex gap-2 items-end">
                     <span class="grow font-semibold ">

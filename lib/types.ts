@@ -29,6 +29,12 @@ export type MutualServer = {
     members: SelectMemberWithUser[];
 };
 
+export type MutualFriend = {
+    id: number;
+    name: string;
+    image: string | null;
+};
+
 export type StatusError = {
     statusCode: number;
     statusMessage: string;

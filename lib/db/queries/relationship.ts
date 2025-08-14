@@ -1,9 +1,9 @@
-import { and, eq, not, or, sql } from "drizzle-orm";
+import { and, eq, ne, not, or, sql } from "drizzle-orm";
 
 import type { FriendshipStatus, InsertFriendship } from "../schema";
 
 import db from "..";
-import { friendship } from "../schema";
+import { friendship, user } from "../schema";
 
 export async function sendFriendship(insertable: InsertFriendship) {
     const [created] = await db.insert(friendship).values({
@@ -54,4 +54,58 @@ export async function findFriendship(requestId: number, userId: number, status: 
             userTwo: true,
         },
     });
+}
+
+export async function findMutualFriends(userAId: number, userBId: number) {
+    const friendsOfA = db
+        .select({
+            friendId: sql<number>`CASE 
+        WHEN ${friendship.userOneId} = ${userAId} THEN ${friendship.userTwoId}
+        ELSE ${friendship.userOneId}
+      END`.as("friend_id"),
+        })
+        .from(friendship)
+        .where(and(
+            eq(friendship.status, "ACCEPTED"),
+            or(
+                eq(friendship.userOneId, userAId),
+                eq(friendship.userTwoId, userAId),
+            ),
+        ))
+        .as("friends_of_a");
+
+    // Get all friends of user B
+    const friendsOfB = db
+        .select({
+            friendId: sql<number>`CASE 
+        WHEN ${friendship.userOneId} = ${userBId} THEN ${friendship.userTwoId}
+        ELSE ${friendship.userOneId}
+      END`.as("friend_id"),
+        })
+        .from(friendship)
+        .where(and(
+            eq(friendship.status, "ACCEPTED"),
+            or(
+                eq(friendship.userOneId, userBId),
+                eq(friendship.userTwoId, userBId),
+            ),
+        ))
+        .as("friends_of_b");
+
+    // Find intersection of both friend lists
+    const mutualFriends = await db
+        .select({
+            id: user.id,
+            name: user.name,
+            image: user.image,
+        })
+        .from(user)
+        .innerJoin(friendsOfA, eq(user.id, friendsOfA.friendId))
+        .innerJoin(friendsOfB, eq(user.id, friendsOfB.friendId))
+        .where(and(
+            ne(user.id, userAId),
+            ne(user.id, userBId),
+        ));
+
+    return mutualFriends;
 }

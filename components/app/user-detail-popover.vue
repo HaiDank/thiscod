@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { User } from "~/lib/db/schema";
-import type { MutualServer } from "~/lib/types";
+import type { MutualFriend, MutualServer } from "~/lib/types";
 
 import { useImageColor } from "~/composables/use-image-color";
 
@@ -19,11 +19,38 @@ const open = ref(false);
 const rgbString = ref<string>("rgb(255,255,255)");
 const { getAverageRGB } = useImageColor();
 
-const { data, status, error, refresh } = useFetch(`/api/users/${user.id}/mutual-servers`, {
+const { data: mutualServersData, status: mutualServersStatus, error: mutualServersError, refresh: refreshMutualServers } = useFetch(`/api/users/${user.id}/mutual-servers`, {
     lazy: true,
     watch: false,
     immediate: false,
     transform(payload: MutualServer[]) {
+        return {
+            data: payload,
+            fetchedAt: new Date(),
+        };
+    },
+    getCachedData(key: string) {
+        const data = nuxtApp.payload.data[key] || nuxtApp.static.data[key];
+        if (!data) {
+            return;
+        }
+        const expiration = new Date(data.fetchedAt);
+        expiration.setTime(expiration.getTime() + 60 * 1000);
+        const isExpired = expiration.getTime() < Date.now();
+
+        if (isExpired) {
+            return;
+        }
+
+        return data;
+    },
+});
+
+const { data: mutualFriendsData, status: mutualFriendsStatus, error: mutualFriendsError, refresh: refreshMutualFriends } = useFetch(`/api/users/${user.id}/mutual-friends`, {
+    lazy: true,
+    watch: false,
+    immediate: false,
+    transform(payload: MutualFriend[]) {
         return {
             data: payload,
             fetchedAt: new Date(),
@@ -55,11 +82,19 @@ defineExpose({
 });
 watchEffect(async () => {
     if (!isUser.value) {
-        await refresh();
-        if (error.value) {
+        await refreshMutualFriends();
+        await refreshMutualServers();
+        if (mutualServersError.value) {
             toast.add({
                 title: "An error occured",
-                description: getFetchErrorMessage(error.value),
+                description: getFetchErrorMessage(mutualServersError.value),
+                color: "error",
+            });
+        }
+        if (mutualFriendsError.value) {
+            toast.add({
+                title: "An error occured",
+                description: getFetchErrorMessage(mutualFriendsError.value),
                 color: "error",
             });
         }
@@ -120,16 +155,36 @@ watchPostEffect(async () => {
                         </div>
                     </div>
                     <div v-else class="flex flex-col gap-2 text-xs text-dimmed">
-                        <div v-if="status !== 'pending' && data && data.data.length > 0 " class="flex items-center gap-2">
-                            <UAvatarGroup size="3xs" :max="3">
-                                <UAvatar
-                                    v-for="server in data.data"
-                                    :key="`server-${server.id}`"
-                                    :alt="server.name"
-                                    :src="server.image ?? undefined"
-                                />
-                            </UAvatarGroup>
-                            {{ data.data.length }} mutual server
+                        <div class="flex items-center gap-2">
+                            <div v-if="mutualFriendsStatus !== 'pending' && mutualFriendsData && mutualFriendsData.data.length > 0" class="flex items-center gap-2">
+                                <UAvatarGroup size="3xs" :max="3">
+                                    <UAvatar
+                                        v-for="friend in mutualFriendsData.data"
+                                        :key="`friend-${friend.id}`"
+                                        :alt="friend.name"
+                                        :src="friend.image ?? undefined"
+                                    />
+                                </UAvatarGroup>
+                                {{ mutualFriendsData.data.length }} mutual {{ mutualFriendsData.data.length > 1 ? 'friends' : 'friend' }}
+                            </div>
+                            <div v-if="mutualServersStatus !== 'pending' && mutualServersData && mutualServersData.data.length > 0" class="flex items-center gap-2">
+                                <UAvatarGroup
+                                    v-if="!mutualFriendsData || mutualFriendsData.data.length === 0"
+                                    size="3xs"
+                                    :max="3"
+                                >
+                                    <UAvatar
+                                        v-for="server in mutualServersData.data"
+                                        :key="`server-${server.id}`"
+                                        :alt="server.name"
+                                        :src="server.image ?? undefined"
+                                    />
+                                </UAvatarGroup>
+                                <span v-else class="font-bold">
+                                    ·
+                                </span>
+                                {{ mutualServersData.data.length }} mutual {{ mutualServersData.data.length > 1 ? 'servers' : 'server' }}
+                            </div>
                         </div>
                     </div>
                 </div>

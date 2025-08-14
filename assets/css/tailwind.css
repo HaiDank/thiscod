@@ -99,7 +99,7 @@
     --ui-text-highlighted: var(--color-black);
     --ui-text-inverted: var(--ui-color-neutral-300);
     --ui-error: var(--ui-color-error-500);
-    --ui-primary: var(--ui-color-primary-500);
+    --ui-primary: var(--ui-color-primary-400);
 }
 
 .dark {
@@ -143,7 +143,7 @@
     --ui-text-highlighted: var(--color-white);
     --ui-text-inverted: var(--ui-color-neutral-900);
     --ui-error: var(--ui-color-error-600);
-    --ui-primary: var(--ui-color-primary-600);
+    --ui-primary: var(--ui-color-primary-500);
 }
 
 @theme {
