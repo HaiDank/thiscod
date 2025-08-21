@@ -19,7 +19,8 @@ const show = computed(() => status !== "Offline");
         position="bottom-right"
         :size="size"
         :ui="{
-            base: `${!show && 'bg-neutral-500'} ${chipStyle}`,
+            base: `${!show && 'bg-neutral-500'} ${chipStyle} z-10`,
+            root: 'peer',
         }"
         :color="chipColor"
     >

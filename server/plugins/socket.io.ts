@@ -330,7 +330,6 @@ export default defineNitroPlugin((nitroApp: NitroApp) => {
 
         // Handle disconnect
         socket.on("disconnect", () => {
-            console.log("User disconnected:", socket.id);
             if (socket.user) {
                 updateUserStatus(socket.user.id, "Offline");
             }

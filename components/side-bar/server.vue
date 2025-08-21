@@ -7,7 +7,7 @@ const {
 </script>
 
 <template>
-    <nav class="w-20 h-full overflow-y-scroll no-scrollbar top-0 pt-1 pb-2 flex flex-col items-center box-border gap-2 ">
+    <nav class="w-20 h-full overflow-y-auto no-scrollbar top-0 pt-1 pb-2 flex flex-col items-center box-border gap-2 ">
         <ServerButton
             :sidebar-item="topSidebarItem"
         />

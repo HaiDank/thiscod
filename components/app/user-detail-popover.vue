@@ -12,6 +12,7 @@ const { align = "center", side = "top", sideOffset = 12, user } = defineProps<{
 }>();
 
 const authStore = useAuthStore();
+const dialogStore = useDialogStore();
 const toast = useToast();
 const isUser = computed(() => `${authStore.user?.id}` === `${user.id}`);
 const open = ref(false);
@@ -166,6 +167,7 @@ async function Logout() {
                             variant="ghost"
                             color="neutral"
                             icon="material-symbols:edit-rounded"
+                            @click="dialogStore.openUserProfile = true"
                         >
                             Edit profile
                         </UButton>

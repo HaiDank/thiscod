@@ -31,6 +31,7 @@ const isResizing = useIsResizing();
 
 <template>
     <section :class="cn('w-screen h-screen overflow-hidden', isResizing && 'cursor-ew-resize ')">
+        <AppUserProfile />
         <div :class="cn('w-screen h-screen bg-background absolute top-0 left-0 z-100 flex items-center justify-center', isLoading ? '' : 'hidden')">
             <UIcon name="mdi:jellyfish" class="animate-spin-ease-loop size-32" />
         </div>

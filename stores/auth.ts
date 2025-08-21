@@ -33,6 +33,39 @@ export const useAuthStore = defineStore("auth", () => {
     });
     const loading = computed(() => session.value?.isPending);
 
+    async function updateProfile(data: { image?: string; name?: string }) {
+        const { csrf } = useCsrf();
+        const headers = new Headers();
+        headers.append("csrf-token", csrf);
+
+        const { image, name } = data;
+
+        return await authClient.updateUser({
+            image,
+            name,
+            fetchOptions: {
+                headers,
+            },
+        });
+    }
+
+    async function changePassword(data: { newPassword: string; currentPassword: string }) {
+        const { csrf } = useCsrf();
+        const headers = new Headers();
+        headers.append("csrf-token", csrf);
+
+        const { newPassword, currentPassword } = data;
+
+        return await authClient.changePassword({
+            newPassword,
+            currentPassword,
+            revokeOtherSessions: true,
+            fetchOptions: {
+                headers,
+            },
+        });
+    }
+
     async function signInWithGithub() {
         const { csrf } = useCsrf();
         const headers = new Headers();
@@ -96,6 +129,8 @@ export const useAuthStore = defineStore("auth", () => {
         getOneTimeToken,
         init,
         loading,
+        updateProfile,
+        changePassword,
         signInWithGithub,
         signInWithEmail,
         signUp,

@@ -1,4 +1,5 @@
 import { int, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { createInsertSchema } from "drizzle-zod";
 
 // import { usersToConversations } from "./conversation";
 
@@ -19,6 +20,30 @@ export const user = sqliteTable("user", {
 // }));
 
 export type User = typeof user.$inferSelect;
+export const InsertAvatar = createInsertSchema(user, {
+    image: field => field.regex(/^https?:\/\/(?:www\.)?[-\w@:%.+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}(\/\d+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.jpg)$/, "Invalid key").optional(),
+}).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+    email: true,
+    emailVerified: true,
+    lastSeenAt: true,
+    status: true,
+    name: true,
+});
+
+export const InsertProfile = createInsertSchema(user, {
+    email: field => field.optional(),
+    name: field => field.optional(),
+}).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+    emailVerified: true,
+    lastSeenAt: true,
+    status: true,
+});
 
 export const session = sqliteTable("session", {
     id: int().primaryKey({ autoIncrement: true }),
